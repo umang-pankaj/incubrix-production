@@ -1,0 +1,33 @@
+[
+    {
+        "id": "pricing",
+        "label": "Pricing & Plans",
+        "answer": "### Pricing & Plans\n\nWe offer flexible pricing to suit your needs:\n\n*   **Starter**: $29/mo - For individuals\n*   **Pro**: $79/mo - For growing teams\n*   **Enterprise**: Custom - For large organizations\n\n[View Full Pricing](/pricing)",
+        "type": "preset"
+    },
+    {
+        "id": "how_it_works",
+        "label": "How IncuBrix Works",
+        "answer": "### How IncuBrix Works\n\n1.  **Connect**: Link your existing platforms.\n2.  **Build**: Use our drag-and-drop tools.\n3.  **Launch**: Deploy instantly to the web.\n\nIt's that simple! [Watch a Demo](/demo)",
+        "type": "preset"
+    },
+    {
+        "id": "platforms",
+        "label": "Supported Platforms",
+        "answer": "### Supported Platforms\n\nIncuBrix currently supports:\n\n*   Web (React, Vue, Angular)\n*   Mobile (React Native, Flutter)\n*   Desktop (Electron)\n\nWe are constantly adding more!",
+        "type": "preset"
+    },
+    {
+        "id": "demo",
+        "label": "Book a Demo",
+        "answer": "### Book a Demo\n\nReady to see IncuBrix in action? Schedule a live, personalized session with our team to explore features and get your questions answered.\n\n[Schedule Your Demo](/how-it-works#demo)\n\nOur team will walk you through the platform.",
+        "type": "preset"
+    },
+    {
+        "id": "something_else",
+        "label": "Something Else",
+        "answer": "Sure! Please type your question below and I'll do my best to verify it using our knowledge base or connect you with support.",
+        "type": "action",
+        "action": "enable_input"
+    }
+]

@@ -1,0 +1,88 @@
+[
+  {
+    "id": 1,
+    "name": "Test Creator",
+    "email": "testcreator@example.com",
+    "channelLink": "https://youtube.com/@testcreator",
+    "contactNumber": "+91 9876543210",
+    "status": "Pending",
+    "createdAt": "2026-02-23T08:29:42.173Z"
+  },
+  {
+    "id": 2,
+    "name": "Umang",
+    "email": "umang@incubrix.com",
+    "channelLink": null,
+    "contactNumber": "+91 7710850644",
+    "status": "Pending",
+    "createdAt": "2026-02-23T11:13:56.180Z"
+  },
+  {
+    "id": 3,
+    "name": "Armindha Gladia",
+    "email": "armindhagladia@gmail.com",
+    "channelLink": null,
+    "contactNumber": "+91 9566502479",
+    "status": "Pending",
+    "createdAt": "2026-02-23T11:15:48.195Z"
+  },
+  {
+    "id": 4,
+    "name": "Kmaraj",
+    "email": "kamraj@incubrix.com",
+    "channelLink": null,
+    "contactNumber": null,
+    "status": "Pending",
+    "createdAt": "2026-02-23T15:24:37.960Z"
+  },
+  {
+    "id": 5,
+    "name": "Umang",
+    "channelName": null,
+    "email": "umangpankaj810@gmail.com",
+    "channelLinks": null,
+    "contactNumber": "+1 dubdeu",
+    "status": "Pending",
+    "createdAt": "2026-03-01T07:22:18.726Z"
+  },
+  {
+    "id": 6,
+    "name": "fff",
+    "channelName": null,
+    "email": "dfdfdfrf@fdrrrg.com",
+    "channelLinks": null,
+    "contactNumber": "+1 defedf",
+    "status": "Pending",
+    "createdAt": "2026-03-01T07:25:27.286Z"
+  },
+  {
+    "id": 7,
+    "name": "Umang",
+    "channelName": null,
+    "email": "deepalikaushik173@gmail.com",
+    "channelLinks": null,
+    "contactNumber": "+91 771085064",
+    "status": "Pending",
+    "createdAt": "2026-03-01T09:10:54.088Z"
+  },
+  {
+    "id": 8,
+    "name": "Test User",
+    "channelName": "Test Channel",
+    "email": "test.beta@example.com",
+    "channelLinks": null,
+    "contactNumber": null,
+    "status": "Pending",
+    "createdAt": "2026-03-06T10:20:32.022Z"
+  },
+  {
+    "id": 9,
+    "name": "E2E Test Creator",
+    "channelName": "Test Channel",
+    "email": "e2etest.creator@example.com",
+    "channelLinks": null,
+    "contactNumber": "+91 9876543210",
+    "status": "Pending",
+    "createdAt": "2026-03-06T10:24:36.307Z"
+  }
+]

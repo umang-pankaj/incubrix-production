@@ -1,0 +1,254 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+  /* Global scale adjustment to match 80% view density at 100% zoom */
+  :root {
+    --background: 232 58% 10%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+    --radius: 0.5rem;
+
+    --navy-900: #0a0e27;
+    --navy-800: #0f1535;
+    --navy-700: #151d45;
+  }
+
+  .light {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+
+    --navy-900: #f8fafc;
+    --navy-800: #f1f5f9;
+    --navy-700: #e2e8f0;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    zoom: 0.8;
+    /* Replicate 80% zoom level globally */
+  }
+}
+
+/* Light mode: override hardcoded dark utility classes on the nav */
+.light nav,
+.light header {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Light mode footer */
+.light footer {
+  background: #f1f5f9 !important;
+  border-top-color: rgba(0, 0, 0, 0.06) !important;
+  color: #374151 !important;
+}
+
+/* ===================================================
+   LIGHT MODE — GLOBAL PAGE BACKGROUNDS
+   Flip all hardcoded navy/dark page wrappers
+   =================================================== */
+
+/* All pages: top-level page wrapper dark backgrounds */
+.light [class*="min-h-screen"][class*="bg-"] {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* All section backgrounds */
+.light section {
+  background-color: #f8fafc !important;
+}
+
+/* Commonly used dark backgrounds across pages */
+.light .bg-\[\#0a0e27\] {
+  background-color: #f8fafc !important;
+}
+
+.light .bg-\[\#07091c\] {
+  background-color: #f8fafc !important;
+}
+
+.light .bg-\[\#050510\] {
+  background-color: #f8fafc !important;
+}
+
+.light .bg-\[\#0f1535\] {
+  background-color: #f1f5f9 !important;
+}
+
+.light .bg-\[\#0f1428\] {
+  background-color: #ffffff !important;
+}
+
+.light .bg-\[\#111830\] {
+  background-color: #ffffff !important;
+}
+
+.light .bg-\[\#151d45\] {
+  background-color: #ffffff !important;
+}
+
+.light .bg-\[\#111a4a\] {
+  background-color: #ffffff !important;
+}
+
+.light .bg-\[\#0f173d\] {
+  background-color: #f8fafc !important;
+}
+
+.light .bg-\[\#05091d\] {
+  background-color: #f8fafc !important;
+}
+
+/* Backdrop transparent dark backgrounds */
+.light .bg-\[\#0f1535\]\/80 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.light .bg-\[\#0a0e27\]\/50 {
+  background-color: rgba(248, 250, 252, 0.9) !important;
+}
+
+.light .bg-\[\#0a0e27\]\/30 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+.light .bg-\[\#0a0e27\]\/95 {
+  background-color: rgba(255, 255, 255, 0.97) !important;
+}
+
+/* Gradient sections used in home/pricing */
+.light .bg-gradient-to-b.from-\[\#0a0e27\],
+.light .bg-gradient-to-b.via-\[\#050510\] {
+  background: #f8fafc !important;
+}
+
+/* ===================================================
+   LIGHT MODE — TEXT COLORS (Fix invisible white text)
+   =================================================== */
+.light .text-white {
+  color: #0f172a !important;
+}
+
+.light .text-gray-300 {
+  color: #4b5563 !important;
+}
+
+.light .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+.light .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+.light .text-gray-600 {
+  color: #374151 !important;
+}
+
+/* Gradient text — reset to solid dark */
+.light .bg-clip-text.text-transparent {
+  -webkit-text-fill-color: #0f172a !important;
+  background: none !important;
+}
+
+/* ===================================================
+   LIGHT MODE — CARDS & BORDERS
+   =================================================== */
+.light .border-white\/10,
+.light .border-white\/5,
+.light .border-white\/20 {
+  border-color: #e2e8f0 !important;
+}
+
+.light .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.light .bg-white\/10 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Card shadow overrides for flat light look */
+.light .shadow-\[0_8px_40px_rgba\(0\,0\,0\,0\.4\)\] {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ===================================================
+   LIGHT MODE — AMBIENT ORBS (reduce on white bg)
+   =================================================== */
+.light [class*="blur-[8"],
+.light [class*="blur-[9"],
+.light [class*="blur-[10"],
+.light [class*="blur-[11"],
+.light [class*="blur-[12"],
+.light [class*="blur-[13"],
+.light [class*="blur-[15"],
+.light [class*="blur-[18"] {
+  opacity: 0.06 !important;
+}
+
+/* ===================================================
+   LIGHT MODE — SCROLLBAR
+   =================================================== */
+.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ===================================================
+   LIGHT MODE — DIVIDERS
+   =================================================== */
+.light .via-cyan-500\/20 {
+  --tw-gradient-via: rgba(6, 182, 212, 0.15) !important;
+}

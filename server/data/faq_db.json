@@ -1,0 +1,468 @@
+[
+    {
+        "id": "faq_001",
+        "question": "What is IncuBrix?",
+        "keywords": [
+            "what is incubrix",
+            "about incubrix",
+            "incubrix platform",
+            "what does incubrix do"
+        ],
+        "answer": "IncuBrix is an AI-powered Creator Operating System that helps creators generate multi-format content, publish across platforms, track analytics, and connect with brands — all from one unified platform."
+    },
+    {
+        "id": "faq_002",
+        "question": "How does IncuBrix work?",
+        "keywords": [
+            "how incubrix works",
+            "how does it work",
+            "workflow",
+            "process"
+        ],
+        "answer": "IncuBrix turns one idea into multiple content formats using AI, then allows you to schedule, publish, analyze, and monetize — all within a streamlined workflow."
+    },
+    {
+        "id": "faq_003",
+        "question": "Who is IncuBrix designed for?",
+        "keywords": [
+            "who is it for",
+            "target users",
+            "creators",
+            "audience"
+        ],
+        "answer": "IncuBrix is built for content creators, educators, founders, coaches, consultants, and thought leaders who want to scale their content and income efficiently."
+    },
+    {
+        "id": "faq_004",
+        "question": "What platforms are supported?",
+        "keywords": [
+            "supported platforms",
+            "which platforms",
+            "publish where"
+        ],
+        "answer": "IncuBrix supports LinkedIn, YouTube, newsletters, and podcast-ready formats, with more integrations planned."
+    },
+    {
+        "id": "faq_005",
+        "question": "Is IncuBrix free?",
+        "keywords": [
+            "free",
+            "cost",
+            "price",
+            "pricing"
+        ],
+        "answer": "IncuBrix currently offers early access during beta. Pricing details will be announced at official launch."
+    },
+    {
+        "id": "faq_006",
+        "question": "How can I book a demo?",
+        "keywords": [
+            "demo",
+            "schedule demo",
+            "book meeting"
+        ],
+        "answer": "Click the 'Schedule Demo' button on our homepage and choose your preferred time slot via Google Meet."
+    },
+    {
+        "id": "faq_007",
+        "question": "Do I need technical skills?",
+        "keywords": [
+            "technical skills",
+            "coding",
+            "developer needed"
+        ],
+        "answer": "No. IncuBrix is built for creators and requires no coding knowledge."
+    },
+    {
+        "id": "faq_008",
+        "question": "How is IncuBrix different from ChatGPT?",
+        "keywords": [
+            "chatgpt",
+            "difference",
+            "vs chatgpt"
+        ],
+        "answer": "ChatGPT generates text. IncuBrix provides full creator workflows — including publishing, analytics, monetization, and brand matching."
+    },
+    {
+        "id": "faq_009",
+        "question": "Does IncuBrix replace Canva or editing tools?",
+        "keywords": [
+            "canva",
+            "design tools",
+            "editing"
+        ],
+        "answer": "IncuBrix complements design tools by generating structured content and workflows. It is not a direct replacement for graphic design software."
+    },
+    {
+        "id": "faq_010",
+        "question": "How does IncuBrix help creators grow?",
+        "keywords": [
+            "grow audience",
+            "increase followers",
+            "growth"
+        ],
+        "answer": "By automating content repurposing and providing performance insights, IncuBrix increases consistency and reach."
+    },
+    {
+        "id": "faq_011",
+        "question": "Can I monetize using IncuBrix?",
+        "keywords": [
+            "monetize",
+            "earn money",
+            "income"
+        ],
+        "answer": "Yes. IncuBrix includes brand discovery tools and income tracking features to help creators diversify revenue streams."
+    },
+    {
+        "id": "faq_012",
+        "question": "What is the Creator Sustainability Score?",
+        "keywords": [
+            "creator score",
+            "css",
+            "sustainability score"
+        ],
+        "answer": "It measures financial stability, growth consistency, engagement quality, and revenue diversification."
+    },
+    {
+        "id": "faq_013",
+        "question": "Is my data secure?",
+        "keywords": [
+            "security",
+            "privacy",
+            "data safe"
+        ],
+        "answer": "Yes. IncuBrix uses secure authentication and encrypted communication protocols."
+    },
+    {
+        "id": "faq_014",
+        "question": "Do I own my content?",
+        "keywords": [
+            "content ownership",
+            "rights"
+        ],
+        "answer": "Yes. You retain full ownership of all content generated using IncuBrix."
+    },
+    {
+        "id": "faq_015",
+        "question": "Can I cancel anytime?",
+        "keywords": [
+            "cancel subscription",
+            "refund"
+        ],
+        "answer": "Yes. There are no long-term lock-ins."
+    },
+    {
+        "id": "faq_016",
+        "question": "Is IncuBrix global?",
+        "keywords": [
+            "available worldwide",
+            "countries"
+        ],
+        "answer": "Yes. IncuBrix supports creators globally."
+    },
+    {
+        "id": "faq_017",
+        "question": "Does IncuBrix support teams?",
+        "keywords": [
+            "teams",
+            "collaboration"
+        ],
+        "answer": "Team collaboration features are planned for future releases."
+    },
+    {
+        "id": "faq_018",
+        "question": "Does it support YouTube?",
+        "keywords": [
+            "youtube scripts",
+            "youtube automation"
+        ],
+        "answer": "Yes. IncuBrix generates YouTube scripts, outlines, and structured video ideas."
+    },
+    {
+        "id": "faq_019",
+        "question": "Does it support LinkedIn creators?",
+        "keywords": [
+            "linkedin posts",
+            "linkedin automation"
+        ],
+        "answer": "Yes. IncuBrix helps generate LinkedIn posts, carousels, and thought leadership content."
+    },
+    {
+        "id": "faq_020",
+        "question": "How does analytics work?",
+        "keywords": [
+            "analytics",
+            "dashboard",
+            "metrics"
+        ],
+        "answer": "IncuBrix provides unified analytics across platforms to track engagement, growth, and revenue."
+    },
+    {
+        "id": "faq_021",
+        "question": "Is AI customizable to my tone?",
+        "keywords": [
+            "tone",
+            "voice",
+            "custom style"
+        ],
+        "answer": "Yes. The AI adapts to your tone preferences and personal branding."
+    },
+    {
+        "id": "faq_022",
+        "question": "Does IncuBrix auto-publish?",
+        "keywords": [
+            "auto publish",
+            "schedule posts"
+        ],
+        "answer": "Yes. You can schedule and publish across supported platforms."
+    },
+    {
+        "id": "faq_023",
+        "question": "Can brands find me?",
+        "keywords": [
+            "brand deals",
+            "sponsorship"
+        ],
+        "answer": "Yes. Brands can discover creators based on engagement and niche."
+    },
+    {
+        "id": "faq_024",
+        "question": "Is IncuBrix scalable?",
+        "keywords": [
+            "scale business",
+            "scalable"
+        ],
+        "answer": "Yes. It supports creators at all stages, from beginners to enterprise-level."
+    },
+    {
+        "id": "faq_025",
+        "question": "Does it provide media kits?",
+        "keywords": [
+            "media kit",
+            "brand proposal"
+        ],
+        "answer": "Yes. IncuBrix helps generate automated media kits with analytics data."
+    },
+    {
+        "id": "faq_026",
+        "question": "Is IncuBrix suitable for agencies?",
+        "keywords": [
+            "agency use",
+            "manage multiple creators"
+        ],
+        "answer": "Yes. Agencies can use IncuBrix to streamline creator workflows."
+    },
+    {
+        "id": "faq_027",
+        "question": "Can I track income?",
+        "keywords": [
+            "income tracking",
+            "revenue dashboard"
+        ],
+        "answer": "Yes. IncuBrix provides financial tracking insights."
+    },
+    {
+        "id": "faq_028",
+        "question": "Does it help with brand pitching?",
+        "keywords": [
+            "pitch brands",
+            "brand proposal"
+        ],
+        "answer": "Yes. It assists with AI-generated pitch drafts."
+    },
+    {
+        "id": "faq_029",
+        "question": "Does it support newsletters?",
+        "keywords": [
+            "newsletter",
+            "email content"
+        ],
+        "answer": "Yes. It can generate newsletter-ready content."
+    },
+    {
+        "id": "faq_030",
+        "question": "Is onboarding quick?",
+        "keywords": [
+            "onboarding",
+            "setup time"
+        ],
+        "answer": "Yes. Setup takes only a few minutes."
+    },
+    {
+        "id": "faq_031",
+        "question": "Can I export my data?",
+        "keywords": [
+            "export data",
+            "download content"
+        ],
+        "answer": "Yes. Data export features are supported."
+    },
+    {
+        "id": "faq_032",
+        "question": "Does IncuBrix support podcasts?",
+        "keywords": [
+            "podcast scripts",
+            "audio content"
+        ],
+        "answer": "Yes. It can generate podcast outlines and scripts."
+    },
+    {
+        "id": "faq_033",
+        "question": "Is there customer support?",
+        "keywords": [
+            "support",
+            "help center"
+        ],
+        "answer": "Yes. Contact us via the Help section."
+    },
+    {
+        "id": "faq_034",
+        "question": "Is IncuBrix in beta?",
+        "keywords": [
+            "beta access",
+            "early users"
+        ],
+        "answer": "Yes. Early access is currently available."
+    },
+    {
+        "id": "faq_035",
+        "question": "Will there be enterprise plans?",
+        "keywords": [
+            "enterprise",
+            "business plan"
+        ],
+        "answer": "Enterprise plans are planned for scaling teams and agencies."
+    },
+    {
+        "id": "faq_036",
+        "question": "Does IncuBrix integrate with CRM tools?",
+        "keywords": [
+            "crm integration",
+            "hubspot"
+        ],
+        "answer": "CRM integrations are planned for future releases."
+    },
+    {
+        "id": "faq_037",
+        "question": "Can I collaborate with editors?",
+        "keywords": [
+            "editors",
+            "team editing"
+        ],
+        "answer": "Collaboration tools are in roadmap."
+    },
+    {
+        "id": "faq_038",
+        "question": "Does it track engagement rates?",
+        "keywords": [
+            "engagement rate",
+            "engagement metrics"
+        ],
+        "answer": "Yes. Engagement metrics are part of the analytics dashboard."
+    },
+    {
+        "id": "faq_039",
+        "question": "Does IncuBrix store drafts?",
+        "keywords": [
+            "save drafts",
+            "draft storage"
+        ],
+        "answer": "Yes. You can save and edit drafts."
+    },
+    {
+        "id": "faq_040",
+        "question": "Is there a roadmap?",
+        "keywords": [
+            "roadmap",
+            "future features"
+        ],
+        "answer": "Yes. Our roadmap is shared with beta users."
+    },
+    {
+        "id": "faq_041",
+        "question": "Can beginners use IncuBrix?",
+        "keywords": [
+            "beginner friendly"
+        ],
+        "answer": "Yes. It is designed for both beginners and professionals."
+    },
+    {
+        "id": "faq_042",
+        "question": "Is content plagiarism-free?",
+        "keywords": [
+            "plagiarism",
+            "original content"
+        ],
+        "answer": "Yes. AI-generated content is original and customizable."
+    },
+    {
+        "id": "faq_043",
+        "question": "Can I customize workflows?",
+        "keywords": [
+            "custom workflows"
+        ],
+        "answer": "Yes. Workflow templates can be customized."
+    },
+    {
+        "id": "faq_044",
+        "question": "Does IncuBrix support multilingual content?",
+        "keywords": [
+            "multi language",
+            "translate"
+        ],
+        "answer": "Yes. AI supports multiple languages."
+    },
+    {
+        "id": "faq_045",
+        "question": "How does IncuBrix ensure consistency?",
+        "keywords": [
+            "content consistency"
+        ],
+        "answer": "AI workflow automation ensures consistent publishing."
+    },
+    {
+        "id": "faq_046",
+        "question": "Is it suitable for founders?",
+        "keywords": [
+            "founders",
+            "startup leaders"
+        ],
+        "answer": "Yes. Founders use IncuBrix to build thought leadership."
+    },
+    {
+        "id": "faq_047",
+        "question": "Does IncuBrix reduce workload?",
+        "keywords": [
+            "save time",
+            "reduce workload"
+        ],
+        "answer": "Yes. It reduces manual work by automating repetitive tasks."
+    },
+    {
+        "id": "faq_048",
+        "question": "Can I track ROI?",
+        "keywords": [
+            "roi",
+            "return on investment"
+        ],
+        "answer": "Yes. Analytics provide insights into performance and growth."
+    },
+    {
+        "id": "faq_049",
+        "question": "Does IncuBrix connect creators with brands?",
+        "keywords": [
+            "brand matching",
+            "brand marketplace"
+        ],
+        "answer": "Yes. It facilitates brand discovery and partnership management."
+    },
+    {
+        "id": "faq_050",
+        "question": "How fast is content generation?",
+        "keywords": [
+            "generation speed",
+            "how long"
+        ],
+        "answer": "Content can be generated in minutes using AI workflows."
+    }
+]

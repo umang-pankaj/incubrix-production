@@ -1,0 +1,33 @@
+[
+    {
+        "id": "pricing",
+        "label": "Pricing & Plans",
+        "answer": "### Our Pricing Plans\n\n- **Free**: $0/mo - Perfect for exploring our platform.\n- **Starter**: $29/mo - Essential tools for growing creators.\n- **Creator**: $69/mo - Ideal for consistent content creators.\n- **Pro**: $129/mo - Advanced features for professional creators.\n- **Business**: $249/mo - Scale your content production effortlessly.\n\nAll plans are billed monthly. Do you have any questions about these plans or would you like to see the full feature comparison?",
+        "type": "preset"
+    },
+    {
+        "id": "how_it_works",
+        "label": "How IncuBrix Works",
+        "answer": "### How IncuBrix Works\n\n1.  **Connect**: Link your existing platforms.\n2.  **Build**: Use our drag-and-drop tools.\n3.  **Launch**: Deploy instantly to the web.\n\nIt's that simple! [Watch a Demo](/HowItWorks#demo)",
+        "type": "preset"
+    },
+    {
+        "id": "platforms",
+        "label": "Supported Platforms",
+        "answer": "### Supported Platforms\n\nIncuBrix currently supports:\n\n*   LinkedIn\n*   YouTube\n*   Podcasts\n*   Newsletters\n\nWe are constantly adding more integrations!",
+        "type": "preset"
+    },
+    {
+        "id": "demo",
+        "label": "Demo",
+        "answer": "How would you like to explore IncuBrix?",
+        "type": "preset"
+    },
+    {
+        "id": "something_else",
+        "label": "Something Else",
+        "answer": "Sure! Please type your question below and I'll do my best to verify it using our knowledge base or connect you with support.",
+        "type": "action",
+        "action": "enable_input"
+    }
+]

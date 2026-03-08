@@ -1,0 +1,38 @@
+{
+    "name": "incubrix-auth-server",
+    "version": "1.0.0",
+    "description": "Google OAuth 2.0 authentication server for Incubrix",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "node index.js"
+    },
+    "keywords": [
+        "oauth",
+        "google",
+        "passport",
+        "authentication"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@langchain/community": "^1.1.15",
+        "@langchain/core": "^1.1.24",
+        "@langchain/openai": "^1.2.7",
+        "@langchain/textsplitters": "^1.0.1",
+        "@sendgrid/mail": "^8.1.6",
+        "bcrypt": "^5.1.1",
+        "cheerio": "^1.2.0",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.21.2",
+        "express-rate-limit": "^8.2.1",
+        "express-session": "^1.18.1",
+        "googleapis": "^171.4.0",
+        "passport": "^0.7.0",
+        "passport-google-oauth20": "^2.0.0",
+        "uuid": "^13.0.0"
+    }
+}

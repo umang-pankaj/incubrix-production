@@ -1,0 +1,356 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { createPageUrl } from '../utils';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Check, Zap, Crown, Rocket, User, Star, ChevronDown } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/lib/AuthContext';
+
+export default function Pricing() {
+  // Monthly billing only as annual is currently unavailable
+  const billingCycle = 'monthly';
+  const { user } = useAuth();
+  const location = useLocation();
+  const [highlightPlan, setHighlightPlan] = useState(null);
+  const [activeFaq, setActiveFaq] = useState(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const highlight = params.get('highlight');
+    if (highlight) {
+      setHighlightPlan(highlight);
+    } else {
+      setHighlightPlan(user?.plan || 'Free');
+    }
+  }, [location, user]);
+
+  const plans = [
+    {
+      name: 'Free',
+      subtitle: '(Weekly Creator)',
+      icon: User,
+      price: 0,
+      description: 'Perfect for exploring our platform',
+      features: [
+        '10 Upload files/mo',
+        '120 mins OR 10 files Transcribe',
+        '40 mins Repurpose',
+        '20k TTS (v3) characters',
+        '10 mins Render (720p)',
+        'Watermarked exports',
+        '1 Concurrency'
+      ],
+      cta: 'Get Started',
+      popular: false
+    },
+    {
+      name: 'Starter',
+      icon: Zap,
+      price: 29,
+      description: 'Essential tools for growing creators',
+      features: [
+        '30 Upload files/mo',
+        '240 mins Transcribe',
+        '120 mins Repurpose',
+        '60k TTS (v3) characters',
+        '25 mins Render',
+        '12 platform publish/mo',
+        '2 Concurrency'
+      ],
+      cta: 'Start Free Trial',
+      popular: false
+    },
+    {
+      name: 'Creator',
+      icon: Star,
+      price: 69,
+      description: 'Ideal for consistent content creators',
+      features: [
+        '60 Upload files/mo',
+        '600 mins Transcribe',
+        '300 mins Repurpose',
+        '150k TTS (v3) characters',
+        '60 mins Render',
+        '30 platform publish/mo',
+        '3 Concurrency'
+      ],
+      cta: 'Start Free Trial',
+      popular: true
+    },
+    {
+      name: 'Pro',
+      icon: Crown,
+      price: 129,
+      description: 'Advanced features for professional creators',
+      features: [
+        '120 Upload files/mo',
+        '1200 mins Transcribe',
+        '700 mins Repurpose',
+        '300k TTS (v3) characters',
+        '120 mins Render',
+        '70 platform publish/mo',
+        '5 Concurrency'
+      ],
+      cta: 'Start Free Trial',
+      popular: false
+    },
+    {
+      name: 'Business',
+      icon: Rocket,
+      price: 249,
+      description: 'Scale your content production effortlessly',
+      features: [
+        '300 Upload files/mo',
+        '3000 mins Transcribe',
+        '1500 mins Repurpose',
+        '600k TTS (v3) characters',
+        '300 mins Render',
+        '200 platform publish/mo',
+        '8 Concurrency'
+      ],
+      cta: 'Contact Sales',
+      popular: false
+    }
+  ];
+
+  return (
+    <div className="bg-[#0a0e27] text-white min-h-screen">
+      {/* Hero */}
+      <section className="relative py-8 px-6 overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0e27] to-black pointer-events-none">
+          <motion.div
+            className="absolute top-1/4 left-1/3 w-[480px] h-[480px] bg-gradient-to-br from-cyan-500/30 to-blue-500/25 rounded-full blur-[120px] pointer-events-none"
+            animate={{
+              scale: [1, 1.4, 1.2, 1],
+              opacity: [0.4, 0.6, 0.5, 0.4],
+              x: [0, 90, -50, 0],
+              y: [0, -50, 40, 0],
+              rotate: [0, 90, 180, 360]
+            }}
+            transition={{ duration: 17, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/3 w-[520px] h-[520px] bg-gradient-to-br from-purple-500/25 to-indigo-500/30 rounded-full blur-[130px] pointer-events-none"
+            animate={{
+              scale: [1.3, 1, 1.4, 1.3],
+              opacity: [0.5, 0.3, 0.6, 0.5],
+              x: [0, -80, 70, 0],
+              y: [0, 60, -60, 0],
+              rotate: [360, 270, 90, 0]
+            }}
+            transition={{ duration: 19, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] bg-gradient-to-br from-pink-500/20 to-cyan-500/20 rounded-full blur-[110px] pointer-events-none"
+            animate={{
+              scale: [1.1, 1.5, 0.9, 1.1],
+              opacity: [0.3, 0.5, 0.4, 0.3],
+              rotate: [0, 180, 360, 0]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-4xl md:text-4xl lg:text-4xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent">
+                Simple Pricing
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-300 mb-8">
+              Choose the plan that's right for your creator business
+            </p>
+
+            {/* Only Monthly Billing currently available */}
+            <div className="inline-flex items-center gap-4 bg-[#151d45] p-2 rounded-full invisible h-0 pointer-events-none">
+              {/* Toggle removed as only monthly is available */}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section id="plans" className="py-8 px-6 relative z-10 scroll-mt-8">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {plans.map((plan, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{
+                  y: -12,
+                  scale: 1.02,
+                  zIndex: 20,
+                  transition: { duration: 0.3, ease: "easeOut" }
+                }}
+                whileTap={{ scale: 0.98 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="relative group h-full"
+              >
+                {plan.popular && (
+                  <div className="absolute -inset-[2px] bg-gradient-to-r from-cyan-500 to-blue-500 rounded-[22px] opacity-20 group-hover:opacity-100 transition-opacity blur-[2px] z-0" />
+                )}
+
+                <Card
+                  className={`bg-[#0f1535]/80 backdrop-blur-xl p-6 h-full flex flex-col border transition-all duration-300 relative z-10 ${plan.name === highlightPlan
+                    ? `border-cyan-400 shadow-[0_0_50px_rgba(6,182,212,0.6)] ring-2 ring-cyan-400/50 scale-[1.02]`
+                    : (plan.popular
+                      ? 'border-cyan-500 shadow-[0_0_40px_-10px_rgba(6,182,212,0.3)]'
+                      : 'border-white/10 hover:border-cyan-500/50')
+                    }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap shadow-lg shadow-cyan-500/20 z-20">
+                      Most Popular
+                    </div>
+                  )}
+
+                  {plan.name === highlightPlan && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap shadow-lg shadow-green-500/20 z-30 ring-2 ring-white/20">
+                      Current Plan
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-3 mb-4">
+                    <motion.div
+                      whileHover={{ rotate: 360 }}
+                      transition={{ duration: 0.8 }}
+                      className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0"
+                    >
+                      <plan.icon className="w-5 h-5 text-white" />
+                    </motion.div>
+                    <div className="flex flex-col min-w-0">
+                      <h3 className="text-lg font-bold text-white truncate">{plan.name}</h3>
+                      {plan.subtitle && (
+                        <span className="text-[9px] text-cyan-400 font-medium uppercase tracking-wider">
+                          {plan.subtitle}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="text-gray-400 text-sm mb-6 line-clamp-2">{plan.description}</p>
+
+                  <div className="mb-6 h-10">
+                    {typeof plan.price === 'number' ? (
+                      <div className="flex items-baseline gap-1">
+                        <motion.span
+                          key={billingCycle + plan.price}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="text-4xl font-bold text-white block"
+                        >
+                          ${plan.price}
+                        </motion.span>
+                        <span className="text-gray-400 text-xs">
+                          /mo
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-4xl font-bold text-white">{plan.price}</span>
+                    )}
+                  </div>
+
+                  <ul className="space-y-3 mb-8 flex-1">
+                    {plan.features.map((feature, featureIdx) => (
+                      <motion.li
+                        key={featureIdx}
+                        initial={{ opacity: 0, x: -5 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 + featureIdx * 0.05 }}
+                        className="flex items-start gap-2 text-xs"
+                      >
+                        <Check className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-gray-300 group-hover:text-white transition-colors">{feature}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  <Link to={createPageUrl(plan.name === 'Business' ? 'NeedHelp' : 'Signup')} className="mt-auto">
+                    <Button
+                      className={`w-full py-4 text-sm font-bold rounded-xl transition-all duration-300 ${plan.popular
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white shadow-lg shadow-cyan-500/20'
+                        : 'bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-cyan-500/50'
+                        }`}
+                    >
+                      {plan.cta}
+                    </Button>
+                  </Link>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-8 px-6 bg-[#0f1535]">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-4xl font-bold mb-4">Pricing FAQs</h2>
+          </div>
+
+          <div className="space-y-6">
+            {[
+              {
+                q: 'Can I switch plans anytime?',
+                a: 'Yes! You can upgrade, downgrade, or cancel your plan at any time.'
+              },
+              {
+                q: 'Is there a free trial?',
+                a: 'Yes, all paid plans come with a 14-day free trial. No credit card required.'
+              },
+              {
+                q: 'What payment methods do you accept?',
+                a: 'We accept all major credit cards, PayPal, and wire transfers for enterprise plans.'
+              },
+              {
+                q: 'Do you offer refunds?',
+                a: 'Yes, we offer a 30-day money-back guarantee on all plans.'
+              }
+            ].map((faq, idx) => (
+              <Card
+                key={idx}
+                className={`bg-[#151d45] border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer overflow-hidden ${activeFaq === idx ? 'ring-1 ring-cyan-500/30' : ''}`}
+                onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+              >
+                <div className="p-6 flex items-center justify-between">
+                  <h3 className="text-xl font-semibold text-white">{faq.q}</h3>
+                  <motion.div
+                    animate={{ rotate: activeFaq === idx ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-cyan-400"
+                  >
+                    <ChevronDown className="w-6 h-6" />
+                  </motion.div>
+                </div>
+
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: activeFaq === idx ? 'auto' : 0,
+                    opacity: activeFaq === idx ? 1 : 0
+                  }}
+                  transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
+                >
+                  <div className="px-6 pb-6 pt-0">
+                    <p className="text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                      {faq.a}
+                    </p>
+                  </div>
+                </motion.div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
