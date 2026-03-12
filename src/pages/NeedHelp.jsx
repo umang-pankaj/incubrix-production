@@ -134,7 +134,7 @@ export default function NeedHelp() {
     },
     {
       question: "Is there a free trial available?",
-      answer: "Yes! We offer a 14-day free trial for all new users. No credit card required. You'll have full access to all features during the trial period to explore how IncuBrix can transform your creator workflow."
+      answer: "Yes! We offer a 14-day free trial for all new users. No credit card required. You'll have full access to all features during the trial period to explore how IncuBrix can transform your creator journey."
     },
     {
       question: "How secure is my content and data?",

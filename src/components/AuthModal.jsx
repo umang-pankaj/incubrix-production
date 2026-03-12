@@ -11,7 +11,7 @@ export default function AuthModal({ open, onOpenChange }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [agreed, setAgreed] = useState(true);
-  const { loginWithGoogle } = useAuth();
+  const { loginWithGoogle, loginWithLinkedIn } = useAuth();
 
   const handleGoogleSignIn = async () => {
     if (!agreed) {
@@ -24,6 +24,21 @@ export default function AuthModal({ open, onOpenChange }) {
       await loginWithGoogle();
     } catch (err) {
       setError('Google Sign-In failed. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  const handleLinkedInSignIn = async () => {
+    if (!agreed) {
+      setError('Please accept the Terms of Service and Privacy Policy to continue.');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      await loginWithLinkedIn();
+    } catch (err) {
+      setError('LinkedIn Sign-In failed. Please try again.');
       setLoading(false);
     }
   };
@@ -43,15 +58,7 @@ export default function AuthModal({ open, onOpenChange }) {
           {/* Logo */}
           <div className="flex flex-col items-center pt-4 pb-2">
             <div className="w-16 h-16 transform transition-transform duration-300">
-              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-[0_0_12px_rgba(0,217,255,0.4)]">
-                <path d="M28 20C23 20 23 20 23 25V75C23 80 23 80 28 80L52 65V35L28 20Z" fill="#0080ff" />
-                <path d="M62 35L82 48C86 50 86 50 82 52L62 65V35Z" fill="#00ffff" />
-                <circle cx="57" cy="12" r="5" fill="#00ffff" />
-                <path d="M52 25C52 20 54 18 57 18C60 18 62 20 62 25V35H52V25Z" fill="#00ffff" />
-                <rect x="52" y="35" width="10" height="30" fill="#050a24" />
-                <rect x="52" y="65" width="10" height="10" fill="#00ffff" />
-                <path d="M52 75L57 85L62 75H52Z" fill="#004080" />
-              </svg>
+              <img src="/logo.jpeg" alt="IncuBrix" className="w-full h-full object-contain drop-shadow-[0_0_12px_rgba(0,217,255,0.4)]" />
             </div>
           </div>
           <DialogTitle className="text-3xl font-bold text-center">
@@ -86,6 +93,21 @@ export default function AuthModal({ open, onOpenChange }) {
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
               Continue with Google
+            </Button>
+          </motion.div>
+
+          {/* LinkedIn Sign In */}
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              onClick={handleLinkedInSignIn}
+              disabled={loading}
+              className="w-full py-10 text-xl font-bold shadow-lg rounded-2xl text-white"
+              style={{ backgroundColor: '#0A66C2' }}
+            >
+              <svg className="w-8 h-8 mr-4" viewBox="0 0 24 24" fill="white">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+              Continue with LinkedIn
             </Button>
           </motion.div>
 

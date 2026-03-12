@@ -62,6 +62,11 @@ export function AuthProvider({ children }) {
     window.location.href = `${BACKEND_URL}/auth/google`;
   };
 
+  // Login with LinkedIn OAuth
+  const loginWithLinkedIn = () => {
+    window.location.href = `${BACKEND_URL}/auth/linkedin`;
+  };
+
   // Sign up with email and password
   const signup = async (email, password, name) => {
     setError(null);
@@ -196,6 +201,7 @@ export function AuthProvider({ children }) {
     loading,
     error,
     loginWithGoogle,
+    loginWithLinkedIn,
     signup,
     verifyOtp,
     login,

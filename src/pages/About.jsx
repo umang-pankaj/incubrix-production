@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '../utils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import ScheduleDemoModal from '../components/ScheduleDemoModal';
+import BetaSignupModal from '../components/BetaSignupModal';
 import {
   Target,
   Users,
@@ -11,14 +11,25 @@ import {
   Sparkles,
   Share2,
   BarChart3,
-  Handshake,
-  TrendingUp,
+  CheckCircle2,
   ArrowRight,
-  CheckCircle2
+  Repeat as RepurposerIcon,
+  Mic,
+  Youtube,
+  Linkedin,
+  Instagram,
+  Music,
+  Video,
+  Briefcase,
+  PenTool,
+  Monitor,
+  Clock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function About() {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isBetaOpen, setIsBetaOpen] = React.useState(false);
   const values = [
     {
       icon: Target,
@@ -46,51 +57,105 @@ export default function About() {
     {
       icon: Sparkles,
       title: 'AI Content Studio',
-      description: 'Transform one idea into multiple content formats - posts, scripts, newsletters, and podcasts - in minutes.',
+      description: 'Create Posts, Blogs, Podcasts, and Video Content in minutes.',
+    },
+    {
+      icon: RepurposerIcon,
+      title: 'Repurposer',
+      description: 'Transform your core content into 10+ formats for different platforms automatically.',
     },
     {
       icon: Share2,
-      title: 'Multi-Platform Publishing',
-      description: 'Publish and schedule content across LinkedIn, YouTube, and more from a single unified dashboard.',
+      title: 'Publishing',
+      description: 'Publish across 10+ platforms including YouTube, Instagram, Spotify, LinkedIn and others.',
     },
     {
       icon: BarChart3,
       title: 'Unified Analytics',
       description: 'Track performance, engagement, and growth across all platforms with real-time insights.',
-    },
-    {
-      icon: Handshake,
-      title: 'Brand Partnership Hub',
-      description: 'Get discovered by brands and manage collaborations seamlessly in one place.',
-    },
-    {
-      icon: TrendingUp,
-      title: 'Creator Growth Score',
-      description: 'Track your consistency, growth, and monetization health with actionable metrics.',
+      comingSoon: true
     }
   ];
 
   const howItWorks = [
     {
       step: '01',
-      title: 'Create Once',
-      description: 'Input your idea and let AI generate content across multiple formats'
+      title: 'Get Content Insights',
+      icon: Lightbulb,
+      description: 'Analyze content topics, current trends, and performance to understand what works and what doesn\'t, with clear guidance to help you create content and meet your objectives.'
     },
     {
       step: '02',
-      title: 'Publish Everywhere',
-      description: 'Schedule and distribute to all your platforms from one dashboard'
+      title: 'Create Content',
+      icon: Sparkles,
+      description: 'Input your idea or content, and generate content across multiple formats (original or AI-enhanced content). Convert text to audio, text to video, and repurpose content across platforms like LinkedIn, Reels, and Newsletters while preserving your unique voice.'
     },
     {
       step: '03',
-      title: 'Track & Grow',
-      description: 'Monitor performance and optimize based on real-time analytics'
+      title: 'Publish Everywhere',
+      icon: Share2,
+      description: 'Distribute content across platforms from one place without switching between tools.'
     },
     {
       step: '04',
-      title: 'Monetize',
-      description: 'Connect with brands and manage partnerships that match your niche'
+      title: 'Track & Grow',
+      icon: BarChart3,
+      description: 'Monitor engagement and reach, compare performance across platforms, and get insights to improve future content and grow your audience.',
+      comingSoon: true
     }
+  ];
+
+  const creatorTypes = [
+    {
+      type: 'Thought Leaders',
+      icon: Lightbulb,
+      color: 'from-amber-400 to-orange-500',
+      desc: 'Build authority through consistent expert content',
+      img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80'
+    },
+    {
+      type: 'Podcasters',
+      icon: Mic,
+      color: 'from-purple-400 to-pink-500',
+      desc: 'Repurpose episodes into clips, posts & articles',
+      img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80'
+    },
+    {
+      type: 'Coaches',
+      icon: Target,
+      color: 'from-cyan-400 to-blue-500',
+      desc: 'Scale your reach without scaling your workload',
+      img: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80'
+    },
+    {
+      type: 'Consultants',
+      icon: Briefcase,
+      color: 'from-emerald-400 to-teal-500',
+      desc: 'Build a personal brand while running your business',
+      img: 'https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=600&q=80'
+    },
+    {
+      type: 'Founders',
+      icon: Monitor,
+      color: 'from-blue-400 to-indigo-500',
+      desc: 'Document your journey and build in public',
+      img: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=600&q=80'
+    },
+    {
+      type: 'Content Creators',
+      icon: PenTool,
+      color: 'from-rose-400 to-red-500',
+      desc: 'Create more in less time across every platform',
+      img: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=600&q=80'
+    }
+  ];
+
+  const platforms = [
+    { name: 'LinkedIn', icon: Linkedin, color: '#0077B5' },
+    { name: 'YouTube', icon: Youtube, color: '#FF0000' },
+    { name: 'Instagram', icon: Instagram, color: '#E4405F' },
+    { name: 'Spotify', icon: Music, color: '#1DB954' },
+    { name: 'Apple Podcasts', icon: Video, color: '#A2AAAD' }
   ];
 
   return (
@@ -149,43 +214,44 @@ export default function About() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="inline-block mb-4 px-4 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10"
+            >
+              <span className="text-xs font-bold tracking-[0.2em] uppercase text-cyan-400">About Us</span>
+            </motion.div>
+
             <motion.h1
-              className="text-4xl md:text-4xl font-bold mb-8"
+              className="text-6xl md:text-8xl font-black mb-6 tracking-tighter"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1 }}
             >
-              Building the Future of
-              <span className="block bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent animate-pulse">
+              Incu<span className="text-cyan-500">Brix</span>
+            </motion.h1>
+
+            <motion.h2
+              className="text-2xl md:text-3xl font-bold mb-8 text-gray-300 tracking-tight"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+            >
+              Building the Future of{' '}
+              <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
                 Creator Operations
               </span>
-            </motion.h1>
+            </motion.h2>
             <motion.p
-              className="text-xl md:text-2xl text-gray-300 leading-relaxed mb-8"
+              className="text-xl md:text-2xl text-gray-300 leading-relaxed"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
             >
-              IncuBrix is an AI-powered Creator Operating System that helps content creators create, repurpose,
-              publish, analyze, and monetize content across platforms like LinkedIn, YouTube, podcasts, and
-              newsletters - all from one unified platform.
+              IncuBrix is an AI-powered platform that helps content creators create, manage, repurpose, publish, and analyze content across platforms like LinkedIn, YouTube, Instagram, and 10+ audio and video platforms — all from one unified platform.
             </motion.p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="flex flex-wrap gap-4 justify-center"
-            >
-              <Link to={createPageUrl('Demo')}>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70 transition-all">
-                    Schedule Demo
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </motion.div>
-              </Link>
-            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -220,8 +286,7 @@ export default function About() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 }}
                 >
-                  IncuBrix was born from a simple observation: creators are the new entrepreneurs,
-                  but they're still using fragmented tools built for a different era.
+                  IncuBrix was born from a simple observation: creators are the new entrepreneurs, but they are still using fragmented tools built for a different era.
                 </motion.p>
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
@@ -229,8 +294,7 @@ export default function About() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.4 }}
                 >
-                  We're building the operating system for the creator economy - a unified platform
-                  that empowers content professionals to create, distribute, and monetize at scale.
+                  We are building a unified platform that helps creators turn ideas into content, repurpose it across formats, and grow their audience across multiple platforms.
                 </motion.p>
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
@@ -238,8 +302,8 @@ export default function About() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.6 }}
                 >
-                  Our vision is simple: every creator should have enterprise-grade tools without
-                  enterprise-level complexity or cost.
+                  <span className="text-cyan-400 font-semibold italic block mb-2">Our vision is simple:</span>
+                  To empower every creator with intelligent solutions to transform ideas into impact and passion into lasting success.
                 </motion.p>
               </div>
             </motion.div>
@@ -256,8 +320,8 @@ export default function About() {
                 transition={{ duration: 3, repeat: Infinity }}
               />
               <img
-                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80"
-                alt="Platform Overview"
+                src="/assets/images/incubrix-dashboard-laptop.jpg"
+                alt="IncuBrix Dashboard"
                 className="rounded-2xl shadow-2xl relative z-10"
               />
             </motion.div>
@@ -265,52 +329,142 @@ export default function About() {
         </div>
       </section>
 
-      {/* Key Features */}
-      <section className="py-12 px-6 bg-[#0a0e27] relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px]" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px]" />
-        </div>
+      {/* Why IncuBrix Exists */}
+      <section className="py-24 px-6 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-red-500/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              Complete Creator Platform
+            <motion.span
+              className="inline-block px-4 py-1.5 mb-6 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-[0.3em]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
+              The Creator's Dilemma
+            </motion.span>
+            <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-white">
+              Why <span className="text-red-500">IncuBrix</span> Exists
             </h2>
-            <p className="text-xl text-gray-400">Everything you need to build, grow, and monetize</p>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto">Traditional content creation is broken. We're here to fix it.</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, idx) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { title: 'Tool Overload', desc: 'Creators juggle 3+ different tools for creation, scheduling, and analytics.' },
+              { title: 'More Effort', desc: 'Hours spent on repetitive tasks and creating multiple content formats.' },
+              { title: 'Less Reach', desc: 'Limited presence across formats and platforms reduces growth.' }
+            ].map((problem, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -10, scale: 1.02 }}
+                transition={{ duration: 0.6, delay: idx * 0.15 }}
+                whileHover={{ y: -10 }}
               >
-                <Card className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 p-8 h-full hover:border-cyan-500/60 transition-all relative overflow-hidden group">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                  <div className="relative z-10">
-                    <motion.div
-                      className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-cyan-500/50"
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <feature.icon className="w-7 h-7 text-white" />
-                    </motion.div>
-                    <h3 className="text-xl font-semibold mb-3 text-white">{feature.title}</h3>
-                    <p className="text-gray-400">{feature.description}</p>
+                <div className="bg-[#151d45]/20 backdrop-blur-md border border-red-500/10 p-10 rounded-[2.5rem] text-center h-full hover:border-red-500/40 hover:bg-black/40 transition-all duration-500 group relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 blur-3xl group-hover:bg-red-500/10 transition-colors" />
+                  <h3 className="text-2xl font-black mb-4 text-white group-hover:text-red-400 transition-colors">{problem.title}</h3>
+                  <p className="text-gray-400 text-base leading-relaxed group-hover:text-gray-200 transition-colors">{problem.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* Key Features */}
+      <section className="py-24 px-6 relative overflow-hidden bg-[#0a0e27]">
+        {/* Decorative background blobs */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          <div className="absolute top-1/4 -left-20 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px] opacity-40" />
+          <div className="absolute bottom-1/4 -right-20 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] opacity-40" />
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <motion.div
+            className="text-center mb-20"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest"
+            >
+              <Sparkles className="w-3 h-3" /> Core Capabilities
+            </motion.div>
+            <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-white leading-[1.1]">
+              The <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Ultimate</span> Creator Toolkit
+            </h2>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto">Everything creators need to create, grow, and scale</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                whileHover={{ y: -12 }}
+                className="group h-full"
+              >
+                <div className="relative h-full bg-gradient-to-b from-[#151d45]/40 to-[#0a0f2b]/60 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-8 hover:border-cyan-500/30 transition-all duration-500 group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center text-center">
+
+                  {/* Decorative corner glow */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+                  {feature.comingSoon && (
+                    <div className="absolute top-6 right-6 z-20">
+                      <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[10px] font-black uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 backdrop-blur-md">
+                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                        Coming Soon
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="relative mb-8">
+                    {/* Animated icon container */}
+                    <div className="w-20 h-20 bg-gradient-to-br from-[#1a234e] to-[#0a0e27] rounded-3xl border border-white/5 flex items-center justify-center relative shadow-xl group-hover:shadow-cyan-500/20 group-hover:scale-110 transition-all duration-500 overflow-hidden">
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/5 to-transparent"
+                        animate={{ x: ['-200%', '200%'] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                      />
+                      <feature.icon className="w-9 h-9 text-cyan-400 group-hover:text-white transition-colors duration-500 relative z-10" />
+                    </div>
+                    {/* Outer glow */}
+                    <div className="absolute inset-0 bg-cyan-500/20 blur-3xl rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-700 -z-10" />
                   </div>
-                </Card>
+
+                  <h3 className="text-2xl font-black mb-4 text-white group-hover:text-cyan-400 transition-colors duration-300">
+                    {feature.title}
+                  </h3>
+
+                  <p className="text-gray-400 text-base leading-relaxed group-hover:text-gray-300 transition-colors duration-300 flex-grow">
+                    {feature.description}
+                  </p>
+
+                  <div className="mt-8 pt-6 border-t border-white/5 w-full">
+                    <motion.div
+                      className="inline-flex items-center text-cyan-400 text-sm font-bold opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 cursor-pointer hover:text-cyan-300"
+                    >
+                      Learn more <ArrowRight className="ml-2 w-4 h-4" />
+                    </motion.div>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -318,92 +472,212 @@ export default function About() {
       </section>
 
       {/* How It Works */}
-      <section className="py-12 px-6 bg-[#0f1535]">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl md:text-4xl font-bold mb-4">How It Works</h2>
-            <p className="text-xl text-gray-400">Your complete creator journey, simplified</p>
-          </div>
+      <section className="py-32 px-6 bg-[#0a0e27] relative overflow-hidden">
+        {/* Background Decorative Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 mix-blend-overlay" />
+          <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] -translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
+        </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="max-w-6xl mx-auto relative z-10">
+          <motion.div
+            className="text-center mb-20"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.span
+              className="inline-block px-4 py-1.5 mb-6 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-[0.2em]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
+              The Process
+            </motion.span>
+            <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-white">
+              Your complete creator <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">journey</span>, simplified
+            </h2>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">Experience a seamless flow from initial inspiration to global distribution</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative">
+            {/* Animated Connection Line for Desktop */}
+            <div className="hidden lg:block absolute top-[70px] left-[10%] right-[10%] z-0">
+              <svg width="100%" height="2" viewBox="0 0 1000 2" fill="none" preserveAspectRatio="none">
+                <motion.path
+                  d="M0 1H1000"
+                  stroke="url(#lineGradient)"
+                  strokeWidth="2"
+                  strokeDasharray="8 8"
+                  initial={{ strokeDashoffset: 1000 }}
+                  whileInView={{ strokeDashoffset: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 2, ease: "linear", repeat: Infinity }}
+                />
+                <defs>
+                  <linearGradient id="lineGradient" x1="0" y1="0" x2="1000" y2="0" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="rgba(34, 211, 238, 0)" />
+                    <stop offset="0.5" stopColor="rgba(34, 211, 238, 0.5)" />
+                    <stop offset="1" stopColor="rgba(34, 211, 238, 0)" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+
             {howItWorks.map((step, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, x: -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.2 }}
-                className="text-center"
+                transition={{ duration: 0.6, delay: idx * 0.15 }}
+                className="relative z-10 group"
               >
-                <div className="text-4xl font-bold text-cyan-500/30 mb-4">{step.step}</div>
-                <h3 className="text-2xl font-semibold mb-3">{step.title}</h3>
-                <p className="text-gray-400">{step.description}</p>
+                <div className="flex flex-col items-center">
+                  <div className="relative mb-10">
+                    {/* Animated Outer Glow Ring */}
+                    <motion.div
+                      className="absolute -inset-4 rounded-full bg-cyan-500/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    />
+
+                    <motion.div
+                      className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-[#1a234e] to-[#0a0e27] border border-cyan-500/20 flex items-center justify-center relative shadow-[0_0_50px_rgba(0,0,0,0.5)] group-hover:border-cyan-400/50 transition-all duration-500 overflow-hidden"
+                      whileHover={{ y: -10, rotate: idx % 2 === 0 ? 5 : -5 }}
+                    >
+                      {/* Internal Animated Shine */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-tr from-transparent via-cyan-400/10 to-transparent"
+                        animate={{ x: ['-200%', '200%'] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+                      />
+
+                      <step.icon className="w-12 h-12 text-cyan-400 group-hover:text-cyan-300 transition-colors relative z-10" />
+
+                      {/* Floating Step Badge */}
+                      <motion.div
+                        className="absolute -top-2 -right-2 w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 text-white flex items-center justify-center font-black text-lg shadow-xl shadow-cyan-500/40 z-20"
+                        initial={{ rotate: 15 }}
+                        whileHover={{ rotate: 0, scale: 1.1 }}
+                      >
+                        {step.step}
+                      </motion.div>
+                    </motion.div>
+                  </div>
+
+                  <motion.h3
+                    className="text-2xl font-black mb-4 text-white tracking-tight group-hover:text-cyan-400 transition-colors text-center"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: idx * 0.15 + 0.3 }}
+                  >
+                    {step.title}
+                  </motion.h3>
+
+                  <motion.div
+                    className="max-w-[260px] text-center"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: idx * 0.15 + 0.4 }}
+                  >
+                    <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-200 transition-colors">
+                      {step.description}
+                    </p>
+                  </motion.div>
+
+                  {step.comingSoon && (
+                    <div className={`mt-6 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.1)]`}>
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400 flex items-center gap-1.5">
+                        <div className="w-1 h-1 rounded-full bg-cyan-400 animate-pulse" />
+                        Coming Soon
+                      </span>
+                    </div>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Target Audience */}
-      <section className="py-12 px-6 bg-[#0a0e27]">
-        <div className="max-w-6xl mx-auto">
+      {/* Results */}
+      <section className="py-24 px-6 relative overflow-hidden bg-[#0c1233]">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e27] via-transparent to-[#0a0e27] opacity-60" />
+
+        <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              Who We Serve
+            <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-white">
+              Expected <span className="text-cyan-400">Results</span>
             </h2>
-            <p className="text-xl text-gray-400">IncuBrix is built for content professionals across platforms</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                title: 'LinkedIn Creators',
-                desc: 'Build thought leadership and professional brand',
-                img: 'https://images.unsplash.com/photo-1611944212129-29977ae1398c?w=400&q=80'
+                label: 'Time to Create Content',
+                value: '<10 Minutes',
+                icon: Clock,
+                color: 'from-cyan-400 to-blue-500',
+                desc: 'From idea to polished content in record time.'
               },
               {
-                title: 'YouTubers & Podcasters',
-                desc: 'Scale video and audio content production',
-                img: 'https://images.unsplash.com/photo-1590650153855-d9e808231d41?w=400&q=80'
+                label: 'Insights & Control of Content',
+                value: '5X More',
+                icon: BarChart3,
+                color: 'from-blue-500 to-indigo-600',
+                desc: 'Unprecedented visibility into your creator performance.'
               },
               {
-                title: 'Educators & Solopreneurs',
-                desc: 'Monetize expertise and grow audiences',
-                img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&q=80'
+                label: 'Multiple Format & Platform Presence',
+                value: '3X Audience',
+                icon: Share2,
+                color: 'from-indigo-600 to-purple-600',
+                desc: 'Scale your reach across every major platform seamlessly.'
               }
-            ].map((audience, idx) => (
+            ].map((stat, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -15 }}
+                transition={{ duration: 0.7, delay: idx * 0.15 }}
+                whileHover={{ y: -10 }}
+                className="relative group h-full"
               >
-                <Card className="bg-[#151d45] border-cyan-500/20 overflow-hidden hover:border-cyan-500/60 transition-all group relative">
-                  <div className="h-48 overflow-hidden relative">
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-t from-cyan-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
-                    />
-                    <img
-                      src={audience.img}
-                      alt={audience.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-6 relative">
-                    <div className="absolute -top-6 left-6 w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/50 flex items-center justify-center">
-                      <CheckCircle2 className="w-6 h-6 text-white" />
+                <div className="h-full p-8 rounded-[2.5rem] bg-gradient-to-b from-[#151d45]/40 to-[#0a0e27]/40 border border-white/5 backdrop-blur-xl transition-all duration-500 group-hover:border-white/20 group-hover:bg-[#151d45]/60 overflow-hidden">
+                  {/* Background Aura */}
+                  <div className={`absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 blur-[80px] transition-opacity duration-700`} />
+
+                  {/* Icon Container */}
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.color} p-[1px] mb-8`}>
+                    <div className="w-full h-full rounded-2xl bg-[#0a0e27] flex items-center justify-center">
+                      <stat.icon className={`w-6 h-6 bg-gradient-to-br ${stat.color} bg-clip-text text-white`} />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2 text-white mt-4">{audience.title}</h3>
-                    <p className="text-gray-400">{audience.desc}</p>
                   </div>
-                </Card>
+
+                  <div className={`text-4xl lg:text-5xl font-black mb-4 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent tracking-tight`}>
+                    {stat.value}
+                  </div>
+
+                  <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
+                    {stat.label}
+                  </h3>
+
+                  <p className="text-gray-400 leading-relaxed font-medium">
+                    {stat.desc}
+                  </p>
+
+                  {/* Decorative glow line */}
+                  <div className={`absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r ${stat.color} transition-all duration-700 group-hover:w-full`} />
+                </div>
               </motion.div>
             ))}
           </div>
@@ -411,156 +685,215 @@ export default function About() {
       </section>
 
       {/* Values */}
-      <section className="py-12 px-6 bg-[#0f1535]">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl font-bold mb-4">Our Values</h2>
-            <p className="text-xl text-gray-400">The principles that guide everything we build</p>
-          </div>
+      <section className="py-24 px-6 bg-[#0f1535] relative">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/5 via-transparent to-transparent opacity-50" />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, idx) => (
-              <Card key={idx} className="bg-[#151d45] border-cyan-500/20 p-6 text-center">
-                <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <value.icon className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-white">{value.title}</h3>
-                <p className="text-gray-400">{value.description}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* The Problem We Solve */}
-      <section className="py-12 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl font-bold mb-4">Why IncuBrix Exists</h2>
-            <p className="text-xl text-gray-400">The creator's dilemma</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { title: 'Tool Overload', desc: 'Creators juggle 10+ different tools for creation, scheduling, and analytics' },
-              { title: 'Time Waste', desc: 'Hours spent on repetitive tasks instead of creating content' },
-              { title: 'Unstable Income', desc: 'Difficulty finding brand partnerships and monetizing consistently' }
-            ].map((problem, idx) => (
-              <Card key={idx} className="bg-[#151d45] border-red-500/20 p-8 text-center">
-                <h3 className="text-xl font-semibold mb-3 text-white">{problem.title}</h3>
-                <p className="text-gray-400">{problem.desc}</p>
-              </Card>
-            ))}
-          </div>
-
-          <div className="mt-8 text-center">
-            <p className="text-2xl text-gray-300 mb-8">
-              IncuBrix consolidates everything into one intelligent platform, saving creators 85% of their operational time.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Results */}
-      <section className="py-12 px-6 bg-[#0f1535]">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-4xl font-bold mb-4">Real Results</h2>
-            <p className="text-xl text-gray-400">From beta creators using IncuBrix</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-cyan-400 mb-4">85%</div>
-              <p className="text-xl text-gray-300">Time Saved</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-cyan-400 mb-4">10x</div>
-              <p className="text-xl text-gray-300">Content Output</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-cyan-400 mb-4">3x</div>
-              <p className="text-xl text-gray-300">Revenue Growth</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Team */}
-      <section className="py-12 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">Built by Creators, for Creators</h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Our team includes former creators, content strategists, and AI engineers who understand
-            the challenges firsthand.
-          </p>
-          <p className="text-lg text-gray-400">
-            We're backed by leading investors in the creator economy and supported by an advisory
-            network of successful creators across every platform.
-          </p>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-12 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e27] via-cyan-950/20 to-[#050510]" />
-        <motion.div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full"
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360]
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        >
-          <div className="w-96 h-96 mx-auto bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-[150px]" />
-        </motion.div>
-
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.h2
-            className="text-4xl md:text-4xl font-bold mb-8"
-            initial={{ opacity: 0, y: 30 }}
+        <div className="max-w-6xl mx-auto relative z-10">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            Ready to Transform Your Workflow?
-          </motion.h2>
+            <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-white">
+              Built on <span className="text-cyan-400">Principles</span>
+            </h2>
+            <p className="text-xl text-gray-400">The values that guide every line of code we write</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {values.map((value, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                whileHover={{ y: -8 }}
+              >
+                <div className="bg-[#151d45]/40 backdrop-blur-md border border-cyan-500/10 p-8 rounded-[2rem] text-center h-full hover:bg-[#151d45]/60 hover:border-cyan-500/30 transition-all duration-500 group">
+                  <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-cyan-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                    <value.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-black mb-3 text-white group-hover:text-cyan-400 transition-colors">{value.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors">
+                    {value.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* Who IncuBrix is built for */}
+      <section className="py-24 px-6 bg-[#0a0e27] relative overflow-hidden">
+        {/* Background Decorative Rings */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] -translate-x-1/2 translate-y-1/2" />
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-16 text-center"
+          >
+            <motion.span
+              className="inline-block px-4 py-1.5 mb-6 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-black uppercase tracking-[0.3em]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
+              The Community
+            </motion.span>
+            <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-white leading-tight">
+              Built for the <span className="text-cyan-400">Future</span> of Content
+            </h2>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto">Join the new generation of creators scaling their impact with IncuBrix.</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+            {creatorTypes.map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                whileHover={{ y: -10 }}
+                className="group relative rounded-[2rem] overflow-hidden cursor-pointer h-[320px] sm:h-[400px] lg:h-[450px] shadow-2xl"
+              >
+                {/* Background Image with Parallax-like effect */}
+                <motion.img
+                  src={item.img}
+                  alt={item.type}
+                  className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-125"
+                />
+
+                {/* Multi-layered Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-40 transition-opacity duration-700 mix-blend-overlay`} />
+
+                {/* Animated Border Glow */}
+                <div className="absolute inset-0 rounded-[2rem] border border-white/10 group-hover:border-white/30 transition-colors duration-500" />
+
+                <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                  <motion.div
+                    className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-2xl group-hover:shadow-white/20 transition-all duration-500 group-hover:-translate-y-2`}
+                  >
+                    <item.icon className="w-7 h-7 text-white" />
+                  </motion.div>
+
+                  <h3 className="text-2xl font-black text-white mb-2 tracking-tight group-hover:text-cyan-400 transition-colors duration-300">
+                    {item.type}
+                  </h3>
+
+                  <div className="overflow-hidden">
+                    <p className="text-gray-300 text-sm leading-relaxed translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 font-medium">
+                      {item.desc}
+                    </p>
+                  </div>
+
+                  <motion.div
+                    className="h-1 bg-gradient-to-r from-cyan-400 to-blue-500 mt-6 rounded-full group-hover:w-full w-0 transition-all duration-500"
+                    whileHover={{ width: '100%' }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Platform Integrations */}
+      <section className="py-16 px-6 bg-[#0f1535] border-y border-white/5">
+        <div className="max-w-6xl mx-auto text-center">
           <motion.p
-            className="text-xl text-gray-400 mb-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
+            className="text-sm font-bold tracking-[0.3em] uppercase text-cyan-500/60 mb-10"
           >
-            Join 500+ creators already using IncuBrix to scale their content business
+            Seamlessly Integrated With
           </motion.p>
+          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 transition-all duration-700">
+            {platforms.map((platform, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                whileHover={{ y: -5 }}
+                className="flex flex-col items-center gap-3 group"
+              >
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:bg-white/10 group-hover:border-white/10 transition-all duration-300 shadow-lg shadow-black/20">
+                  <platform.icon className="w-8 h-8 md:w-10 md:h-10 transition-transform duration-300 group-hover:scale-110" style={{ color: platform.color }} />
+                </div>
+                <span className="text-sm font-bold text-white tracking-wide">{platform.name}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-24 px-6 relative overflow-hidden bg-gradient-to-b from-[#0a0e27] to-[#040612]">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-cyan-500/5 blur-[120px] rounded-full" />
+        </div>
+
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div
-            className="flex flex-col sm:flex-row gap-6 justify-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
           >
-            <Link to={createPageUrl('Demo')}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button className="relative bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-12 py-6 text-lg font-semibold rounded-xl shadow-2xl shadow-cyan-500/50 hover:shadow-cyan-500/70 overflow-hidden group">
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0"
-                    animate={{ x: [-200, 200] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  />
-                  <span className="relative z-10 flex items-center">
-                    Schedule Demo
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </span>
+            <h2 className="text-4xl md:text-5xl font-black mb-12 tracking-tight text-white leading-tight">
+              Join creators already using IncuBrix to <span className="text-cyan-400">scale</span> their content business.
+            </h2>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              {/* Primary CTA */}
+              <div className="relative">
+                <motion.div
+                  className="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 blur-lg"
+                  animate={{ opacity: [0.4, 0.75, 0.4] }}
+                  transition={{ duration: 2.5, repeat: Infinity }}
+                />
+                <Button
+                  onClick={() => setIsBetaOpen(true)}
+                  className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-6 rounded-full text-lg font-bold shadow-xl shadow-cyan-500/30 transition-all hover:scale-105 active:scale-95"
+                >
+                  Join Free Beta
                 </Button>
-              </motion.div>
-            </Link>
+              </div>
+              {/* Secondary CTA */}
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                variant="ghost"
+                className="text-cyan-300 hover:text-white hover:bg-cyan-500/15 px-8 py-6 rounded-full text-base font-semibold border border-cyan-400/30 hover:border-cyan-400/60 transition-all"
+              >
+                Schedule a Demo <ArrowRight className="ml-2 w-5 h-5 inline" />
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
+
+      <ScheduleDemoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+      <BetaSignupModal
+        isOpen={isBetaOpen}
+        onClose={() => setIsBetaOpen(false)}
+        onSuccess={() => { }}
+      />
     </div>
   );
 }

@@ -7,7 +7,6 @@ import dotenv from 'dotenv';
 import { configurePassport } from './config/passport.js';
 import authRoutes from './routes/auth.js';
 import chatRouter from './routes/chat.js';
-import bookingRoutes from './routes/booking.js';
 import supportRoutes from './routes/support.js';
 import betaRoutes from './routes/beta.js';
 import chatService from './services/chatbot/chatService.js';
@@ -102,7 +101,6 @@ app.get('/health', (req, res) => {
 app.use('/auth', authRoutes);
 console.log('Mounting chatRouter...');
 app.use('/api/chat', chatRouter);
-app.use('/api/booking', bookingRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/beta', betaRoutes);
 

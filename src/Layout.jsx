@@ -204,23 +204,9 @@ export default function Layout({ children, currentPageName }) {
               onClick={() => handleNavClick('Home')}
               className="flex items-center space-x-2.5 group"
             >
-              <div className="relative w-10 h-10 transform group-hover:scale-105 transition-transform duration-300">
-                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-[0_0_12px_rgba(0,217,255,0.4)]">
-                  {/* Left Blue Part */}
-                  <path d="M28 20C23 20 23 20 23 25V75C23 80 23 80 28 80L52 65V35L28 20Z" fill="#0080ff" />
-                  {/* Right Cyan Part */}
-                  <path d="M62 35L82 48C86 50 86 50 82 52L62 65V35Z" fill="#00ffff" />
-                  {/* Vertical 'i' Stem components */}
-                  <circle cx="57" cy="12" r="5" fill="#00ffff" />
-                  <path d="M52 25C52 20 54 18 57 18C60 18 62 20 62 25V35H52V25Z" fill="#00ffff" />
-                  <rect x="52" y="35" width="10" height="30" fill="#050a24" />
-                  <rect x="52" y="65" width="10" height="10" fill="#00ffff" />
-                  <path d="M52 75L57 85L62 75H52Z" fill="#004080" />
-                </svg>
+              <div className="h-10 flex-shrink-0">
+                <img src="/logo.jpeg" alt="IncuBrix" className="h-full w-auto object-contain" />
               </div>
-              <span className={`text-2xl font-black tracking-tight leading-none mb-0.5 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                IncuBrix
-              </span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -637,20 +623,9 @@ export default function Layout({ children, currentPageName }) {
                   onClick={() => handleNavClick('Home')}
                   className="flex items-center space-x-2.5 mb-6 group"
                 >
-                  <div className="w-10 h-10">
-                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-                      <path d="M28 20C23 20 23 20 23 25V75C23 80 23 80 28 80L52 65V35L28 20Z" fill="#0080ff" />
-                      <path d="M62 35L82 48C86 50 86 50 82 52L62 65V35Z" fill="#00ffff" />
-                      <circle cx="57" cy="12" r="5" fill="#00ffff" />
-                      <path d="M52 25C52 20 54 18 57 18C60 18 62 20 62 25V35H52V25Z" fill="#00ffff" />
-                      <rect x="52" y="35" width="10" height="30" fill="#050a24" />
-                      <rect x="52" y="65" width="10" height="10" fill="#00ffff" />
-                      <path d="M52 75L57 85L62 75H52Z" fill="#004080" />
-                    </svg>
+                  <div className="h-10 flex-shrink-0">
+                    <img src="/logo.jpeg" alt="IncuBrix" className="h-full w-auto object-contain" />
                   </div>
-                  <span className="text-2xl font-black text-white tracking-tight leading-none mb-0.5">
-                    IncuBrix
-                  </span>
                 </Link>
                 <p className="text-gray-400 text-sm max-w-xs leading-relaxed">
                   The all-in-one AI platform for creators. Turn ideas into high-quality content instantly.

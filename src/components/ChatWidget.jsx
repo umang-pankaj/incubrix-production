@@ -241,10 +241,6 @@ export default function ChatWidget() {
     }, [messages]);
 
     const handleToggle = () => {
-        if (!isOpen && !isAuthenticated) {
-            setAuthModalOpen(true);
-            return;
-        }
         setIsOpen(!isOpen);
     };
 
@@ -274,12 +270,8 @@ export default function ChatWidget() {
         const key = user?.email ? `${user.email}_${POPUP_DISMISSED_KEY}` : POPUP_DISMISSED_KEY;
         sessionStorage.setItem(key, 'true');
         setShowWelcomePopup(false);
-        if (isAuthenticated) {
-            setIsOpen(true);
-            setMode('menu');
-        } else {
-            setAuthModalOpen(true);
-        }
+        setIsOpen(true);
+        setMode('menu');
     };
 
     const handleDismissPopup = () => {

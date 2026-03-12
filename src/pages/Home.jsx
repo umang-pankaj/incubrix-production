@@ -16,7 +16,12 @@ import {
   Twitter,
   Linkedin,
   Youtube,
-  MessageSquare
+  MessageSquare,
+  Lightbulb,
+  Target,
+  Briefcase,
+  Monitor,
+  PenTool
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ScheduleDemoModal from '../components/ScheduleDemoModal';
@@ -30,6 +35,51 @@ const SIDEBAR_TOOLS = [
   { icon: Pencil, title: 'Scribe', desc: 'Your AI editorial brain — analyses your content portfolio, surfaces missing topics, and auto-plans your next 2 weeks of content.', accent: '#a78bfa' },
   { icon: Scissors, title: 'Content Repurposer', desc: 'Extract the most viral and engaging moments from long-form content with AI precision.', accent: '#8b5cf6' },
   { icon: Share2, title: 'Publisher', desc: 'Hit publish once — and your content goes live across every social media platform simultaneously. No switching tabs, no copy-pasting. One click, everywhere.', accent: '#06b6d4' },
+];
+
+const creatorTypes = [
+  {
+    type: 'Thought Leaders',
+    icon: Lightbulb,
+    color: 'from-amber-400 to-orange-500',
+    desc: 'Build authority through consistent expert content',
+    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80'
+  },
+  {
+    type: 'Podcasters',
+    icon: Mic,
+    color: 'from-purple-400 to-pink-500',
+    desc: 'Repurpose episodes into clips, posts & articles',
+    img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80'
+  },
+  {
+    type: 'Coaches',
+    icon: Target,
+    color: 'from-cyan-400 to-blue-500',
+    desc: 'Scale your reach without scaling your workload',
+    img: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80'
+  },
+  {
+    type: 'Consultants',
+    icon: Briefcase,
+    color: 'from-emerald-400 to-teal-500',
+    desc: 'Build a personal brand while running your business',
+    img: 'https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=600&q=80'
+  },
+  {
+    type: 'Founders',
+    icon: Monitor,
+    color: 'from-blue-400 to-indigo-500',
+    desc: 'Document your journey and build in public',
+    img: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=600&q=80'
+  },
+  {
+    type: 'Content Creators',
+    icon: PenTool,
+    color: 'from-rose-400 to-red-500',
+    desc: 'Create more in less time across every platform',
+    img: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=600&q=80'
+  }
 ];
 
 function SidebarToolsPanel({ onExploreTool }) {
@@ -86,7 +136,7 @@ function SidebarToolsPanel({ onExploreTool }) {
           <h2 className={`text-3xl md:text-4xl font-bold ${theme === 'dark' ? 'bg-gradient-to-r from-white via-cyan-300 to-purple-400 bg-clip-text text-transparent' : 'text-gray-900'}`}>
             Everything you need to create
           </h2>
-          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Five powerful tools. One seamless creative workflow.</p>
+          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Five powerful tools. One seamless creative process.</p>
         </motion.div>
 
         <motion.div
@@ -204,7 +254,7 @@ function SidebarToolsPanel({ onExploreTool }) {
                     className="mt-5"
                   >
                     {/* Workflow row */}
-                    <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.6)' }}>Workflow Progress</p>
+                    <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.6)' }}>Process Progress</p>
                     <div className="flex items-center w-full mb-5">
                       {[
                         { Icon: FileText, label: 'Document', sub: 'Input source', color: '#06b6d4' },
@@ -643,7 +693,7 @@ function SidebarToolsPanel({ onExploreTool }) {
                     className="mt-5"
                   >
                     {/* Workflow row */}
-                    <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.6)' }}>Workflow</p>
+                    <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.6)' }}>Process</p>
                     <div className="flex items-center w-full mb-5">
                       {[
                         { Icon: Mic, label: 'Text / Audio', sub: 'Script or voice file', color: '#3b82f6' },
@@ -1040,19 +1090,11 @@ export default function Home() {
   }, []);
 
   const handleBetaClick = () => {
-    if (isAuthenticated) {
-      setIsBetaOpen(true);
-    } else {
-      setAuthModalOpen(true);
-    }
+    setIsBetaOpen(true);
   };
 
   const handleDemoClick = () => {
-    if (isAuthenticated) {
-      setIsModalOpen(true);
-    } else {
-      setAuthModalOpen(true);
-    }
+    setIsModalOpen(true);
   };
 
   const handleExploreTool = () => {
@@ -1209,7 +1251,7 @@ export default function Home() {
                   letterSpacing: '-0.02em',
                 }}
               >
-                Grow With Consistency.
+                Grow Your Influence.
               </span>
             </motion.h1>
 
@@ -1220,32 +1262,21 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.55, duration: 1 }}
             >
-              Create, manage, publish, and track content —{' '}
-              <span className={theme === 'light' ? 'text-gray-800 font-semibold' : 'text-gray-300 font-medium'}>all in one AI-powered platform.</span>
+              Plan, create, manage, and publish content.
             </motion.p>
 
-            {/* CTA Buttons */}
             <motion.div
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.85, duration: 1 }}
             >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={handleDemoClick}
-                  variant="ghost"
-                  className="text-cyan-300 hover:text-white hover:bg-cyan-500/15 px-8 py-5 text-base font-semibold rounded-2xl border border-cyan-400/40 hover:border-cyan-400/70 transition-all"
-                >
-                  Schedule a Demo
-                </Button>
-              </motion.div>
+              {/* Primary CTA: Join Free Beta */}
               <motion.div
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.95 }}
                 className="relative"
               >
-                {/* Glow ring */}
                 <motion.div
                   className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 blur-lg"
                   animate={{ opacity: [0.4, 0.75, 0.4], scale: [1, 1.04, 1] }}
@@ -1253,7 +1284,7 @@ export default function Home() {
                 />
                 <Button
                   onClick={handleBetaClick}
-                  className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-8 py-5 text-base font-bold rounded-2xl shadow-2xl shadow-cyan-500/40 border border-cyan-300/30"
+                  className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-5 text-base font-bold rounded-2xl shadow-2xl shadow-cyan-500/40 border border-cyan-300/30"
                 >
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
@@ -1265,16 +1296,18 @@ export default function Home() {
                   </span>
                 </Button>
               </motion.div>
-              <Link to={createPageUrl('About')}>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="ghost" className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 px-8 py-5 text-base font-light rounded-2xl border border-cyan-500/20">
-                    Learn More <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </motion.div>
-              </Link>
+
+              {/* Secondary CTA: Schedule Demo */}
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={handleDemoClick}
+                  variant="ghost"
+                  className="text-cyan-300 hover:text-white hover:bg-cyan-500/15 px-7 py-5 text-sm font-semibold rounded-2xl border border-cyan-400/30 hover:border-cyan-400/60 transition-all"
+                >
+                  Schedule a Demo <ArrowRight className="ml-1.5 w-4 h-4 inline" />
+                </Button>
+              </motion.div>
             </motion.div>
-
-
           </motion.div>
         </div>
 
@@ -1390,75 +1423,82 @@ export default function Home() {
       </div>
 
 
-      <section className="py-10 px-6 relative" id="built-for">
-        <div className="max-w-6xl mx-auto">
+      {/* Who IncuBrix is built for */}
+      <section className="py-24 px-6 bg-[#0a0e27] relative overflow-hidden">
+        {/* Background Decorative Rings */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] -translate-x-1/2 translate-y-1/2" />
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-10"
+            className="mb-16 text-center"
           >
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-              Built For
+            <motion.span
+              className="inline-block px-4 py-1.5 mb-6 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-black uppercase tracking-[0.3em]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+            >
+              The Community
+            </motion.span>
+            <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-white leading-tight">
+              Built for the <span className="text-cyan-400">Future</span> of Content
             </h2>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto">Join the new generation of creators scaling their impact with IncuBrix.</p>
           </motion.div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-5 max-w-5xl mx-auto">
-            {creators.map((creator, idx) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+            {creatorTypes.map((item, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
-                whileHover={creator.active ? { scale: 1.05 } : {}}
-                className={`relative group rounded-3xl overflow-hidden border transition-all duration-300 ${creator.active
-                  ? theme === 'light'
-                    ? 'border-cyan-400/50 shadow-lg shadow-cyan-400/15'
-                    : 'border-cyan-500/30 shadow-lg shadow-cyan-500/10'
-                  : theme === 'light'
-                    ? 'border-gray-200'
-                    : 'border-white/5'
-                  }`}
+                whileHover={{ y: -10 }}
+                className="group relative rounded-[2rem] overflow-hidden cursor-pointer h-[320px] sm:h-[400px] lg:h-[450px] shadow-2xl"
               >
-                <div className="aspect-square relative max-h-[180px]">
-                  <img
-                    src={creator.img}
-                    alt={creator.label}
-                    className={`w-full h-full object-cover transition-all duration-700 ${creator.active ? 'grayscale-0' : 'grayscale group-hover:grayscale-[0.5] opacity-50'
-                      }`}
-                  />
-                  {/* Gradient overlay — lighter in light mode */}
-                  <div className={`absolute inset-0 bg-gradient-to-t ${theme === 'light'
-                    ? creator.active
-                      ? 'from-gray-900/70 via-gray-900/10'
-                      : 'from-gray-900/85 via-gray-900/40 opacity-80'
-                    : creator.active
-                      ? 'from-[#07091c]/90 via-[#07091c]/20'
-                      : 'from-black/95 via-black/60 opacity-80'
-                    } to-transparent`} />
+                {/* Background Image with Parallax-like effect */}
+                <motion.img
+                  src={item.img}
+                  alt={item.type}
+                  className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-125"
+                />
 
-                  {/* Status Badge */}
-                  {creator.badge && (
-                    <div className="absolute top-3 right-3 z-30">
-                      {creator.badge === 'BETA' ? (
-                        <div className="px-3 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-[10px] font-black tracking-widest text-white shadow-[0_0_15px_rgba(6,182,212,0.5)] border border-white/20">
-                          {creator.badge}
-                        </div>
-                      ) : (
-                        <span className="text-[10px] font-black px-3.5 py-1.5 rounded-full border tracking-[0.14em] bg-black/60 backdrop-blur-md text-white border-white/40 shadow-[0_0_12px_rgba(0,0,0,0.8)] uppercase">
-                          {creator.badge}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                {/* Multi-layered Overlays */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-40 transition-opacity duration-700 mix-blend-overlay`} />
 
-                  <div className="absolute bottom-4 left-4 right-4 z-20">
-                    <p className={`font-bold transition-colors text-sm ${creator.active ? 'text-white' : 'text-gray-300'
-                      }`}>
-                      {creator.label}
+                {/* Animated Border Glow */}
+                <div className="absolute inset-0 rounded-[2rem] border border-white/10 group-hover:border-white/30 transition-colors duration-500" />
+
+                <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                  <motion.div
+                    className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-2xl group-hover:shadow-white/20 transition-all duration-500 group-hover:-translate-y-2`}
+                  >
+                    <item.icon className="w-7 h-7 text-white" />
+                  </motion.div>
+
+                  <h3 className="text-2xl font-black text-white mb-2 tracking-tight group-hover:text-cyan-400 transition-colors duration-300">
+                    {item.type}
+                  </h3>
+
+                  <div className="overflow-hidden">
+                    <p className="text-gray-300 text-sm leading-relaxed translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 font-medium">
+                      {item.desc}
                     </p>
                   </div>
+
+                  <motion.div
+                    className="h-1 bg-gradient-to-r from-cyan-400 to-blue-500 mt-6 rounded-full group-hover:w-full w-0 transition-all duration-500"
+                    whileHover={{ width: '100%' }}
+                    transition={{ duration: 0.5 }}
+                  />
                 </div>
               </motion.div>
             ))}
@@ -1474,6 +1514,7 @@ export default function Home() {
       <BetaSignupModal
         isOpen={isBetaOpen}
         onClose={() => setIsBetaOpen(false)}
+        onSuccess={() => { }}
       />
     </div >
   );

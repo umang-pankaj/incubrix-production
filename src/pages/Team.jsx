@@ -36,7 +36,7 @@ export default function Team() {
       position: 'Head of Product',
       linkedin: 'https://linkedin.com',
       image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80',
-      bio: 'Creator turned product leader, deeply understands creator workflows'
+      bio: 'Creator turned product leader, deeply understands creator needs'
     },
     {
       name: 'David Kim',
@@ -66,9 +66,9 @@ export default function Team() {
       <section className="py-12 px-6 overflow-hidden relative">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0e27] to-black">
-          <motion.div 
+          <motion.div
             className="absolute top-1/4 left-1/4 w-[480px] h-[480px] bg-gradient-to-br from-cyan-500/30 to-blue-500/26 rounded-full blur-[120px]"
-            animate={{ 
+            animate={{
               scale: [1, 1.3, 1.1, 1],
               opacity: [0.4, 0.6, 0.5, 0.4],
               x: [0, 90, -50, 0],
@@ -77,9 +77,9 @@ export default function Team() {
             }}
             transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
           />
-          <motion.div 
+          <motion.div
             className="absolute bottom-1/4 right-1/4 w-[530px] h-[530px] bg-gradient-to-br from-purple-500/26 to-pink-500/28 rounded-full blur-[130px]"
-            animate={{ 
+            animate={{
               scale: [1.3, 1, 1.5, 1.3],
               opacity: [0.6, 0.3, 0.7, 0.6],
               x: [0, -90, 70, 0],
@@ -88,9 +88,9 @@ export default function Team() {
             }}
             transition={{ duration: 19, repeat: Infinity, ease: "easeInOut" }}
           />
-          <motion.div 
+          <motion.div
             className="absolute top-1/2 right-1/3 w-[410px] h-[410px] bg-gradient-to-br from-indigo-500/24 to-teal-500/26 rounded-full blur-[110px]"
-            animate={{ 
+            animate={{
               scale: [1.1, 1.4, 0.9, 1.1],
               opacity: [0.3, 0.5, 0.4, 0.3],
               x: [0, 70, -70, 0],
@@ -126,16 +126,16 @@ export default function Team() {
                     className="flex-[0_0_100%] min-w-0 md:flex-[0_0_calc(50%-12px)] lg:flex-[0_0_calc(33.333%-16px)]"
                   >
                     <Card className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 overflow-hidden hover:border-cyan-500/60 transition-all group relative h-full">
-                      <motion.div 
+                      <motion.div
                         className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-blue-500/0 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300"
                       />
-                      <motion.div 
+                      <motion.div
                         className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-t-xl opacity-0 group-hover:opacity-40 blur-xl transition-opacity duration-500"
                       />
                       <div className="aspect-square overflow-hidden relative">
                         <div className="absolute inset-0 bg-gradient-to-br from-[#1a2456] to-[#0f1535]" />
-                        <img 
-                          src={member.image} 
+                        <img
+                          src={member.image}
                           alt={member.name}
                           className="w-full h-full object-cover relative z-10 mix-blend-lighten"
                         />
@@ -145,14 +145,14 @@ export default function Team() {
                         <h3 className="text-2xl font-bold text-white mb-1">{member.name}</h3>
                         <p className="text-cyan-400 font-semibold mb-3">{member.position}</p>
                         <p className="text-gray-400 text-sm mb-4 leading-relaxed">{member.bio}</p>
-                        <a 
+                        <a
                           href={member.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors group/link"
                         >
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                           </svg>
                           <span className="border-b border-cyan-400/0 group-hover/link:border-cyan-400/100 transition-all">
                             LinkedIn Profile
@@ -185,9 +185,9 @@ export default function Team() {
       {/* Join Team CTA */}
       <section className="py-12 px-6 bg-[#0f1535] relative overflow-hidden">
         <div className="absolute inset-0">
-          <motion.div 
+          <motion.div
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full"
-            animate={{ 
+            animate={{
               scale: [1, 1.2, 1],
               rotate: [0, 180, 360]
             }}
@@ -198,7 +198,7 @@ export default function Team() {
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.h2 
+          <motion.h2
             className="text-4xl md:text-4xl font-bold mb-8"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -206,7 +206,7 @@ export default function Team() {
           >
             Want to Join Our Team?
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-xl text-gray-400 mb-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}

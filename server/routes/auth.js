@@ -54,6 +54,95 @@ router.get(
 );
 
 /**
+ * @route   GET /auth/linkedin
+ * @desc    Initiate LinkedIn OIDC flow
+ * @access  Public
+ */
+router.get('/linkedin', (req, res) => {
+    const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: process.env.LINKEDIN_CLIENT_ID,
+        redirect_uri: `${process.env.BACKEND_URL}/auth/linkedin/callback`,
+        scope: 'openid profile email',
+        state: Math.random().toString(36).substring(2),
+    });
+    console.log('--- Redirecting to LinkedIn OIDC ---');
+    res.redirect(`https://www.linkedin.com/oauth/v2/authorization?${params}`);
+});
+
+/**
+ * @route   GET /auth/linkedin/callback
+ * @desc    LinkedIn OIDC callback — exchanges code for token, fetches profile
+ * @access  Public
+ */
+router.get('/linkedin/callback', async (req, res) => {
+    console.log('--- LinkedIn OIDC Callback Triggered ---');
+    const { code, error } = req.query;
+
+    if (error || !code) {
+        console.error('LinkedIn OAuth error:', error);
+        return res.redirect(`${process.env.FRONTEND_URL}?auth=failed&error=${encodeURIComponent(error || 'no_code')}`);
+    }
+
+    try {
+        // Exchange code for access token
+        const tokenRes = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                grant_type: 'authorization_code',
+                code,
+                redirect_uri: `${process.env.BACKEND_URL}/auth/linkedin/callback`,
+                client_id: process.env.LINKEDIN_CLIENT_ID,
+                client_secret: process.env.LINKEDIN_CLIENT_SECRET,
+            }),
+        });
+
+        const tokenData = await tokenRes.json();
+        console.log('LinkedIn token response status:', tokenRes.status);
+
+        if (!tokenData.access_token) {
+            console.error('No access token:', tokenData);
+            return res.redirect(`${process.env.FRONTEND_URL}?auth=failed&error=no_token`);
+        }
+
+        // Fetch user info from LinkedIn OIDC userinfo endpoint
+        const userRes = await fetch('https://api.linkedin.com/v2/userinfo', {
+            headers: { Authorization: `Bearer ${tokenData.access_token}` },
+        });
+
+        const profile = await userRes.json();
+        console.log('LinkedIn profile sub:', profile.sub);
+
+        const userProfile = {
+            id: profile.sub,
+            email: profile.email || '',
+            name: profile.name || `${profile.given_name} ${profile.family_name}`,
+            firstName: profile.given_name || '',
+            lastName: profile.family_name || '',
+            picture: profile.picture || '',
+            provider: 'linkedin',
+        };
+
+        const { userStore } = await import('../models/User.js');
+        const user = await userStore.findOrCreateOAuthUser(userProfile);
+        console.log('LinkedIn user synced:', user.email);
+
+        req.logIn(user, (err) => {
+            if (err) {
+                console.error('LinkedIn session login error:', err);
+                return res.redirect(`${process.env.FRONTEND_URL}?auth=failed&error=session`);
+            }
+            return res.redirect(`${process.env.FRONTEND_URL}?auth=success`);
+        });
+
+    } catch (err) {
+        console.error('LinkedIn OIDC error:', err);
+        return res.redirect(`${process.env.FRONTEND_URL}?auth=failed&error=${encodeURIComponent(err.message)}`);
+    }
+});
+
+/**
  * @route   GET /auth/me
  * @desc    Get current authenticated user
  * @access  Private
@@ -225,7 +314,7 @@ router.post('/logout', (req, res, next) => {
                 return next(err);
             }
 
-            res.clearCookie('connect.sid');
+            res.clearCookie('incubrix.sid');
             res.json({
                 success: true,
                 message: 'Logged out successfully',

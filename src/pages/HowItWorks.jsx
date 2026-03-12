@@ -10,7 +10,11 @@ import {
   ArrowRight,
   CheckCircle2,
   Zap,
-  Video
+  Video,
+  Lightbulb,
+  Mic,
+  Clock,
+  Share2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ScheduleDemoModal from '../components/ScheduleDemoModal';
@@ -18,58 +22,59 @@ import ScheduleDemoModal from '../components/ScheduleDemoModal';
 export default function HowItWorks() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const workflow = [
+  const steps = [
     {
       step: 1,
-      icon: Sparkles,
-      title: 'Create with AI',
-      description: 'Input your idea or topic, and our AI content studio generates multiple formats - LinkedIn posts, YouTube scripts, newsletter drafts, and podcast outlines.',
+      icon: Lightbulb,
+      title: 'Get Content Insights',
+      description: 'Analyse content topics, current trends, and performance to understand what works and what doesn\'t, providing clear guidance on what to create next based on your goals (powered by our Scribe module).',
       features: [
-        'AI learns your unique voice and style',
-        'Generate 5-10 pieces from one idea',
-        'Edit and refine with intuitive controls'
+        'Analyse trending topics and audience interests',
+        'Understand which content performs best',
+        'Get recommendations on what to create next'
       ],
       gradient: 'from-cyan-500 to-blue-500',
       image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&q=80'
     },
     {
       step: 2,
-      icon: Calendar,
-      title: 'Publish Everywhere',
-      description: 'Connect all your platforms and schedule content from a single dashboard. No more logging into multiple accounts or copy-pasting between tools.',
+      icon: Mic,
+      title: 'Create Content',
+      description: 'Input your idea or existing content and transform it into multiple formats (original or AI-enhanced) while preserving your unique voice and perspective.',
       features: [
-        'One-click cross-platform publishing',
-        'Smart scheduling based on audience activity',
-        'Preview how content looks on each platform'
+        'Text to Audio (scripts to podcasts or voice content)',
+        'Text to Video (scripts to short or long-form videos)',
+        'Audio/Video to Text (transcripts, posts, newsletters)',
+        'Multi-format repurposing (LinkedIn, Reels, Newsletter)'
       ],
       gradient: 'from-blue-500 to-indigo-500',
-      image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&q=80'
+      image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80'
     },
     {
       step: 3,
-      icon: BarChart3,
-      title: 'Track Performance',
-      description: 'See all your metrics in one place - engagement, reach, growth trends, and audience insights across every platform you are on.',
+      icon: Calendar,
+      title: 'Publish Everywhere',
+      description: 'Distribute content across platforms from one place without switching between tools.',
       features: [
-        'Unified analytics dashboard',
-        'Cross-platform performance comparison',
-        'Actionable insights and recommendations'
+        'Publish across multiple platforms',
+        'Schedule content at the right time (Soon to be available)',
+        'Preview how content appears before publishing'
       ],
       gradient: 'from-indigo-500 to-purple-500',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80'
+      image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&q=80'
     },
     {
       step: 4,
-      icon: DollarSign,
-      title: 'Monetize & Grow',
-      description: 'Connect with brands looking for creators in your niche. Manage partnerships, track deliverables, and grow your creator business.',
+      icon: BarChart3,
+      title: 'Track & Grow',
+      description: 'Monitor your engagement and reach across platforms to understand your audience and get actionable insights to grow your impact.',
       features: [
-        'Get discovered by relevant brands',
-        'Manage collaboration agreements',
-        'Track your Creator Growth Score'
+        'Monitor engagement and reach',
+        'Compare performance across platforms',
+        'Get insights to improve future content'
       ],
       gradient: 'from-purple-500 to-pink-500',
-      image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80'
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80'
     }
   ];
 
@@ -130,12 +135,12 @@ export default function HowItWorks() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            From idea to income - see how creators are transforming their workflow with IncuBrix
+            From idea to impact — see how creators turn ideas into content, reach, and growth with IncuBrix.
           </motion.p>
         </div>
       </section>
 
-      {/* Workflow Steps */}
+      {/* Process Steps */}
       <section className="py-12 px-6 bg-[#0a0e27] relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/4 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-[100px]" />
@@ -143,7 +148,7 @@ export default function HowItWorks() {
         </div>
 
         <div className="max-w-6xl mx-auto space-y-32 relative z-10">
-          {workflow.map((item, idx) => (
+          {steps.map((item, idx) => (
             <motion.div
               key={idx}
               className={`flex flex-col ${idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-8 items-center`}
@@ -263,32 +268,31 @@ export default function HowItWorks() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              Why Creators Choose IncuBrix
+              Expected Results
             </h2>
-            <p className="text-xl text-gray-400">Real results from real creators</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: Zap,
-                stat: '85%',
-                label: 'Time Saved',
-                description: 'Spend less time on tools, more time creating',
+                icon: Clock,
+                stat: '<10 Minutes',
+                label: 'Time to Create Content',
+                description: 'From idea to polished content in record time.',
                 gradient: 'from-cyan-500 to-blue-500'
               },
               {
-                icon: ArrowRight,
-                stat: '10x',
-                label: 'Content Output',
-                description: 'Create more content without burning out',
+                icon: BarChart3,
+                stat: '5X More',
+                label: 'Insights & Control of Content',
+                description: 'Unprecedented visibility into your creator performance.',
                 gradient: 'from-blue-500 to-indigo-500'
               },
               {
-                icon: DollarSign,
-                stat: '3x',
-                label: 'Monetization',
-                description: 'Increase revenue through partnerships',
+                icon: Share2,
+                stat: '3x Audience',
+                label: 'Multiple Format & Platform Presence',
+                description: 'Scale your reach across every major platform seamlessly.',
                 gradient: 'from-indigo-500 to-purple-500'
               }
             ].map((benefit, idx) => (
@@ -354,7 +358,7 @@ export default function HowItWorks() {
               Ready to See It in Action?
             </h2>
             <p className="text-xl text-gray-400">
-              See IncuBrix in action and discover how it can transform your creator workflow
+              See IncuBrix in action and discover how it helps creators turn ideas into consistent content and long-term growth.
             </p>
           </motion.div>
 

@@ -29,7 +29,7 @@ export default function Terms() {
           <li><strong className="text-cyan-400">Creator</strong> – A User who creates, publishes, distributes, or monetizes Content.</li>
           <li><strong className="text-cyan-400">Marketplace</strong> – The IncuBrix marketplace for AI agents, tools, services, templates, and integrations.</li>
           <li><strong className="text-cyan-400">Partner</strong> – A third party offering products or services through the Platform.</li>
-          <li><strong className="text-cyan-400">Platform</strong> – All IncuBrix websites, applications, APIs, SDKs, AI models, tools, agents, workflows, integrations, and related services.</li>
+          <li><strong className="text-cyan-400">Platform</strong> – All IncuBrix websites, applications, APIs, SDKs, AI models, tools, agents, processes, integrations, and related services.</li>
         </ul>
       )
     },
@@ -330,8 +330,8 @@ export default function Terms() {
                   <button
                     onClick={() => scrollToSection('introduction')}
                     className={`relative py-2.5 pl-6 text-sm text-left transition-all hover:text-cyan-400 group ${activeSection === 'introduction'
-                        ? 'text-cyan-400 font-medium'
-                        : 'text-gray-500 hover:text-gray-300'
+                      ? 'text-cyan-400 font-medium'
+                      : 'text-gray-500 hover:text-gray-300'
                       }`}
                   >
                     {activeSection === 'introduction' && (
@@ -348,8 +348,8 @@ export default function Terms() {
                       key={section.id}
                       onClick={() => scrollToSection(section.id)}
                       className={`relative py-2.5 pl-6 text-sm text-left transition-all hover:text-cyan-400 group ${activeSection === section.id
-                          ? 'text-cyan-400 font-medium'
-                          : 'text-gray-500 hover:text-gray-300'
+                        ? 'text-cyan-400 font-medium'
+                        : 'text-gray-500 hover:text-gray-300'
                         }`}
                     >
                       {activeSection === section.id && (
