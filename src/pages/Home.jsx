@@ -1,6 +1,4 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import {
   ArrowRight,
@@ -16,25 +14,60 @@ import {
   Twitter,
   Linkedin,
   Youtube,
+  Search,
   MessageSquare,
   Lightbulb,
   Target,
   Briefcase,
   Monitor,
-  PenTool
+  PenTool,
+  BarChart3
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ScheduleDemoModal from '../components/ScheduleDemoModal';
 import BetaSignupModal from '../components/BetaSignupModal';
 import { useAuth } from '@/lib/AuthContext';
-import { toast } from 'sonner';
 
 const SIDEBAR_TOOLS = [
-  { icon: Mic, title: 'Text to Speech', desc: 'Turn any written content into natural, human-like AI voices. Perfect for podcasts, videos, and voiceovers.', accent: '#06b6d4' },
-  { icon: Video, title: 'Speech to Video', desc: 'Automatically generate engaging video presentations from audio or script files in minutes.', accent: '#3b82f6' },
-  { icon: Pencil, title: 'Scribe', desc: 'Your AI editorial brain — analyses your content portfolio, surfaces missing topics, and auto-plans your next 2 weeks of content.', accent: '#a78bfa' },
-  { icon: Scissors, title: 'Content Repurposer', desc: 'Extract the most viral and engaging moments from long-form content with AI precision.', accent: '#8b5cf6' },
-  { icon: Share2, title: 'Publisher', desc: 'Hit publish once — and your content goes live across every social media platform simultaneously. No switching tabs, no copy-pasting. One click, everywhere.', accent: '#06b6d4' },
+  { 
+    id: 'insights',
+    icon: Search, 
+    title: 'Content Insights', 
+    accent: '#06b6d4',
+    tools: [
+      { name: 'Scribe', icon: Pencil, desc: 'AI editorial brain for portfolio strategy.' }
+    ]
+  },
+  { 
+    id: 'creation',
+    icon: Sparkles, 
+    title: 'Content Creation', 
+    accent: '#06b6d4',
+    tools: [
+      { name: 'Text to Speech', icon: Mic, desc: 'Generate natural, studio-quality AI voices in seconds.' },
+      { name: 'Speech to Video', icon: Video, desc: 'Transform audio or text into engaging social videos.' },
+      { name: 'Content Repurposer', icon: Scissors, desc: 'Turn long-form content into viral short-form clips.' }
+    ]
+  },
+  { 
+    id: 'publishing',
+    icon: Share2, 
+    title: 'Content Publishing', 
+    accent: '#3b82f6',
+    tools: [
+      { name: 'Publisher', icon: Share2, desc: 'One-click social distribution.' }
+    ]
+  },
+  { 
+    id: 'performance',
+    icon: BarChart3, 
+    title: 'Content Performance', 
+    accent: '#ec4899',
+    badge: 'COMING SOON',
+    tools: [
+      { name: 'Unified Analytics Dashboard', icon: Search, desc: 'Real-time growth insights.' }
+    ]
+  },
 ];
 
 const creatorTypes = [
@@ -43,112 +76,106 @@ const creatorTypes = [
     icon: Lightbulb,
     color: 'from-amber-400 to-orange-500',
     desc: 'Build authority through consistent expert content',
-    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80'
+    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+    comingSoon: false
   },
   {
     type: 'Podcasters',
     icon: Mic,
     color: 'from-purple-400 to-pink-500',
     desc: 'Repurpose episodes into clips, posts & articles',
-    img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80'
+    img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80',
+    comingSoon: false
   },
   {
     type: 'Coaches',
     icon: Target,
     color: 'from-cyan-400 to-blue-500',
     desc: 'Scale your reach without scaling your workload',
-    img: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80'
+    img: '/assets/audience/coaches.png',
+    comingSoon: true
   },
   {
     type: 'Consultants',
     icon: Briefcase,
     color: 'from-emerald-400 to-teal-500',
     desc: 'Build a personal brand while running your business',
-    img: 'https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=600&q=80'
+    img: 'https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=600&q=80',
+    comingSoon: true
   },
   {
     type: 'Founders',
     icon: Monitor,
     color: 'from-blue-400 to-indigo-500',
     desc: 'Document your journey and build in public',
-    img: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=600&q=80'
+    img: '/assets/audience/founders.png',
+    comingSoon: true
   },
   {
     type: 'Content Creators',
     icon: PenTool,
     color: 'from-rose-400 to-red-500',
     desc: 'Create more in less time across every platform',
-    img: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=600&q=80'
+    img: '/assets/audience/creators.png',
+    comingSoon: true
   }
 ];
 
 function SidebarToolsPanel({ onExploreTool }) {
   const [activeTool, setActiveTool] = React.useState(0);
-  const tool = SIDEBAR_TOOLS[activeTool];
+  const [activeSubTool, setActiveSubTool] = React.useState(0);
+  const category = SIDEBAR_TOOLS[activeTool];
   const { theme } = useAuth();
 
+  // Reset subtool when category changes
+  React.useEffect(() => {
+    setActiveSubTool(0);
+  }, [activeTool]);
+
   const toolFeatures = {
-    'Text to Speech': ['Natural AI voices', 'Multiple language support', 'Studio-quality output'],
-    'Speech to Video': ['Auto video generation', 'Sync audio to visuals', 'One-click export'],
     'Scribe': ['Content Intelligence', 'Portfolio Indexer', 'AI Content Planner'],
+    'Text to Speech': ['Natural AI voices', 'Multi-language support', 'Studio-quality output'],
+    'Speech to Video': ['Auto video generation', 'Sync audio to visuals', 'One-click export'],
     'Content Repurposer': ['Clip viral moments', 'AI-powered editing', 'Multi-format export'],
-    'Publisher': ['One-click multi-platform publish', 'Smart peak-time scheduling', 'Unified analytics dashboard'],
+    'Publisher': ['One-click multi-platform publish', 'Peak-time scheduling', 'Unified analytics'],
   };
 
+  const activeToolData = category.id === 'performance' ? null : category.tools[activeSubTool];
+
   return (
-    <section className={`py-14 px-6 relative overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-[#07091c]' : 'bg-[#f8fafc]'}`}>
+    <section className={`py-20 px-6 relative overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-[#07091c]' : 'bg-[#f8fafc]'}`}>
       {/* Ambient background orbs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[350px] h-[350px] bg-purple-600/20 rounded-full blur-[100px]" />
-        <div className="absolute top-1/3 right-1/4 w-[280px] h-[280px] bg-cyan-500/15 rounded-full blur-[90px]" />
-        <div className="absolute bottom-0 left-1/2 w-[200px] h-[200px] bg-blue-600/10 rounded-full blur-[80px]" />
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px]" />
+        <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
       </div>
 
-      {/* Floating particles */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 rounded-full pointer-events-none"
-          style={{ background: ['#06b6d4', '#a78bfa', '#3b82f6', '#ec4899', '#8b5cf6', '#06b6d4'][i], left: `${15 + i * 13}%`, top: `${20 + (i % 3) * 25}%` }}
-          animate={{ y: [-8, 8, -8], opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
-        />
-      ))}
-
-      <div className="max-w-5xl mx-auto relative z-10">
+      <div className="max-w-6xl mx-auto relative z-10">
         {/* Section heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-10"
-        >
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full mb-4 text-[11px] font-bold tracking-[0.2em] uppercase relative"
-            style={{
-              background: 'linear-gradient(135deg, rgba(167,139,250,0.1), rgba(6,182,212,0.08))',
-              boxShadow: 'inset 0 0 0 1px rgba(167,139,250,0.3)',
-              color: '#c4b5fd',
-              letterSpacing: '0.18em',
-            }}>
-            Platform Tools
-          </div>
-          <h2 className={`text-3xl md:text-4xl font-bold ${theme === 'dark' ? 'bg-gradient-to-r from-white via-cyan-300 to-purple-400 bg-clip-text text-transparent' : 'text-gray-900'}`}>
-            Everything you need to create
+        <div className="text-center mb-16">
+          <h2 className={`text-3xl md:text-4xl font-extrabold mb-4 tracking-tight ${theme === 'dark' ? 'bg-gradient-to-r from-white via-cyan-300 to-blue-400 bg-clip-text text-transparent' : 'text-gray-900'}`}>
+            IncuBrix Creator Studio
           </h2>
-          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Five powerful tools. One seamless creative process.</p>
-        </motion.div>
+          <p className={`text-lg md:text-xl font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} max-w-2xl mx-auto`}>
+            Insights, Creation, Publishing and Performance — All in one Creator Studio
+          </p>
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="flex flex-col lg:flex-row gap-5 items-stretch"
+          className="flex flex-col lg:flex-row gap-8 items-stretch"
         >
-          {/* Sidebar Panel */}
-          <div className="w-full lg:w-[185px] shrink-0 rounded-2xl p-2 flex lg:flex-col lg:justify-around gap-1 overflow-x-auto lg:overflow-visible"
-            style={{ background: 'linear-gradient(160deg,#0f1428,#111830)', border: '1px solid rgba(255,255,255,0.07)', boxShadow: '0 8px 40px rgba(0,0,0,0.4)' }}>
+          {/* Sidebar */}
+          <div className="w-full lg:w-[360px] shrink-0 rounded-3xl p-6 flex lg:flex-col lg:justify-start gap-4 overflow-x-auto lg:overflow-visible"
+            style={{
+              background: theme === 'dark' ? 'rgba(15, 21, 53, 0.4)' : '#ffffff',
+              border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)',
+              boxShadow: '0 20px 50px -12px rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(20px)'
+            }}>
             {SIDEBAR_TOOLS.map((t, idx) => {
               const Icon = t.icon;
               const isActive = activeTool === idx;
@@ -156,733 +183,478 @@ function SidebarToolsPanel({ onExploreTool }) {
                 <motion.button
                   key={idx}
                   onClick={() => setActiveTool(idx)}
-                  whileHover={{ scale: 1.03, x: 2 }}
-                  whileTap={{ scale: 0.97 }}
-                  className={`relative flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl transition-all duration-200 min-w-[72px] lg:min-w-0 w-full`}
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`relative flex items-center gap-4 px-6 py-8 rounded-2xl transition-all duration-300 min-w-[200px] lg:min-w-0 w-full group`}
                   style={isActive
-                    ? { background: `linear-gradient(135deg, ${t.accent}18, ${t.accent}08)`, border: `1px solid ${t.accent}30` }
-                    : { border: '1px solid transparent' }}
+                    ? {
+                        background: `linear-gradient(135deg, ${t.accent}25, ${t.accent}10)`,
+                        border: `1.5px solid ${t.accent}40`,
+                        boxShadow: `0 8px 20px -5px ${t.accent}30`
+                      }
+                    : {
+                        border: '1.5px solid transparent',
+                        background: 'transparent'
+                      }}
                 >
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300"
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shrink-0"
                     style={{
-                      background: isActive ? `${t.accent}22` : 'rgba(255,255,255,0.04)',
-                      border: isActive ? `1.5px solid ${t.accent}55` : '1.5px solid rgba(255,255,255,0.06)',
+                      background: isActive ? `${t.accent}33` : theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                      border: isActive ? `1.5px solid ${t.accent}66` : '1.5px solid transparent',
                     }}
                   >
-                    <Icon className="w-4 h-4" style={{ color: isActive ? t.accent : '#4b5563' }} />
+                    <Icon className="w-7 h-7" style={{ color: isActive ? t.accent : '#64748b' }} />
                   </div>
-                  <span className="text-[9px] font-semibold leading-tight text-center" style={{ color: isActive ? t.accent : '#6b7280' }}>
-                    {t.title}
-                  </span>
-                  {/* Badge removed for default state */}
+                  <div className="flex flex-col items-start translate-y-[1px]">
+                    <span className={`text-[17px] font-black leading-tight transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'}`}>
+                      {t.title}
+                    </span>
+                  </div>
+                  {t.badge && (
+                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-pink-500 to-rose-500 text-[9px] font-black text-white px-3 py-1.5 rounded-full shadow-lg border border-white/20 z-20">
+                      {t.badge}
+                    </div>
+                  )}
                 </motion.button>
               );
             })}
           </div>
 
-          {/* Tool Detail Card */}
+          {/* Content Area */}
           <motion.div
             key={activeTool}
-            initial={{ opacity: 0, x: 18, scale: 0.98 }}
+            initial={{ opacity: 0, x: 20, scale: 0.98 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="flex-1 rounded-2xl overflow-hidden relative flex flex-col justify-between"
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="flex-1 rounded-[32px] overflow-hidden relative flex flex-col"
             style={{
-              background: 'linear-gradient(135deg,#0f1428 60%,#111830)',
-              border: `1px solid rgba(255,255,255,0.08)`,
-              boxShadow: `0 8px 40px rgba(0,0,0,0.5)`,
-              minHeight: 260,
-              padding: '2rem',
+              background: theme === 'dark' ? 'linear-gradient(145deg, #0f173a, #070b1f)' : '#fff',
+              border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+              boxShadow: '0 30px 60px -12px rgba(0,0,0,0.6)',
+              minHeight: 650,
+              height: 650,
             }}
           >
-            {/* Subtle grid overlay */}
+            {/* Background elements */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-              style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5) 1px,transparent 1px)', backgroundSize: '32px 32px' }}
+              style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.5) 1px,transparent 1px)', backgroundSize: '40px 40px' }}
             />
-
-            <div className="relative z-10 flex flex-col h-full justify-between">
-              <div>
-                {/* Icon + title row */}
-                <div className="flex items-center gap-4 mb-4">
-                  <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
-                    style={{ background: `${tool.accent}22`, border: `1.5px solid ${tool.accent}45` }}
-                  >
-                    {React.createElement(tool.icon, { className: 'w-7 h-7', style: { color: tool.accent } })}
+            
+            <div className="relative z-10 flex flex-col h-full p-8 md:p-10">
+              {/* Category Header */}
+              <div className="flex justify-between items-start mb-10">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 shadow-2xl"
+                    style={{ background: `${category.accent}22`, border: `2px solid ${category.accent}40` }}>
+                    {React.createElement(category.icon, { className: 'w-8 h-8', style: { color: category.accent } })}
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-white leading-tight">{tool.title}</h3>
-                    {tool.badge && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold mt-1 px-2 py-0.5 rounded-full"
-                        style={{ background: `${tool.accent}20`, color: tool.accent, border: `1px solid ${tool.accent}35` }}>
-                        {tool.badge} — Flagship Module
-                      </span>
-                    )}
+                    <h3 className="text-3xl font-black text-white mb-1">{category.title}</h3>
                   </div>
                 </div>
-
-                <p className="text-gray-300 text-sm leading-relaxed mb-5">{tool.desc}</p>
-
-                {/* Feature bullets */}
-                <div className="flex flex-wrap gap-2">
-                  {(toolFeatures[tool.title] || []).map((f, i) => (
-                    <motion.span
-                      key={i}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.08 }}
-                      className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-md"
-                      style={{
-                        background: `${tool.accent}18`,
-                        color: tool.accent,
-                        letterSpacing: '0.01em',
-                      }}
-                    >
-                      <span style={{ color: tool.accent, opacity: 0.7 }}>›</span>
-                      {f}
-                    </motion.span>
-                  ))}
-                </div>
-
-                {/* Animated Workflow — Text to Speech */}
-                {tool.title === 'Text to Speech' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="mt-5"
-                  >
-                    {/* Workflow row */}
-                    <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.6)' }}>Process Progress</p>
-                    <div className="flex items-center w-full mb-5">
-                      {[
-                        { Icon: FileText, label: 'Document', sub: 'Input source', color: '#06b6d4' },
-                        { Icon: Zap, label: 'Script', sub: 'AI processing', color: '#3b82f6' },
-                        { Icon: Mic, label: 'Audio', sub: 'Natural voice', color: '#a78bfa' },
-                      ].map((step, i) => (
-                        <React.Fragment key={i}>
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.3 + i * 0.15, duration: 0.4 }}
-                            className="flex flex-col items-center gap-1.5 flex-shrink-0"
-                            style={{ minWidth: 72 }}
-                          >
-                            <motion.div
-                              animate={
-                                i === 0 ? {
-                                  boxShadow: [
-                                    `0 0 20px ${step.color}66`,
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 20px ${step.color}66`
-                                  ]
-                                } : i === 1 ? {
-                                  boxShadow: [
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 20px ${step.color}88`,
-                                    `0 0 8px ${step.color}44`,
-                                    `0 0 20px ${step.color}88`
-                                  ]
-                                } : {
-                                  boxShadow: [
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 20px ${step.color}88`,
-                                    `0 0 0px ${step.color}00`
-                                  ]
-                                }
-                              }
-                              transition={
-                                i === 0 ? {
-                                  duration: 4.0,
-                                  repeat: Infinity,
-                                  times: [0, 0.15, 0.95, 1],
-                                  ease: "easeInOut"
-                                } : i === 1 ? {
-                                  duration: 4.0,
-                                  repeat: Infinity,
-                                  times: [0, 0.45, 0.5, 0.75, 1],
-                                  ease: "easeInOut"
-                                } : {
-                                  duration: 4.0,
-                                  repeat: Infinity,
-                                  times: [0, 0.95, 1],
-                                  ease: "easeInOut"
-                                }
-                              }
-                              className="w-11 h-11 rounded-xl flex items-center justify-center"
-                              style={{ background: `${step.color}15`, border: `1.5px solid ${step.color}40`, position: 'relative' }}
-                            >
-                              <step.Icon className="w-5 h-5" style={{ color: step.color }} />
-                            </motion.div>
-                            <span className="text-[10px] font-semibold text-white text-center leading-tight">{step.label}</span>
-                            <span className="text-[9px] text-gray-500 text-center leading-tight">{step.sub}</span>
-                          </motion.div>
-                          {i < 2 && (
-                            <div className="flex-1 flex items-center justify-center relative h-11 mx-1 overflow-hidden">
-                              {/* Connector Line */}
-                              <div className="w-full h-px relative" style={{ background: 'rgba(99,102,241,0.2)' }}>
-                                <div
-                                  className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rotate-45 border-t border-r"
-                                  style={{ borderColor: i === 0 ? '#06b6d4' : '#3b82f6', opacity: 0.6 }}
-                                />
-                              </div>
-
-                              {/* Flowing Elements */}
-                              {i === 0 ? (
-                                <motion.div
-                                  className="absolute flex items-center justify-center -translate-y-1/2"
-                                  style={{ top: '50%' }}
-                                  animate={{
-                                    left: ['-20%', '100%'],
-                                    opacity: [0, 1, 1, 0],
-                                    scale: [0.9, 1.2, 1.2, 0.9]
-                                  }}
-                                  transition={{
-                                    duration: 2.0,
-                                    repeat: Infinity,
-                                    repeatDelay: 2.0,
-                                    ease: "easeInOut",
-                                    times: [0, 0.1, 0.95, 1]
-                                  }}
-                                >
-                                  <FileText className="w-5 h-5" style={{ color: '#06b6d4', filter: 'drop-shadow(0 0 4px #06b6d4)' }} />
-                                </motion.div>
-                              ) : (
-                                <motion.div
-                                  className="absolute flex items-center justify-center -translate-y-1/2"
-                                  style={{ top: '50%' }}
-                                  animate={{
-                                    left: ['0%', '115%'],
-                                    opacity: [0, 1, 1, 0],
-                                    scale: [0.9, 1.2, 1.2, 0.9],
-                                  }}
-                                  transition={{
-                                    delay: 2.0,
-                                    duration: 2.0,
-                                    repeat: Infinity,
-                                    repeatDelay: 2.0,
-                                    ease: "easeInOut",
-                                    times: [0, 0.05, 0.9, 1]
-                                  }}
-                                >
-                                  <Mic className="w-5 h-5" style={{ color: '#3b82f6', filter: 'drop-shadow(0 0 5px #3b82f6)' }} />
-                                </motion.div>
-                              )}
-                            </div>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </div>
-
-                    {/* Capabilities */}
-                    <div className="mt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
-                      <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.5)' }}>Capabilities</p>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { label: '100+ Ultra-realistic voices', dot: '#3b82f6' },
-                          { label: 'Podcast-quality audio', dot: '#6366f1' },
-                          { label: 'Multi-language support', dot: '#38bdf8' },
-                          { label: 'Instant Voice Hub sync', dot: '#06b6d4' },
-                        ].map((item, i) => (
-                          <div
-                            key={i}
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                            style={{
-                              background: 'rgba(255,255,255,0.04)',
-                              border: '1px solid rgba(255,255,255,0.1)',
-                            }}
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: item.dot }} />
-                            <span className="text-xs text-gray-300 font-medium whitespace-nowrap">{item.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Animated Workflow — Content Repurposer */}
-                {tool.title === 'Content Repurposer' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="mt-5"
-                  >
-                    {/* Workflow row */}
-                    <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.6)' }}>Process Flow</p>
-                    <div className="flex items-center w-full mb-5">
-                      {[
-                        { Icon: Video, label: 'Source', sub: 'Long video', color: '#8b5cf6' },
-                        { Icon: Scissors, label: 'Configure', sub: 'Set clips', color: '#a78bfa' },
-                        { Icon: Sparkles, label: 'Clips', sub: 'AI Viral extraction', color: '#06b6d4' },
-                      ].map((step, i) => (
-                        <React.Fragment key={i}>
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.3 + i * 0.15, duration: 0.4 }}
-                            className="flex flex-col items-center gap-1.5 flex-shrink-0"
-                            style={{ minWidth: 72 }}
-                          >
-                            <motion.div
-                              animate={
-                                i === 0 ? {
-                                  boxShadow: [
-                                    `0 0 20px ${step.color}66`,
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 20px ${step.color}66`
-                                  ]
-                                } : i === 1 ? {
-                                  boxShadow: [
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 20px ${step.color}88`,
-                                    `0 0 8px ${step.color}44`,
-                                    `0 0 20px ${step.color}88`
-                                  ]
-                                } : {
-                                  boxShadow: [
-                                    `0 0 0px ${step.color}00`,
-                                    `0 0 20px ${step.color}88`,
-                                    `0 0 0px ${step.color}00`
-                                  ]
-                                }
-                              }
-                              transition={
-                                i === 0 ? {
-                                  duration: 4.0,
-                                  repeat: Infinity,
-                                  times: [0, 0.15, 0.95, 1],
-                                  ease: "easeInOut"
-                                } : i === 1 ? {
-                                  duration: 4.0,
-                                  repeat: Infinity,
-                                  times: [0, 0.45, 0.5, 0.75, 1],
-                                  ease: "easeInOut"
-                                } : {
-                                  duration: 4.0,
-                                  repeat: Infinity,
-                                  times: [0, 0.95, 1],
-                                  ease: "easeInOut"
-                                }
-                              }
-                              className="w-11 h-11 rounded-xl flex items-center justify-center"
-                              style={{ background: `${step.color}15`, border: `1.5px solid ${step.color}40`, position: 'relative' }}
-                            >
-                              <step.Icon className="w-5 h-5" style={{ color: step.color }} />
-                            </motion.div>
-                            <span className="text-[10px] font-semibold text-white text-center leading-tight">{step.label}</span>
-                            <span className="text-[9px] text-gray-500 text-center leading-tight">{step.sub}</span>
-                          </motion.div>
-                          {i < 2 && (
-                            <div className="flex-1 flex items-center justify-center relative h-11 mx-1 overflow-hidden">
-                              {/* Connector Line */}
-                              <div className="w-full h-px relative" style={{ background: 'rgba(99,102,241,0.2)' }}>
-                                <div
-                                  className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rotate-45 border-t border-r"
-                                  style={{ borderColor: i === 0 ? '#8b5cf6' : '#a78bfa', opacity: 0.6 }}
-                                />
-                              </div>
-
-                              {/* Flowing Elements */}
-                              {i === 0 ? (
-                                <motion.div
-                                  className="absolute flex items-center justify-center -translate-y-1/2"
-                                  style={{ top: '50%' }}
-                                  animate={{
-                                    left: ['-20%', '100%'],
-                                    opacity: [0, 1, 1, 0],
-                                    scale: [0.9, 1.2, 1.2, 0.9]
-                                  }}
-                                  transition={{
-                                    duration: 2.0,
-                                    repeat: Infinity,
-                                    repeatDelay: 2.0,
-                                    ease: "easeInOut",
-                                    times: [0, 0.1, 0.95, 1]
-                                  }}
-                                >
-                                  <Video className="w-5 h-5" style={{ color: '#8b5cf6', filter: 'drop-shadow(0 0 4px #8b5cf6)' }} />
-                                </motion.div>
-                              ) : (
-                                <motion.div
-                                  className="absolute flex items-center justify-center -translate-y-1/2"
-                                  style={{ top: '50%' }}
-                                  animate={{
-                                    left: ['0%', '115%'],
-                                    opacity: [0, 1, 1, 0],
-                                    scale: [0.9, 1.2, 1.2, 0.9],
-                                  }}
-                                  transition={{
-                                    delay: 2.0,
-                                    duration: 2.0,
-                                    repeat: Infinity,
-                                    repeatDelay: 2.0,
-                                    ease: "easeInOut",
-                                    times: [0, 0.05, 0.9, 1]
-                                  }}
-                                >
-                                  <Scissors className="w-5 h-5" style={{ color: '#a78bfa', filter: 'drop-shadow(0 0 5px #a78bfa)' }} />
-                                </motion.div>
-                              )}
-                            </div>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </div>
-
-                    {/* Capabilities */}
-                    <div className="mt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
-                      <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.5)' }}>Capabilities</p>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { label: 'Viral Moment Detection', dot: '#8b5cf6' },
-                          { label: 'Auto-Scaling (9:16)', dot: '#a78bfa' },
-                          { label: 'AI Smart Captions', dot: '#06b6d4' },
-                          { label: 'Multi-Format Export', dot: '#38bdf8' },
-                          { label: 'Social Platform Sync', dot: '#8b5cf6' },
-                        ].map((item, i) => (
-                          <div
-                            key={i}
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                            style={{
-                              background: 'rgba(255,255,255,0.04)',
-                              border: '1px solid rgba(255,255,255,0.1)',
-                            }}
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: item.dot }} />
-                            <span className="text-xs text-gray-300 font-medium whitespace-nowrap">{item.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Animated Workflow — Publisher */}
-                {tool.title === 'Publisher' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="mt-5"
-                  >
-                    <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-4" style={{ color: 'rgba(6,182,212,0.6)' }}>One-Click Distribution</p>
-
-                    <div className="flex items-center justify-between gap-2 mb-8">
-                      {/* Step 1: Connect */}
-                      <div className="flex flex-col items-center gap-2">
-                        <motion.div
-                          animate={{ boxShadow: ['0 0 0px #06b6d400', '0 0 15px #06b6d466', '0 0 0px #06b6d400'] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                          className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#06b6d415] border border-[#06b6d440]"
-                        >
-                          <Share2 className="w-5 h-5 text-[#06b6d4]" />
-                        </motion.div>
-                        <span className="text-[9px] font-bold text-gray-400">Connect</span>
-                      </div>
-
-                      {/* Connector 1 */}
-                      <div className="flex-1 h-px bg-gray-800 relative">
-                        <motion.div
-                          animate={{ left: ['0%', '100%'], opacity: [0, 1, 0] }}
-                          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                          className="absolute top-1/2 -translate-y-1/2 w-1 h-1 bg-cyan-400 rounded-full"
-                        />
-                      </div>
-
-                      {/* Step 2: AI Captions */}
-                      <div className="flex flex-col items-center gap-2">
-                        <motion.div
-                          animate={{ scale: [1, 1.05, 1] }}
-                          transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                          className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#a78bfa15] border border-[#a78bfa40]"
-                        >
-                          <div className="relative">
-                            <MessageSquare className="w-5 h-5 text-[#a78bfa]" />
-                            <Sparkles className="w-2.5 h-2.5 text-[#a78bfa] absolute -top-1 -right-1" />
-                          </div>
-                        </motion.div>
-                        <span className="text-[9px] font-bold text-gray-400">Captions</span>
-                      </div>
-
-                      {/* Connector 2 */}
-                      <div className="flex-1 h-px bg-gray-800 relative">
-                        <motion.div
-                          animate={{ left: ['0%', '100%'], opacity: [0, 1, 0] }}
-                          transition={{ duration: 1.5, repeat: Infinity, delay: 0.75, ease: "linear" }}
-                          className="absolute top-1/2 -translate-y-1/2 w-1 h-1 bg-purple-400 rounded-full"
-                        />
-                      </div>
-
-                      {/* Step 3: Publish Button (Central Action) */}
-                      <div className="relative">
-                        <motion.div
-                          animate={{
-                            boxShadow: ['0 0 0px #06e2ff00', '0 0 30px #06e2ff88', '0 0 0px #06e2ff00'],
-                            scale: [1, 1.1, 1]
-                          }}
-                          transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
-                          className="w-12 h-12 rounded-full flex items-center justify-center bg-[#06e2ff20] border-2 border-[#06e2ff60] cursor-default"
-                        >
-                          <Zap className="w-6 h-6 text-[#06e2ff] fill-[#06e2ff20]" />
-                        </motion.div>
-
-                        {/* Branded Icons Bursting Out */}
-                        {[
-                          { Icon: Youtube, color: '#FF0000', angle: -60, delay: 0 },
-                          { Icon: Instagram, color: '#E4405F', angle: -20, delay: 0.1 },
-                          { Icon: Linkedin, color: '#0077B5', angle: 20, delay: 0.2 },
-                          { Icon: Twitter, color: '#1DA1F2', angle: 60, delay: 0.3 }
-                        ].map((social, si) => (
-                          <motion.div
-                            key={si}
-                            initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-                            animate={{
-                              opacity: [0, 1, 1, 0],
-                              scale: [0, 1.2, 1, 0],
-                              x: [0, Math.cos(social.angle * Math.PI / 180) * 45],
-                              y: [0, Math.sin(social.angle * Math.PI / 180) * 45]
-                            }}
-                            transition={{
-                              duration: 2.5,
-                              repeat: Infinity,
-                              repeatDelay: 0.5,
-                              delay: social.delay + 1, // Start after central pulse
-                              ease: "easeOut"
-                            }}
-                            className="absolute inset-0 m-auto w-7 h-7 rounded-lg flex items-center justify-center pointer-events-none"
-                            style={{ background: `${social.color}20`, border: `1px solid ${social.color}40`, zIndex: 20 }}
-                          >
-                            <social.Icon className="w-4 h-4" style={{ color: social.color }} />
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Capabilities */}
-                    <div className="mt-4 pt-4 border-t border-white/5">
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { label: 'One Click - All Socials', dot: '#ec4899' },
-                          { label: 'AI Branded Captions', dot: '#a78bfa' },
-                          { label: 'Connect 10+ Platforms', dot: '#3b82f6' },
-                          { label: 'Smart Distribution', dot: '#06b6d4' },
-                        ].map((item, i) => (
-                          <div key={i} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10">
-                            <span className="w-1 h-1 rounded-full" style={{ background: item.dot }} />
-                            <span className="text-[10px] font-medium text-gray-300">{item.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Animated Workflow — Speech to Video only */}
-                {tool.title === 'Speech to Video' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="mt-5"
-                  >
-                    {/* Workflow row */}
-                    <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.6)' }}>Process</p>
-                    <div className="flex items-center w-full mb-5">
-                      {[
-                        { Icon: Mic, label: 'Text / Audio', sub: 'Script or voice file', color: '#3b82f6' },
-                        { Icon: Zap, label: 'AI Engine', sub: 'Voice + visual sync', color: '#a78bfa' },
-                        { Icon: Video, label: 'Video Ready', sub: 'Export in seconds', color: '#06b6d4' },
-                      ].map((step, i) => (
-                        <React.Fragment key={i}>
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.3 + i * 0.15, duration: 0.4 }}
-                            className="flex flex-col items-center gap-1.5 flex-shrink-0"
-                            style={{ minWidth: 72 }}
-                          >
-                            <motion.div
-                              animate={
-                                i === 0 ? {
-                                  boxShadow: [
-                                    `0 0 20px ${step.color}66`, // Glow at start
-                                    `0 0 0px ${step.color}00`,  // Fade as icon leaves
-                                    `0 0 0px ${step.color}00`,  // Wait
-                                    `0 0 20px ${step.color}66`  // Return for restart
-                                  ]
-                                } : i === 1 ? {
-                                  boxShadow: [
-                                    `0 0 0px ${step.color}00`,  // Wait
-                                    `0 0 0px ${step.color}00`,  // wait
-                                    `0 0 20px ${step.color}88`, // Glow when icon arrives (2s)
-                                    `0 0 8px ${step.color}44`,  // Pulse
-                                    `0 0 20px ${step.color}88`  // Pulse end
-                                  ]
-                                } : {
-                                  boxShadow: [
-                                    `0 0 0px ${step.color}00`,  // Wait
-                                    `0 0 20px ${step.color}88`, // Glow when icon arrives (4s)
-                                    `0 0 0px ${step.color}00`   // Fade
-                                  ]
-                                }
-                              }
-                              transition={
-                                i === 0 ? {
-                                  duration: 4.0,
-                                  repeat: Infinity,
-                                  times: [0, 0.15, 0.95, 1],
-                                  ease: "easeInOut"
-                                } : i === 1 ? {
-                                  duration: 4.0,
-                                  repeat: Infinity,
-                                  times: [0, 0.45, 0.5, 0.75, 1],
-                                  ease: "easeInOut"
-                                } : {
-                                  duration: 4.0,
-                                  repeat: Infinity,
-                                  times: [0, 0.95, 1],
-                                  ease: "easeInOut"
-                                }
-                              }
-                              className="w-11 h-11 rounded-xl flex items-center justify-center"
-                              style={{ background: `${step.color}15`, border: `1.5px solid ${step.color}40`, position: 'relative' }}
-                            >
-                              <step.Icon className="w-5 h-5" style={{ color: step.color }} />
-                            </motion.div>
-                            <span className="text-[10px] font-semibold text-white text-center leading-tight">{step.label}</span>
-                            <span className="text-[9px] text-gray-500 text-center leading-tight">{step.sub}</span>
-                          </motion.div>
-                          {i < 2 && (
-                            <div className="flex-1 flex items-center justify-center relative h-11 mx-1 overflow-hidden">
-                              {/* Connector Line */}
-                              <div className="w-full h-px relative" style={{ background: 'rgba(99,102,241,0.2)' }}>
-                                {/* Arrowhead at the end */}
-                                <div
-                                  className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 rotate-45 border-t border-r"
-                                  style={{ borderColor: i === 0 ? '#3b82f6' : '#a78bfa', opacity: 0.6 }}
-                                />
-                              </div>
-
-                              {/* Flowing Elements - Sequential Cycle: 4s total */}
-                              {i === 0 ? (
-                                // Input Flow: Single large FileText icon (Starts at 0s, ends at 2s)
-                                <motion.div
-                                  className="absolute flex items-center justify-center -translate-y-1/2"
-                                  style={{
-                                    top: '50%'
-                                  }}
-                                  animate={{
-                                    left: ['-20%', '100%'],
-                                    opacity: [0, 1, 1, 0],
-                                    scale: [0.9, 1.2, 1.2, 0.9]
-                                  }}
-                                  transition={{
-                                    duration: 2.0,
-                                    repeat: Infinity,
-                                    repeatDelay: 2.0, // Wait for output segment to finish
-                                    ease: "easeInOut",
-                                    times: [0, 0.1, 0.95, 1]
-                                  }}
-                                >
-                                  <FileText className="w-5 h-5" style={{ color: '#3b82f6', filter: 'drop-shadow(0 0 4px #3b82f6)' }} />
-                                </motion.div>
-                              ) : (
-                                // Output Flow: Single large Video icon (Starts at 2s, ends at 4s)
-                                <motion.div
-                                  className="absolute flex items-center justify-center -translate-y-1/2"
-                                  style={{
-                                    top: '50%'
-                                  }}
-                                  animate={{
-                                    left: ['0%', '115%'],
-                                    opacity: [0, 1, 1, 0],
-                                    scale: [0.9, 1.2, 1.2, 0.9],
-                                    rotate: [0, 15, -15, 0]
-                                  }}
-                                  transition={{
-                                    delay: 2.0, // Start after input finishes
-                                    duration: 2.0,
-                                    repeat: Infinity,
-                                    repeatDelay: 2.0, // Wait for input segment to restart
-                                    ease: "easeInOut",
-                                    times: [0, 0.05, 0.9, 1]
-                                  }}
-                                >
-                                  <Video className="w-5 h-5" style={{ color: '#a78bfa', filter: 'drop-shadow(0 0 5px #a78bfa)' }} />
-                                </motion.div>
-                              )}
-                            </div>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </div>
-
-                    {/* Capabilities */}
-                    <div className="mt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
-                      <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-3" style={{ color: 'rgba(6,182,212,0.5)' }}>Capabilities</p>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { label: 'Text-to-video generation', dot: '#06b6d4' },
-                          { label: 'Auto captions & subtitles', dot: '#a78bfa' },
-                          { label: '5 video templates', dot: '#3b82f6' },
-                          { label: 'Digital avatar mode', dot: '#6366f1' },
-                          { label: 'Voice synthesis', dot: '#38bdf8' },
-                          { label: 'One-click export', dot: '#06b6d4' },
-                        ].map((item, i) => (
-                          <div
-                            key={i}
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                            style={{
-                              background: 'rgba(255,255,255,0.04)',
-                              border: '1px solid rgba(255,255,255,0.1)',
-                            }}
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: item.dot }} />
-                            <span className="text-xs text-gray-300 font-medium whitespace-nowrap">{item.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
               </div>
 
-              {/* Bottom row */}
-              <div className="flex items-center gap-4 mt-6 pt-5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={onExploreTool}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white relative overflow-hidden"
-                  style={{ background: `linear-gradient(135deg, ${tool.accent}, ${tool.accent}bb)`, boxShadow: `0 4px 20px ${tool.accent}45` }}
-                >
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    animate={{ x: ['-150%', '150%'] }}
-                    transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1 }}
-                  />
-                  <span className="relative">Try it now</span>
-                  <ArrowRight className="w-4 h-4 relative" />
-                </motion.button>
+              {category.id === 'performance' ? (
+                <div className="flex-1 flex flex-col items-center justify-center relative">
+                  {/* Decorative Background Elements */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+                    <div className="w-[500px] h-[500px] bg-pink-500/10 rounded-full blur-[100px] animate-pulse" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-20">
+                      <div className="absolute top-[20%] left-[10%] w-32 h-20 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-sm" />
+                      <div className="absolute top-[30%] right-[15%] w-40 h-24 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-sm" />
+                      <div className="absolute bottom-[20%] left-[20%] w-48 h-32 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-sm" />
+                      <div className="absolute bottom-[25%] right-[10%] w-24 h-16 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-sm" />
+                    </div>
+                  </div>
 
-                {/* Dot indicators */}
-                <div className="flex gap-1.5">
-                  {SIDEBAR_TOOLS.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveTool(i)}
-                      className="rounded-full transition-all duration-300"
-                      style={{ width: activeTool === i ? 22 : 6, height: 6, background: activeTool === i ? tool.accent : 'rgba(255,255,255,0.15)' }}
-                    />
-                  ))}
+                  <div className="relative z-10 text-center px-6">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="mb-8"
+                    >
+                      <h4 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
+                        Unified Analytics Dashboard
+                      </h4>
+                      <p className="text-gray-400 max-w-lg mx-auto leading-relaxed text-lg font-medium opacity-80">
+                        The heartbeat of your content strategy. Track growth, revenue, and audience engagement across 12+ platforms in one stunning interface.
+                      </p>
+                    </motion.div>
+
+                    <motion.div 
+                      whileHover={{ scale: 1.05 }}
+                      className="inline-flex items-center px-8 py-3 rounded-full bg-gradient-to-r from-pink-500/20 to-rose-500/20 border border-pink-500/40 text-pink-300 font-bold text-sm tracking-widest uppercase shadow-[0_0_40px_-10px_rgba(236,72,153,0.5)]"
+                    >
+                      Coming Soon
+                    </motion.div>
+
+                    {/* Feature Pills */}
+                    <div className="mt-12 flex flex-wrap justify-center gap-3">
+                      {['Real-time Insights', 'ROI Tracking', 'Audience Demographics', 'Predictive Growth'].map((label, idx) => (
+                        <div key={idx} className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-gray-400 uppercase tracking-wider backdrop-blur-md">
+                          {label}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
+              ) : (
+                <>
+                  {category.tools.length > 1 && (
+                    <div className="flex gap-2 mb-8 p-1.5 rounded-2xl bg-black/20 self-start border border-white/5">
+                      {category.tools.map((t, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setActiveSubTool(idx)}
+                          className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 ${activeSubTool === idx ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}`}
+                        >
+                          {t.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex-1 flex flex-col md:flex-row gap-12">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/10">
+                          {React.createElement(activeToolData.icon, { className: 'w-5 h-5', style: { color: category.accent } })}
+                        </div>
+                      <h4 className="text-2xl font-black text-white">{activeToolData.name}</h4>
+                    </div>
+                    <div className="space-y-4">
+                      <p className="text-[11px] font-black tracking-[0.2em] text-cyan-400/80 uppercase">Key Capabilities</p>
+                        <div className="grid grid-cols-1 gap-3">
+                          {(toolFeatures[activeToolData.name] || []).map((f, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.1 }}
+                              className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-white/5 border border-white/5 group hover:border-white/10 transition-colors"
+                            >
+                              <div className="w-1.5 h-1.5 rounded-full" style={{ background: category.accent }} />
+                              <span className="text-xs text-gray-300 font-medium">{f}</span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 rounded-3xl bg-black/20 border border-white/5 p-8 flex items-center justify-center relative overflow-hidden group">
+                      <div className="absolute inset-0 opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity">
+                         <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: `radial-gradient(circle at center, ${category.accent} 0%, transparent 75%)` }} />
+                      </div>
+                      
+                      {activeToolData.name === 'Text to Speech' && (
+                        <div className="relative w-full aspect-video flex items-center justify-center">
+                          <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                            {[1, 2, 3].map((i) => (
+                              <motion.div
+                                key={i}
+                                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }}
+                                transition={{ duration: 3, repeat: Infinity, delay: i * 0.8 }}
+                                className="absolute rounded-full border border-cyan-500"
+                                style={{ width: i * 120, height: i * 120 }}
+                              />
+                            ))}
+                          </div>
+                          <div className="relative z-10 flex items-center gap-8">
+                            <motion.div
+                              animate={{ y: [0, -5, 0] }}
+                              transition={{ duration: 2, repeat: Infinity }}
+                              className="w-16 h-20 rounded-xl bg-white/5 border border-white/10 flex flex-col gap-2 p-3"
+                            >
+                              <div className="h-1.5 w-full bg-white/20 rounded-full" />
+                              <div className="h-1.5 w-2/3 bg-white/20 rounded-full" />
+                              <div className="h-1.5 w-3/4 bg-white/20 rounded-full" />
+                            </motion.div>
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1, repeat: Infinity }}
+                            >
+                              <ArrowRight className="w-6 h-6 text-cyan-500/50" />
+                            </motion.div>
+                            <div className="relative">
+                              <Mic className="w-12 h-12 text-cyan-400" />
+                              <div className="absolute -inset-4 border border-cyan-500/30 rounded-full animate-ping" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {activeToolData.name === 'Speech to Video' && (
+                        <div className="relative w-full aspect-video flex items-center justify-center gap-6">
+                           {/* Audio Waveform Side */}
+                           <motion.div 
+                             initial={{ opacity: 0, x: -20 }}
+                             animate={{ opacity: 1, x: 0 }}
+                             className="flex items-center gap-1"
+                           >
+                             {[...Array(5)].map((_, i) => (
+                               <motion.div
+                                 key={i}
+                                 animate={{ height: [10, 30 + Math.random() * 20, 10] }}
+                                 transition={{ 
+                                   duration: 1.5, 
+                                   repeat: Infinity, 
+                                   delay: i * 0.1,
+                                   ease: "easeInOut"
+                                 }}
+                                 className="w-1.5 bg-cyan-400 rounded-full"
+                               />
+                             ))}
+                           </motion.div>
+
+                           {/* Transformation Arrow */}
+                           <motion.div
+                             animate={{ x: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
+                             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                           >
+                             <ArrowRight className="w-6 h-6 text-blue-400" />
+                           </motion.div>
+
+                           {/* Video Result Side */}
+                           <div className="w-48 h-32 rounded-xl border border-white/10 bg-black/40 relative overflow-hidden flex flex-col">
+                              {/* Video Image/Scene */}
+                              <motion.div 
+                                animate={{ 
+                                  background: [
+                                    'linear-gradient(45deg, #0f172a, #1e293b)',
+                                    'linear-gradient(45deg, #1e293b, #0e7490)',
+                                    'linear-gradient(45deg, #0f172a, #1e293b)'
+                                  ]
+                                }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                className="flex-1 relative overflow-hidden flex items-center justify-center" 
+                              >
+                                <Video className="w-8 h-8 text-white/20" />
+                                {/* Scanning Effect */}
+                                <motion.div 
+                                  animate={{ y: ['-100%', '100%'] }}
+                                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                  className="absolute inset-x-0 h-1/2 bg-gradient-to-b from-transparent via-cyan-500/10 to-transparent"
+                                />
+                              </motion.div>
+                              
+                              {/* Video Controls / Timeline */}
+                              <div className="h-8 bg-[#0f172a]/80 border-t border-white/5 flex items-center px-3 gap-2 backdrop-blur-sm">
+                                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                                <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+                                  <motion.div 
+                                    animate={{ width: ['0%', '100%'] }} 
+                                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }} 
+                                    className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" 
+                                  />
+                                </div>
+                              </div>
+                           </div>
+                        </div>
+                      )}
+
+                      {activeToolData.name === 'Scribe' && (
+                        <div className="relative w-full aspect-video flex items-center justify-center bg-gradient-to-br from-[#0f172a] to-[#070b1f] rounded-[2rem] border border-white/5 overflow-hidden">
+                          {/* Background Grid */}
+                          <div className="absolute inset-0 opacity-10" 
+                            style={{ backgroundImage: 'radial-gradient(#22d3ee 0.5px, transparent 0.5px)', backgroundSize: '20px 20px' }} 
+                          />
+                          
+                          <div className="relative w-64 h-64 flex items-center justify-center">
+                            {/* Neural Network Pulse Rings */}
+                            {[1, 2, 3].map((i) => (
+                              <motion.div
+                                key={i}
+                                animate={{ 
+                                  scale: [1, 1.6],
+                                  opacity: [0.5, 0]
+                                }}
+                                transition={{ 
+                                  duration: 3, 
+                                  repeat: Infinity, 
+                                  delay: i * 1,
+                                  ease: "easeOut" 
+                                }}
+                                className="absolute rounded-full border border-cyan-500/30"
+                                style={{ width: 80, height: 80 }}
+                              />
+                            ))}
+
+                            {/* Center "Brain" Node */}
+                            <motion.div 
+                              animate={{ 
+                                boxShadow: ['0 0 20px rgba(34,211,238,0.2)', '0 0 40px rgba(34,211,238,0.5)', '0 0 20px rgba(34,211,238,0.2)']
+                              }}
+                              transition={{ duration: 2, repeat: Infinity }}
+                              className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center z-20 shadow-2xl relative"
+                            >
+                              <Zap className="w-10 h-10 text-white animate-pulse" />
+                              
+                              {/* Orbiting Data Particles */}
+                              {[...Array(6)].map((_, i) => (
+                                <motion.div
+                                  key={i}
+                                  animate={{ rotate: 360 }}
+                                  transition={{ 
+                                    duration: 4 + i, 
+                                    repeat: Infinity, 
+                                    ease: "linear" 
+                                  }}
+                                  className="absolute w-full h-full"
+                                >
+                                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-cyan-400 blur-[1px]" />
+                                </motion.div>
+                              ))}
+                            </motion.div>
+
+                            {/* Floating "Idea" Nodes being scanned */}
+                            {[
+                              { Icon: FileText, top: '15%', left: '20%' },
+                              { Icon: Video, top: '20%', right: '15%' },
+                              { Icon: Mic, bottom: '25%', left: '15%' },
+                              { Icon: Share2, bottom: '20%', right: '20%' }
+                            ].map((node, i) => (
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, scale: 0 }}
+                                animate={{ 
+                                  opacity: [0, 1, 0.4],
+                                  scale: [0.8, 1, 0.9],
+                                  y: [0, -10, 0]
+                                }}
+                                transition={{ 
+                                  duration: 4, 
+                                  repeat: Infinity, 
+                                  delay: i * 0.7,
+                                  ease: "easeInOut" 
+                                }}
+                                className="absolute p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm"
+                                style={{ top: node.top, left: node.left, right: node.right, bottom: node.bottom }}
+                              >
+                                <node.Icon className="w-5 h-5 text-gray-400" />
+                                
+                                {/* Scanning Laser Line */}
+                                <motion.div 
+                                  animate={{ x: ['-100%', '200%'] }}
+                                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+                                  className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent"
+                                />
+                              </motion.div>
+                            ))}
+                          </div>
+                          
+                          {/* Bottom Stats/Feedback overlay */}
+                          <div className="absolute bottom-6 left-6 right-6 flex justify-between gap-3">
+                            {['Analyzing Trends', 'Indexing Portfolio', 'Drafting Strategy'].map((text, i) => (
+                              <motion.div
+                                key={i}
+                                animate={{ opacity: [0.3, 1, 0.3] }}
+                                transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
+                                className="flex items-center gap-2"
+                              >
+                                <div className="w-1 h-1 rounded-full bg-cyan-500" />
+                                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{text}</span>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {activeToolData.name === 'Content Repurposer' && (
+                        <div className="flex flex-col items-center gap-6 w-full">
+                           <div className="relative">
+                              {/* Long form container */}
+                              <div className="w-64 h-32 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center relative">
+                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                                 <motion.div 
+                                   animate={{ x: [-100, 100] }}
+                                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                                   className="absolute h-full w-[2px] bg-pink-500/50"
+                                 />
+                                 <Video className="w-8 h-8 text-white/10" />
+                              </div>
+                              
+                              <motion.div 
+                                animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.1, 1] }}
+                                transition={{ duration: 1, repeat: Infinity }}
+                                className="absolute -bottom-4 right-1/2 translate-x-1/2 bg-pink-600 rounded-full p-2 shadow-xl border-2 border-white/20"
+                              >
+                                 <Scissors className="w-4 h-4 text-white" />
+                              </motion.div>
+                           </div>
+
+                           <div className="flex justify-center gap-3">
+                              {[1, 2, 3].map(i => (
+                                <motion.div
+                                  key={i}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: 1.5 + (i * 0.2), repeat: Infinity, repeatDelay: 3 }}
+                                  className="w-14 h-24 rounded-lg border border-pink-500/20 bg-pink-500/10 flex items-center justify-center"
+                                >
+                                  <Video className="w-4 h-4 text-pink-400/30" />
+                                </motion.div>
+                              ))}
+                           </div>
+                        </div>
+                      )}
+
+                      {activeToolData.name === 'Publisher' && (
+                        <div className="relative w-full aspect-video flex items-center justify-center">
+                           <div className="relative w-40 h-40 flex items-center justify-center">
+                              <motion.div 
+                                animate={{ scale: [1, 1.05, 1], rotate: [0, 5, -5, 0] }} 
+                                transition={{ duration: 4, repeat: Infinity }}
+                                className="w-20 h-20 rounded-2xl bg-blue-500/10 border border-blue-500/40 flex items-center justify-center z-10 shadow-[0_0_50px_-10px_rgba(59,130,246,0.3)] backdrop-blur-sm"
+                              >
+                                 <Share2 className="w-10 h-10 text-blue-400" />
+                              </motion.div>
+                              
+                              {[
+                                { Icon: Youtube, color: '#ff0000', angle: 0 },
+                                { Icon: Instagram, color: '#e4405f', angle: 90 },
+                                { Icon: ({ className, style }) => (
+                                  <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={style}>
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                  </svg>
+                                ), color: '#ffffff', angle: 180 },
+                                { Icon: Linkedin, color: '#0077b5', angle: 270 }
+                              ].map((item, i) => (
+                                <motion.div
+                                  key={i}
+                                  initial={{ opacity: 0, scale: 0 }}
+                                  animate={{ 
+                                    x: [0, Math.cos(item.angle * Math.PI / 180) * 80],
+                                    y: [0, Math.sin(item.angle * Math.PI / 180) * 80],
+                                    opacity: [0, 1, 0.8],
+                                    scale: [0.5, 1.2, 1]
+                                  }}
+                                  transition={{ duration: 3, repeat: Infinity, delay: i * 0.4 }}
+                                  className="absolute p-3 rounded-xl bg-white/5 border border-white/10"
+                                >
+                                   <item.Icon className="w-6 h-6" style={{ color: item.color }} />
+                                </motion.div>
+                              ))}
+                           </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="mt-12 flex items-center justify-between pt-8 border-t border-white/5">
+                <p className="text-xs text-gray-500 font-medium whitespace-nowrap">IncuBrix Creator Studio</p>
+                {category.id !== 'performance' && (
+                  <Button
+                    onClick={onExploreTool}
+                    className="bg-white hover:bg-gray-100 text-black px-10 py-6 rounded-2xl font-bold text-sm shadow-2xl flex items-center gap-2 group transition-all"
+                  >
+                    Explore {activeToolData.name}
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                )}
               </div>
             </div>
           </motion.div>
@@ -935,20 +707,9 @@ function ShowcaseCarousel({ cards }) {
         transition={{ duration: 0.7 }}
         className="text-center mb-8 px-6 relative z-10"
       >
-        <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-3 text-[11px] font-bold tracking-[0.18em] uppercase"
-          style={{
-            background: 'linear-gradient(135deg, rgba(6,182,212,0.12), rgba(59,130,246,0.1))',
-            boxShadow: 'inset 0 0 0 1px rgba(6,182,212,0.35)',
-            color: '#67e8f9',
-          }}
-        >
-          Platform in Action
-        </div>
-        <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-cyan-200 to-blue-300 bg-clip-text text-transparent">
+        <h2 className="text-3xl md:text-5xl font-extrabold bg-gradient-to-r from-white via-cyan-200 to-blue-300 bg-clip-text text-transparent tracking-tight">
           See IncuBrix in Action
         </h2>
-        <p className="text-gray-400 mt-1.5 text-sm">Four tools. One seamless content operation.</p>
       </motion.div>
 
       {/* Tab selectors */}
@@ -1137,11 +898,10 @@ export default function Home() {
   ];
 
   const contentFlow = [
-    { icon: Sparkles, label: 'Idea', color: 'from-cyan-400 to-cyan-600' },
-    { icon: FileText, label: 'Post', color: 'from-blue-400 to-blue-600' },
-    { icon: Video, label: 'Video', color: 'from-indigo-400 to-indigo-600' },
-    { icon: Mic, label: 'Podcast', color: 'from-purple-400 to-purple-600' },
-    { icon: Share2, label: 'Publish', color: 'from-cyan-400 to-cyan-600' }
+    { icon: Search, label: 'Get Content Insights', color: 'from-cyan-400 to-cyan-600' },
+    { icon: Sparkles, label: 'Create Content', color: 'from-blue-400 to-blue-600' },
+    { icon: Share2, label: 'Publish Everywhere', color: 'from-indigo-400 to-indigo-600' },
+    { icon: BarChart3, label: 'Track & Grow', color: 'from-purple-400 to-purple-600' }
   ];
 
   const creators = [
@@ -1213,20 +973,28 @@ export default function Home() {
               transition={{ delay: 0.1, duration: 0.8 }}
               className="flex justify-center mb-7"
             >
-              <span
-                className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold tracking-[0.2em] uppercase"
+              <div
+                className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-[11px] font-black tracking-[0.25em] uppercase relative overflow-hidden group transition-all duration-500"
                 style={{
                   background: theme === 'light'
-                    ? 'linear-gradient(135deg, rgba(6,182,212,0.1), rgba(99,102,241,0.08))'
-                    : 'linear-gradient(135deg, rgba(6,182,212,0.12), rgba(99,102,241,0.1))',
-                  border: theme === 'light' ? '1.5px solid rgba(6,182,212,0.5)' : '1px solid rgba(6,182,212,0.35)',
+                    ? 'rgba(255, 255, 255, 0.7)'
+                    : 'rgba(255, 255, 255, 0.03)',
+                  border: '1.5px solid rgba(34, 211, 238, 0.3)',
                   color: theme === 'light' ? '#0e7490' : '#67e8f9',
-                  boxShadow: theme === 'light' ? 'none' : '0 0 24px rgba(6,182,212,0.15)',
+                  backdropFilter: 'blur(12px)',
+                  boxShadow: theme === 'light' 
+                    ? '0 10px 25px -5px rgba(6, 182, 212, 0.1)' 
+                    : '0 20px 40px -15px rgba(0, 0, 0, 0.7)',
                 }}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
-                AI-Powered Creator Platform
-              </span>
+                {/* Subtle animated gradient background on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                
+
+
+                
+                <span className="relative z-10">CREATOR GROWTH PLATFORM</span>
+              </div>
             </motion.div>
 
             {/* Headline */}
@@ -1271,28 +1039,20 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.85, duration: 1 }}
             >
-              {/* Primary CTA: Join Free Beta */}
+              {/* Primary CTA: Start Your Journey */}
               <motion.div
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.95 }}
                 className="relative"
               >
-                <motion.div
-                  className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 blur-lg"
-                  animate={{ opacity: [0.4, 0.75, 0.4], scale: [1, 1.04, 1] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                />
+
                 <Button
                   onClick={handleBetaClick}
                   className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-5 text-base font-bold rounded-2xl shadow-2xl shadow-cyan-500/40 border border-cyan-300/30"
                 >
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
-                    animate={{ x: ['-200%', '200%'] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.5 }}
-                  />
+
                   <span className="relative flex items-center gap-2">
-                    Join Free Beta Access
+                    Start Your Journey
                   </span>
                 </Button>
               </motion.div>
@@ -1312,20 +1072,7 @@ export default function Home() {
         </div>
 
 
-        {/* Scroll Indicator */}
-        <motion.div
-          className="flex justify-center mt-8"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className="w-6 h-10 border-2 border-cyan-500/30 rounded-full flex justify-center pt-2">
-            <motion.div
-              className="w-1.5 h-1.5 bg-cyan-400 rounded-full"
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-        </motion.div>
+
       </section>
 
       {/* Sidebar Tools Panel */}
@@ -1335,45 +1082,43 @@ export default function Home() {
       {(() => {
         const showcaseCards = [
           {
-            badge: 'TEXT TO SPEECH',
-            accent: '#06b6d4',
-            title: 'Turn Words into Voices & Videos',
-            caption: 'Paste a script — get a studio-quality voiceover and an auto-generated video in minutes.',
-            img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=900&q=85',
-            imgAlt: 'Professional podcasting microphone in a recording studio',
-          },
-          {
-            badge: 'DASHBOARD',
-            accent: '#38bdf8',
-            title: 'All Your Metrics, One View',
-            caption: 'Track reach, engagement, and growth across every platform — no tab-switching required.',
-            img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=85',
-            imgAlt: 'Analytics dashboard with charts and performance metrics',
-          },
-          {
-            badge: 'SCRIBE',
-            accent: '#c084fc',
+            badge: 'CONTENT INSIGHTS',
+            accent: '#c084fc', // purple from Scribe
             title: 'Your AI Editorial Brain',
-            caption: 'Scribe scans your content portfolio, surfaces gaps, and auto-plans your next 2 weeks.',
+            caption: 'Scan your content portfolio, surface gaps, and auto-plan your content strategy with deep intelligence.',
             img: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=900&q=85',
             imgAlt: 'Content creator working on a laptop with a content calendar',
           },
           {
-            badge: 'PUBLISHER',
-            accent: '#fb7185',
+            badge: 'CONTENT CREATION',
+            accent: '#06b6d4', // cyan from Text to Voice
+            title: 'Turn Words into Voices & Videos',
+            caption: 'From studio-quality AI voiceovers to automated social videos, create highly-engaging content in minutes.',
+            img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=900&q=85',
+            imgAlt: 'Professional podcasting microphone in a recording studio',
+          },
+          {
+            badge: 'CONTENT PUBLISHING',
+            accent: '#fb7185', // pink from Publisher
             title: 'One Click, Every Platform',
-            caption: 'Hit publish once — LinkedIn, YouTube, Instagram, and more all go live simultaneously.',
+            caption: 'Hit publish once — LinkedIn, YouTube, Instagram, and more all go live simultaneously to maximize reach.',
             img: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=900&q=85',
             imgAlt: 'Social media multi-platform publishing on a phone and laptop',
+          },
+          {
+            badge: 'CONTENT PERFORMANCE',
+            accent: '#38bdf8', // blue from Dashboard
+            title: 'All Your Metrics, One View',
+            caption: 'Track reach, engagement, and growth across every platform with unified analytics — no tab-switching required.',
+            img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=85',
+            imgAlt: 'Analytics dashboard with charts and performance metrics',
           },
         ];
         return <ShowcaseCarousel cards={showcaseCards} />;
       })()}
 
-      {/* Content Flow — static, always-visible workflow strip */}
-      <div className={`py-7 relative border-y transition-colors duration-300 ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-[#07091c] border-white/5'
-        }`}>
-        <div className="max-w-3xl mx-auto px-6 flex items-center justify-center gap-3 flex-wrap">
+      <div className={`py-10 relative border-y transition-colors duration-300 ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-[#07091c] border-white/5'}`}>
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-center gap-4 flex-nowrap overflow-x-auto no-scrollbar scroll-smooth">
           {contentFlow.map((item, idx) => {
             const Icon = item.icon;
             const iconColor = item.color.includes('cyan') ? '#06b6d4'
@@ -1389,32 +1134,39 @@ export default function Home() {
             return (
               <React.Fragment key={idx}>
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  whileHover={{ y: -4, scale: 1.02 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: idx * 0.1 }}
-                  className="flex items-center gap-2.5 px-4 py-2 rounded-full shrink-0"
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className="flex items-center gap-3 px-6 py-3.5 rounded-2xl shrink-0 cursor-default group"
                   style={{
-                    background: theme === 'light' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.05)',
-                    border: theme === 'light' ? '1px solid rgba(0,0,0,0.1)' : '1px solid rgba(255,255,255,0.1)'
+                    background: theme === 'light' ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.03)',
+                    border: theme === 'light' ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)',
+                    boxShadow: theme === 'light' ? '0 4px 6px -1px rgba(0,0,0,0.05)' : '0 10px 30px -10px rgba(0,0,0,0.5)',
+                    backdropFilter: 'blur(8px)'
                   }}
                 >
                   <div
-                    className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: `${bgColor}25` }}
+                    className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:rotate-12"
+                    style={{ background: `${bgColor}20` }}
                   >
-                    <Icon className="w-3.5 h-3.5" style={{ color: iconColor }} />
+                    <Icon className="w-4 h-4" style={{ color: iconColor }} />
                   </div>
-                  <span className={`text-sm font-semibold ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'}`}>{item.label}</span>
+                  <span className={`text-[15px] font-bold tracking-tight ${theme === 'light' ? 'text-gray-800' : 'text-gray-100'}`}>
+                    {item.label}
+                  </span>
                 </motion.div>
                 {idx < contentFlow.length - 1 && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: idx * 0.1 + 0.05 }}
-                    className={`text-base shrink-0 select-none ${theme === 'light' ? 'text-gray-400' : 'text-gray-600'}`}
-                  >→</motion.span>
+                    transition={{ duration: 0.5, delay: idx * 0.1 + 0.2 }}
+                    className={`flex items-center text-xl font-light ${theme === 'light' ? 'text-gray-300' : 'text-gray-700'}`}
+                  >
+                    <ArrowRight className="w-5 h-5 opacity-40" />
+                  </motion.div>
                 )}
               </React.Fragment>
             );
@@ -1460,31 +1212,40 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
-                whileHover={{ y: -10 }}
-                className="group relative rounded-[2rem] overflow-hidden cursor-pointer h-[320px] sm:h-[400px] lg:h-[450px] shadow-2xl"
+                whileHover={item.comingSoon ? {} : { y: -10 }}
+                className={`${!item.comingSoon ? "group " : ""}relative rounded-[2rem] overflow-hidden ${!item.comingSoon ? "cursor-pointer" : "cursor-default border border-white/5 opacity-90"} h-[320px] sm:h-[400px] lg:h-[450px] shadow-2xl`}
               >
                 {/* Background Image with Parallax-like effect */}
                 <motion.img
                   src={item.img}
                   alt={item.type}
-                  className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-125"
+                  className={`absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 ${!item.comingSoon ? "group-hover:scale-125" : ""}`}
                 />
+
+                {/* Coming Soon Badge */}
+                {item.comingSoon && (
+                  <div className="absolute top-6 right-6 z-20">
+                    <span className="px-4 py-2 rounded-xl bg-white text-black text-xs font-black uppercase tracking-widest shadow-2xl">
+                      Coming Soon
+                    </span>
+                  </div>
+                )}
 
                 {/* Multi-layered Overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-40 transition-opacity duration-700 mix-blend-overlay`} />
 
                 {/* Animated Border Glow */}
-                <div className="absolute inset-0 rounded-[2rem] border border-white/10 group-hover:border-white/30 transition-colors duration-500" />
+                <div className={`absolute inset-0 rounded-[2rem] border border-white/10 ${!item.comingSoon ? "group-hover:border-white/30" : ""} transition-colors duration-500`} />
 
                 <div className="absolute inset-0 p-8 flex flex-col justify-end">
                   <motion.div
-                    className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-2xl group-hover:shadow-white/20 transition-all duration-500 group-hover:-translate-y-2`}
+                    className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-2xl ${!item.comingSoon ? "group-hover:shadow-white/20 group-hover:-translate-y-2" : ""} transition-all duration-500`}
                   >
                     <item.icon className="w-7 h-7 text-white" />
                   </motion.div>
 
-                  <h3 className="text-2xl font-black text-white mb-2 tracking-tight group-hover:text-cyan-400 transition-colors duration-300">
+                  <h3 className={`text-2xl font-black text-white mb-2 tracking-tight ${!item.comingSoon ? "group-hover:text-cyan-400" : ""} transition-colors duration-300`}>
                     {item.type}
                   </h3>
 

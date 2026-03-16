@@ -126,7 +126,7 @@ export default function NeedHelp() {
     },
     {
       question: "What platforms does IncuBrix integrate with?",
-      answer: "IncuBrix currently integrates with LinkedIn, YouTube, podcasts, and newsletters. We're actively working on adding support for Twitter/X, Instagram, TikTok, and Medium in our upcoming releases."
+      answer: "IncuBrix currently integrates with LinkedIn, YouTube, podcasts, and newsletters. We're actively working on adding support for X, Instagram, TikTok, and Medium in our upcoming releases."
     },
     {
       question: "Can I schedule a live demo?",

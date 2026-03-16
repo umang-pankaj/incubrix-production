@@ -29,7 +29,7 @@ export default function FAQ() {
       questions: [
         {
           q: 'Which platforms does IncuBrix support?',
-          a: 'We currently support LinkedIn, YouTube, podcasts, newsletters, and blogs. We\'re constantly adding new platforms based on user feedback. Instagram, Twitter/X, and TikTok support is coming soon.'
+          a: 'We currently support LinkedIn, YouTube, podcasts, newsletters, and blogs. We\'re constantly adding new platforms based on user feedback. Instagram, X, and TikTok support is coming soon.'
         },
         {
           q: 'How does the AI content generation work?',

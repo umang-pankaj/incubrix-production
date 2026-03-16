@@ -51,7 +51,7 @@ export default function Dashboard() {
               <h3 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{tool.title}</h3>
               <p className={`mb-4 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{tool.desc}</p>
               <Button variant="ghost" className="text-cyan-500 hover:text-cyan-400 p-0 font-semibold text-sm">
-                Get Started →
+                Start Your Journey →
               </Button>
             </Card>
           ))}

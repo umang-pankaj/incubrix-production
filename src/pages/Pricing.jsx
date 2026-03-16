@@ -41,7 +41,7 @@ export default function Pricing() {
         'Watermarked exports',
         '1 Concurrency'
       ],
-      cta: 'Get Started',
+      cta: 'Start Your Journey',
       popular: false
     },
     {
@@ -300,20 +300,24 @@ export default function Pricing() {
           <div className="space-y-6">
             {[
               {
-                q: 'Can I switch plans anytime?',
-                a: 'Yes! You can upgrade, downgrade, or cancel your plan at any time.'
+                q: 'Do we offer a free trial?',
+                a: <>We do not offer free trials for paid plans. However, <span className="text-white font-bold">we offer a Free plan</span> for exploring the platform. Once the limits of the free plan are exhausted, we provide options to upgrade to a paid plan to continue using the services.</>
               },
               {
-                q: 'Is there a free trial?',
-                a: 'Yes, all paid plans come with a 14-day free trial. No credit card required.'
+                q: 'Can I upgrade or downgrade my plan?',
+                a: <><span className="text-white font-bold">We support plan upgrades anytime</span> when higher limits or additional capabilities are required. Downgrading plans is currently not supported once a paid plan has been activated.</>
               },
               {
-                q: 'What payment methods do you accept?',
-                a: 'We accept all major credit cards, PayPal, and wire transfers for enterprise plans.'
+                q: 'Is there a monthly usage limit?',
+                a: <>No. There are <span className="text-white font-bold">no monthly limits</span>. We allow the usage limits provided in each plan to be used <span className="text-white font-bold">within a 1-year period</span>, giving flexibility to utilize them based on the workflow.</>
               },
               {
-                q: 'Do you offer refunds?',
-                a: 'Yes, we offer a 30-day money-back guarantee on all plans.'
+                q: 'What payment methods do we accept?',
+                a: <>All payments are processed through <span className="text-white font-bold">Stripe</span>, our secure payment partner. We support all payment methods accepted by Stripe, such as major credit or debit cards depending on the region.</>
+              },
+              {
+                q: 'Do we offer refunds?',
+                a: <>We do not offer refunds for completed purchases. Refunds are only processed in cases where there is a <span className="text-white font-bold">technical payment issue</span>, such as duplicate or incorrect deductions. These refunds are handled according to the policies of our payment partner, Stripe.</>
               }
             ].map((faq, idx) => (
               <Card

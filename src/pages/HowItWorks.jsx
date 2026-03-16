@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -16,11 +16,19 @@ import {
   Clock,
   Share2
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useScroll } from 'framer-motion';
 import ScheduleDemoModal from '../components/ScheduleDemoModal';
 
 export default function HowItWorks() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const containerRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end center"]
+  });
+
+  const scaleY = scrollYProgress;
 
   const steps = [
     {
@@ -74,7 +82,8 @@ export default function HowItWorks() {
         'Get insights to improve future content'
       ],
       gradient: 'from-purple-500 to-pink-500',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80'
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80',
+      comingSoon: true
     }
   ];
 
@@ -140,111 +149,144 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* Process Steps */}
-      <section className="py-12 px-6 bg-[#0a0e27] relative overflow-hidden">
+      {/* Process Steps Timeline */}
+      <section className="py-16 px-6 bg-[#0a0e27] relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-1/4 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-[100px]" />
           <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px]" />
         </div>
 
-        <div className="max-w-6xl mx-auto space-y-32 relative z-10">
-          {steps.map((item, idx) => (
-            <motion.div
-              key={idx}
-              className={`flex flex-col ${idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-8 items-center`}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              {/* Content */}
+        <div ref={containerRef} className="max-w-6xl mx-auto relative z-10 py-12">
+          {/* Vertical Center Line Background */}
+          <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-[2px] bg-slate-800/40 transform -translate-x-1/2" />
+          
+          {/* Animated Vertical Center Line Foreground */}
+          <motion.div 
+            className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-cyan-500 via-indigo-500 to-purple-500 transform -translate-x-1/2 origin-top"
+            style={{ scaleY }}
+          />
+
+          <div className="space-y-24 md:space-y-32">
+            {steps.map((item, idx) => (
               <motion.div
-                className="flex-1"
-                initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.3 }}
+                key={idx}
+                className={`relative flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-24 ${item.comingSoon ? 'opacity-70 grayscale-[0.5] pointer-events-none select-none' : ''}`}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.8, delay: 0.1 }}
               >
-                <div className="flex items-center gap-4 mb-6">
-                  <motion.div
-                    className={`w-16 h-16 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/50`}
-                    whileHover={{ rotate: 360, scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <item.icon className="w-8 h-8 text-white" />
-                  </motion.div>
-                  <div>
+                {/* Center Node Badge Animated (lg only) */}
+                <motion.div 
+                  className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 z-20 w-14 h-14 rounded-full border-4 items-center justify-center transition-colors duration-500"
+                  initial={{ backgroundColor: '#1e293b', borderColor: '#0f172a', color: '#64748b' }}
+                  whileInView={{ backgroundColor: '#4f46e5', borderColor: '#818cf8', color: '#ffffff', boxShadow: '0 0 20px rgba(79,70,229,0.6)' }}
+                  viewport={{ once: false, margin: "100% 0px -50% 0px" }}
+                >
+                  <span className="text-xl font-bold">{item.step}</span>
+                </motion.div>
+
+                {/* Content Block */}
+                <motion.div
+                  className={`flex-1 w-full lg:w-1/2 flex flex-col ${idx % 2 === 0 ? 'lg:items-end lg:text-right lg:pr-12 order-2 lg:order-1' : 'lg:items-start lg:text-left lg:pl-12 order-2 lg:order-2'}`}
+                  initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                >
+                  <div className={`flex items-center gap-4 mb-6 ${idx % 2 === 0 ? 'lg:flex-row-reverse' : 'flex-row'}`}>
                     <motion.div
-                      className="text-sm text-cyan-400 font-semibold"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.4 }}
+                      className={`w-14 h-14 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30 flex-shrink-0`}
+                      whileHover={{ rotate: 360, scale: 1.1 }}
+                      transition={{ duration: 0.6 }}
                     >
-                      STEP {item.step}
+                      <item.icon className="w-7 h-7 text-white" />
                     </motion.div>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-                      {item.title}
-                    </h2>
-                  </div>
-                </div>
-
-                <p className="text-lg text-gray-300 mb-6">{item.description}</p>
-
-                <ul className="space-y-3">
-                  {item.features.map((feature, featureIdx) => (
-                    <motion.li
-                      key={featureIdx}
-                      className="flex items-start gap-3"
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.5 + featureIdx * 0.1 }}
-                    >
-                      <CheckCircle2 className="w-5 h-5 text-cyan-400 mt-1 flex-shrink-0" />
-                      <span className="text-gray-300">{feature}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </motion.div>
-
-              {/* Visual with Image */}
-              <motion.div
-                className="flex-1"
-                initial={{ opacity: 0, x: idx % 2 === 0 ? 50 : -50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-              >
-                <div className="relative group">
-                  <motion.div
-                    className={`absolute -inset-4 bg-gradient-to-br ${item.gradient} rounded-2xl blur-xl opacity-30 group-hover:opacity-50`}
-                    animate={{ opacity: [0.3, 0.5, 0.3] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  />
-                  <Card className="bg-gradient-to-br from-[#151d45] to-[#0f1535] border-cyan-500/30 overflow-hidden relative z-10 group-hover:border-cyan-500/60 transition-all">
-                    <div className="aspect-video relative overflow-hidden">
-                      <motion.img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.5 }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#151d45] via-transparent to-transparent" />
-                      <motion.div
-                        className={`absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-br ${item.gradient} rounded-xl flex items-center justify-center shadow-lg`}
-                        whileHover={{ rotate: 360 }}
-                        transition={{ duration: 0.6 }}
-                      >
-                        <item.icon className="w-6 h-6 text-white" />
-                      </motion.div>
+                    
+                    {/* Mobile Step Badge (visible md and down) */}
+                    <div className="lg:hidden flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/30">
+                      {item.step}
                     </div>
-                  </Card>
-                </div>
+
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                      <h2 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                        {item.title}
+                      </h2>
+                      {item.comingSoon && (
+                        <span className="px-3 py-1 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-full shadow-lg">
+                          Coming Soon
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {idx % 2 === 0 ? (
+                    <div className="w-full lg:w-3/4 mx-0 lg:ml-auto h-px bg-gradient-to-l from-cyan-500/50 to-transparent mb-6" />
+                  ) : (
+                    <div className="w-full lg:w-3/4 mr-auto h-px bg-gradient-to-r from-cyan-500/50 to-transparent mb-6" />
+                  )}
+
+                  <p className="text-lg text-gray-400 mb-8 max-w-lg">{item.description}</p>
+
+                  <ul className={`space-y-4 mb-8 max-w-lg ${idx % 2 === 0 ? 'lg:mr-auto lg:ml-auto lg:text-right' : ''}`}>
+                    {item.features.map((feature, featureIdx) => (
+                      <motion.li
+                        key={featureIdx}
+                        className={`flex items-center gap-3 ${idx % 2 === 0 ? 'lg:flex-row-reverse' : 'flex-row'}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4 + featureIdx * 0.1 }}
+                      >
+                        <div className="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                          <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+                        </div>
+                        <span className="text-gray-300 font-medium">{feature}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+
+                  <a 
+                    href="#demo"
+                    className="group inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-semibold transition-colors text-lg"
+                  >
+                    See how it works 
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                </motion.div>
+
+                {/* Visual Block */}
+                <motion.div
+                  className={`flex-1 w-full lg:w-1/2 ${idx % 2 === 0 ? 'order-1 lg:order-2' : 'order-1 lg:order-1'}`}
+                  initial={{ opacity: 0, x: idx % 2 === 0 ? 50 : -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                >
+                  <div className="relative group mx-auto max-w-xl">
+                    <motion.div
+                      className={`absolute -inset-4 bg-gradient-to-br ${item.gradient} rounded-[2rem] blur-2xl opacity-20 group-hover:opacity-40`}
+                      animate={{ opacity: [0.2, 0.4, 0.2] }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    />
+                    <Card className="bg-[#151d45]/80 backdrop-blur-sm border-cyan-500/20 overflow-hidden relative z-10 group-hover:border-cyan-500/50 transition-all rounded-[1.5rem] p-3 shadow-2xl">
+                      <div className="aspect-[4/3] lg:aspect-[16/10] relative overflow-hidden rounded-xl border border-white/5">
+                        <motion.img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.7 }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#151d45]/80 via-[#151d45]/20 to-transparent" />
+                      </div>
+                    </Card>
+                  </div>
+                </motion.div>
+
               </motion.div>
-            </motion.div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 

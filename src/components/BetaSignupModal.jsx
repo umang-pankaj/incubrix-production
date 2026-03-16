@@ -333,13 +333,13 @@ export default function BetaSignupModal({ isOpen, onClose, onSuccess }) {
                                 <DialogTitle className="text-2xl font-bold text-white leading-snug">
                                     {success
                                         ? <>Welcome to the Future<br />of Content Creation.</>
-                                        : <>Be Among the First<br />100 Creators.</>}
+                                        : <>Elevate Your<br />Creative Impact.</>}
                                 </DialogTitle>
                             </div>
                             <DialogDescription className="text-gray-400 text-base">
                                 {success
                                     ? "You're officially part of something special. We'll be in touch soon."
-                                    : "Get early access to the AI platform built for serious content creators — before the world does."}
+                                    : "Join the next generation of creators scaling their reach and influence with IncuBrix."}
                             </DialogDescription>
                         </DialogHeader>
                     </div>
@@ -585,14 +585,12 @@ export default function BetaSignupModal({ isOpen, onClose, onSuccess }) {
                                             Submitting...
                                         </>
                                     ) : (
-                                        'Join Free Beta Access'
+                                        'Submit'
                                     )}
                                 </Button>
                             </motion.div>
 
-                            <p className="text-center text-xs text-gray-500">
-                                Limited to 100 early users. No credit card required.
-                            </p>
+
                         </form>
                     )}
                 </div>

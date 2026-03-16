@@ -6,7 +6,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/umang-incubrix/30min';
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/indubrix-demo/30min';
 
 export default function ScheduleDemoModal({ isOpen, onClose }) {
     return (

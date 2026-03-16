@@ -70,6 +70,13 @@
     zoom: 0.8;
     /* Replicate 80% zoom level globally */
   }
+
+  @media (min-width: 1024px) {
+    body {
+      zoom: 0.72;
+      /* Reduced desktop size by 10% from 0.8 */
+    }
+  }
 }
 
 /* Light mode: override hardcoded dark utility classes on the nav */

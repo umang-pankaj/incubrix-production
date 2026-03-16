@@ -111,51 +111,73 @@ export default function About() {
       icon: Lightbulb,
       color: 'from-amber-400 to-orange-500',
       desc: 'Build authority through consistent expert content',
-      img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80'
+      img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+      comingSoon: false
     },
     {
       type: 'Podcasters',
       icon: Mic,
       color: 'from-purple-400 to-pink-500',
       desc: 'Repurpose episodes into clips, posts & articles',
-      img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80'
+      img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80',
+      comingSoon: false
     },
     {
       type: 'Coaches',
       icon: Target,
       color: 'from-cyan-400 to-blue-500',
       desc: 'Scale your reach without scaling your workload',
-      img: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80'
+      img: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600&q=80',
+      comingSoon: true
     },
     {
       type: 'Consultants',
       icon: Briefcase,
       color: 'from-emerald-400 to-teal-500',
       desc: 'Build a personal brand while running your business',
-      img: 'https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=600&q=80'
+      img: 'https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=600&q=80',
+      comingSoon: true
     },
     {
       type: 'Founders',
       icon: Monitor,
       color: 'from-blue-400 to-indigo-500',
       desc: 'Document your journey and build in public',
-      img: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=600&q=80'
+      img: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?w=600&q=80',
+      comingSoon: true
     },
     {
       type: 'Content Creators',
       icon: PenTool,
       color: 'from-rose-400 to-red-500',
       desc: 'Create more in less time across every platform',
-      img: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=600&q=80'
+      img: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=600&q=80',
+      comingSoon: true
     }
   ];
+
+  const SpotifyIcon = ({ className }) => (
+    <div className={`${className} bg-[#1DB954] rounded-full p-1 flex items-center justify-center`}>
+      <svg viewBox="0 0 24 24" fill="black" className="w-full h-full">
+        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+      </svg>
+    </div>
+  );
+
+  const ApplePodcastsIcon = ({ className }) => (
+    <div className={`${className} bg-gradient-to-br from-[#A254F2] to-[#8025E6] rounded-xl p-1.5 flex items-center justify-center`}>
+      <svg viewBox="0 0 24 24" fill="white" className="w-full h-full">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.06 14.19c-1.31.25-2.61.12-3.84-.28-.51-.17-1.03-.43-1.51-.76-.84-.57-1.46-1.36-1.81-2.26-.37-.96-.44-2-.22-3.02.26-1.19.86-2.27 1.72-3.11.83-.8 1.84-1.37 2.94-1.63 1.25-.29 2.53-.29 3.77-.02.66.14 1.29.38 1.88.72.63.36 1.18.82 1.63 1.38.74.92 1.17 2.05 1.21 3.23v.97h-6.72c-.08 1.05.34 1.86.99 2.51.7.7 1.61 1.03 2.58.9.89-.12 1.65-.62 2.1-1.38l1.37.58c-.6 1.02-1.56 1.76-2.68 2.02l-.51.15zM7.28 10.9h4.86c0-1.18-.73-2.09-1.92-2.33-.8-.16-1.61-.06-2.28.42-.51.37-.81.99-.81 1.63v.28h.15z"/>
+      </svg>
+    </div>
+  );
 
   const platforms = [
     { name: 'LinkedIn', icon: Linkedin, color: '#0077B5' },
     { name: 'YouTube', icon: Youtube, color: '#FF0000' },
     { name: 'Instagram', icon: Instagram, color: '#E4405F' },
-    { name: 'Spotify', icon: Music, color: '#1DB954' },
-    { name: 'Apple Podcasts', icon: Video, color: '#A2AAAD' }
+    { name: 'Spotify', icon: SpotifyIcon, color: '#1DB954' },
+    { name: 'Apple Podcasts', icon: ApplePodcastsIcon, color: '#A2AAAD' }
   ];
 
   return (
@@ -331,17 +353,17 @@ export default function About() {
 
       {/* Why IncuBrix Exists */}
       <section className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-red-500/5 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
+            className="text-center mb-20"
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
             <motion.span
-              className="inline-block px-4 py-1.5 mb-6 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold uppercase tracking-[0.3em]"
+              className="inline-block px-4 py-1.5 mb-6 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold uppercase tracking-[0.3em]"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -349,7 +371,7 @@ export default function About() {
               The Creator's Dilemma
             </motion.span>
             <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-white">
-              Why <span className="text-red-500">IncuBrix</span> Exists
+              Why <span className="text-cyan-400">IncuBrix</span> Exists
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">Traditional content creation is broken. We're here to fix it.</p>
           </motion.div>
@@ -426,10 +448,10 @@ export default function About() {
                   {/* Decorative corner glow */}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
+                  {/* Coming Soon Badge */}
                   {feature.comingSoon && (
                     <div className="absolute top-6 right-6 z-20">
-                      <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-[10px] font-black uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 backdrop-blur-md">
-                        <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                      <span className="px-4 py-2 rounded-xl bg-white text-black text-xs font-black uppercase tracking-widest shadow-2xl">
                         Coming Soon
                       </span>
                     </div>
@@ -457,13 +479,6 @@ export default function About() {
                     {feature.description}
                   </p>
 
-                  <div className="mt-8 pt-6 border-t border-white/5 w-full">
-                    <motion.div
-                      className="inline-flex items-center text-cyan-400 text-sm font-bold opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 cursor-pointer hover:text-cyan-300"
-                    >
-                      Learn more <ArrowRight className="ml-2 w-4 h-4" />
-                    </motion.div>
-                  </div>
                 </div>
               </motion.div>
             ))}
@@ -504,13 +519,13 @@ export default function About() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 relative">
             {/* Animated Connection Line for Desktop */}
-            <div className="hidden lg:block absolute top-[70px] left-[10%] right-[10%] z-0">
+            <div className="hidden lg:block absolute top-[60px] left-[12%] right-[12%] z-0">
               <svg width="100%" height="2" viewBox="0 0 1000 2" fill="none" preserveAspectRatio="none">
                 <motion.path
                   d="M0 1H1000"
                   stroke="url(#lineGradient)"
-                  strokeWidth="2"
-                  strokeDasharray="8 8"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 6"
                   initial={{ strokeDashoffset: 1000 }}
                   whileInView={{ strokeDashoffset: 0 }}
                   viewport={{ once: true }}
@@ -519,7 +534,7 @@ export default function About() {
                 <defs>
                   <linearGradient id="lineGradient" x1="0" y1="0" x2="1000" y2="0" gradientUnits="userSpaceOnUse">
                     <stop stopColor="rgba(34, 211, 238, 0)" />
-                    <stop offset="0.5" stopColor="rgba(34, 211, 238, 0.5)" />
+                    <stop offset="0.5" stopColor="rgba(34, 211, 238, 0.6)" />
                     <stop offset="1" stopColor="rgba(34, 211, 238, 0)" />
                   </linearGradient>
                 </defs>
@@ -529,71 +544,44 @@ export default function About() {
             {howItWorks.map((step, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: idx * 0.15 }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
                 className="relative z-10 group"
               >
                 <div className="flex flex-col items-center">
-                  <div className="relative mb-10">
-                    {/* Animated Outer Glow Ring */}
+                  <div className="relative mb-8">
+                    {/* Simplified Background Container */}
                     <motion.div
-                      className="absolute -inset-4 rounded-full bg-cyan-500/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                    />
-
-                    <motion.div
-                      className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-[#1a234e] to-[#0a0e27] border border-cyan-500/20 flex items-center justify-center relative shadow-[0_0_50px_rgba(0,0,0,0.5)] group-hover:border-cyan-400/50 transition-all duration-500 overflow-hidden"
-                      whileHover={{ y: -10, rotate: idx % 2 === 0 ? 5 : -5 }}
+                      className="w-28 h-28 rounded-3xl bg-[#151d45]/40 backdrop-blur-md border border-white/10 flex items-center justify-center relative shadow-2xl transition-all duration-500 group-hover:border-cyan-500/30 group-hover:bg-[#151d45]/60"
+                      whileHover={{ y: -8 }}
                     >
-                      {/* Internal Animated Shine */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-tr from-transparent via-cyan-400/10 to-transparent"
-                        animate={{ x: ['-200%', '200%'] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
-                      />
-
-                      <step.icon className="w-12 h-12 text-cyan-400 group-hover:text-cyan-300 transition-colors relative z-10" />
-
-                      {/* Floating Step Badge */}
-                      <motion.div
-                        className="absolute -top-2 -right-2 w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 text-white flex items-center justify-center font-black text-lg shadow-xl shadow-cyan-500/40 z-20"
-                        initial={{ rotate: 15 }}
-                        whileHover={{ rotate: 0, scale: 1.1 }}
-                      >
+                      {/* Floating Step Badge - Corner Pill Style */}
+                      <div className="absolute -top-3 -right-3 px-3 py-1 rounded-full bg-[#0ea5e9] text-white font-black text-[10px] tracking-tighter shadow-lg shadow-cyan-500/40 z-20">
                         {step.step}
-                      </motion.div>
+                      </div>
+
+                      <step.icon className="w-10 h-10 text-cyan-400 group-hover:scale-110 transition-transform duration-500" />
                     </motion.div>
+
+                    {/* Subtle Glow beneath */}
+                    <div className="absolute inset-0 bg-cyan-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
                   </div>
 
-                  <motion.h3
-                    className="text-2xl font-black mb-4 text-white tracking-tight group-hover:text-cyan-400 transition-colors text-center"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: idx * 0.15 + 0.3 }}
-                  >
+                  <h3 className="text-xl font-bold mb-3 text-white tracking-tight group-hover:text-cyan-400 transition-colors text-center">
                     {step.title}
-                  </motion.h3>
+                  </h3>
 
-                  <motion.div
-                    className="max-w-[260px] text-center"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: idx * 0.15 + 0.4 }}
-                  >
-                    <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-200 transition-colors">
+                  <div className="max-w-[240px] text-center">
+                    <p className="text-gray-400 text-xs leading-relaxed group-hover:text-gray-300 transition-colors">
                       {step.description}
                     </p>
-                  </motion.div>
+                  </div>
 
                   {step.comingSoon && (
-                    <div className={`mt-6 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.1)]`}>
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-400 flex items-center gap-1.5">
-                        <div className="w-1 h-1 rounded-full bg-cyan-400 animate-pulse" />
-                        Coming Soon
-                      </span>
+                    <div className="mt-5 px-3 py-1 rounded-full bg-cyan-500/5 border border-cyan-500/20">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-cyan-500/80">Coming Soon</span>
                     </div>
                   )}
                 </div>
@@ -764,31 +752,40 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
-                whileHover={{ y: -10 }}
-                className="group relative rounded-[2rem] overflow-hidden cursor-pointer h-[320px] sm:h-[400px] lg:h-[450px] shadow-2xl"
+                whileHover={item.comingSoon ? {} : { y: -10 }}
+                className={`${!item.comingSoon ? "group " : ""}relative rounded-[2rem] overflow-hidden ${!item.comingSoon ? "cursor-pointer" : "cursor-default border border-white/5 opacity-90"} h-[320px] sm:h-[400px] lg:h-[450px] shadow-2xl`}
               >
                 {/* Background Image with Parallax-like effect */}
                 <motion.img
                   src={item.img}
                   alt={item.type}
-                  className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-125"
+                  className={`absolute inset-0 w-full h-full object-cover object-center transition-transform duration-1000 ${!item.comingSoon ? "group-hover:scale-125" : ""}`}
                 />
+
+                {/* Coming Soon Badge */}
+                {item.comingSoon && (
+                  <div className="absolute top-6 right-6 z-20">
+                    <span className="px-4 py-2 rounded-xl bg-white text-black text-xs font-black uppercase tracking-widest shadow-2xl">
+                      Coming Soon
+                    </span>
+                  </div>
+                )}
 
                 {/* Multi-layered Overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-40 transition-opacity duration-700 mix-blend-overlay`} />
 
                 {/* Animated Border Glow */}
-                <div className="absolute inset-0 rounded-[2rem] border border-white/10 group-hover:border-white/30 transition-colors duration-500" />
+                <div className={`absolute inset-0 rounded-[2rem] border border-white/10 ${!item.comingSoon ? "group-hover:border-white/30" : ""} transition-colors duration-500`} />
 
                 <div className="absolute inset-0 p-8 flex flex-col justify-end">
                   <motion.div
-                    className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-2xl group-hover:shadow-white/20 transition-all duration-500 group-hover:-translate-y-2`}
+                    className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6 shadow-2xl ${!item.comingSoon ? "group-hover:shadow-white/20 group-hover:-translate-y-2" : ""} transition-all duration-500`}
                   >
                     <item.icon className="w-7 h-7 text-white" />
                   </motion.div>
 
-                  <h3 className="text-2xl font-black text-white mb-2 tracking-tight group-hover:text-cyan-400 transition-colors duration-300">
+                  <h3 className={`text-2xl font-black text-white mb-2 tracking-tight ${!item.comingSoon ? "group-hover:text-cyan-400" : ""} transition-colors duration-300`}>
                     {item.type}
                   </h3>
 
@@ -858,7 +855,7 @@ export default function About() {
               Join creators already using IncuBrix to <span className="text-cyan-400">scale</span> their content business.
             </h2>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              {/* Primary CTA */}
+              {/* Primary CTA: Start Your Journey */}
               <div className="relative">
                 <motion.div
                   className="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 blur-lg"
@@ -869,7 +866,7 @@ export default function About() {
                   onClick={() => setIsBetaOpen(true)}
                   className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-6 rounded-full text-lg font-bold shadow-xl shadow-cyan-500/30 transition-all hover:scale-105 active:scale-95"
                 >
-                  Join Free Beta
+                  Start Your Journey
                 </Button>
               </div>
               {/* Secondary CTA */}

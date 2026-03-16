@@ -151,8 +151,8 @@ export default function Terms() {
       content: (
         <ul className="list-disc list-inside space-y-2 ml-4 text-gray-300">
           <li>12.1 Certain features may use credits, tokens, or usage-based billing.</li>
-          <li>12.2 Credits are non-transferable, non-refundable, and may expire.</li>
-          <li>12.3 Unused credits are forfeited upon account termination unless required by law.</li>
+          <li>12.2 All fees and credits are non-transferable and non-refundable. IncuBrix uses Stripe as its payment partner; by using the Platform, you agree to be bound by Stripe's transactional rules.</li>
+          <li>12.3 Refunds are only available in the event of a transactional fault or processing error from our payment partner, Stripe, which will be handled automatically.</li>
           <li>12.4 Fees are billed in advance and subscriptions may auto-renew unless canceled.</li>
         </ul>
       )

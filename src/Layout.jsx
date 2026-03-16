@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from './utils';
-import { Menu, X, User, Settings, Sparkles, Info, CreditCard, Moon, Sun, Monitor, UserCircle, Camera, Upload, Rocket } from 'lucide-react';
+import { Menu, X, User, Settings, Sparkles, Info, CreditCard, Moon, Sun, Monitor, UserCircle, Camera, Upload, Rocket, Calendar, Pencil, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/lib/AuthContext';
 import { toast, Toaster } from "sonner";
 import BetaSignupModal from '@/components/BetaSignupModal';
+import ScheduleDemoModal from '@/components/ScheduleDemoModal';
 
 export default function Layout({ children, currentPageName }) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,15 +22,21 @@ export default function Layout({ children, currentPageName }) {
   const [useNicknameAsDisplay, setUseNicknameAsDisplay] = useState(false);
   const [isBetaEnrolled, setIsBetaEnrolled] = useState(false);
   const [betaModalOpen, setBetaModalOpen] = useState(false);
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const location = useLocation();
 
   // Click-based dropdown state
   const [isHeaderDropdownOpen, setIsHeaderDropdownOpen] = useState(false);
   const [isFooterDropdownOpen, setIsFooterDropdownOpen] = useState(false);
   const [isSocialDropdownOpen, setIsSocialDropdownOpen] = useState(false);
+  const [isCreatorStudioDropdownOpen, setIsCreatorStudioDropdownOpen] = useState(false);
+  const [isResourcesDropdownOpen, setIsResourcesDropdownOpen] = useState(false);
+  const [isMobileResourcesOpen, setIsMobileResourcesOpen] = useState(false);
   const headerDropdownRef = useRef(null);
   const footerDropdownRef = useRef(null);
   const socialDropdownRef = useRef(null);
+  const creatorStudioDropdownRef = useRef(null);
+  const resourcesDropdownRef = useRef(null);
 
   // Sync combined open state with AuthContext (used by ChatWidget)
   useEffect(() => {
@@ -47,6 +54,12 @@ export default function Layout({ children, currentPageName }) {
       }
       if (socialDropdownRef.current && !socialDropdownRef.current.contains(e.target)) {
         setIsSocialDropdownOpen(false);
+      }
+      if (creatorStudioDropdownRef.current && !creatorStudioDropdownRef.current.contains(e.target)) {
+        setIsCreatorStudioDropdownOpen(false);
+      }
+      if (resourcesDropdownRef.current && !resourcesDropdownRef.current.contains(e.target)) {
+        setIsResourcesDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -140,10 +153,7 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   const navLinks = [
-    { name: 'Home', path: 'Home' },
-    { name: 'How It Works', path: 'HowItWorks' },
     { name: 'Pricing', path: 'Pricing' },
-    { name: 'Blogs', path: 'Blog' },
     { name: 'Contact Us', path: 'NeedHelp' }
   ];
 
@@ -189,6 +199,13 @@ export default function Layout({ children, currentPageName }) {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: rgba(6, 182, 212, 0.4);
         }
+        @keyframes pulse-vibrant {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        .animate-pulse-vibrant {
+          animation: pulse-vibrant 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
       `}</style>
 
       {/* Navigation */}
@@ -211,6 +228,80 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-8">
+
+              {/* Resources Dropdown */}
+              <div className="relative" ref={resourcesDropdownRef}>
+                <button
+                  onClick={() => setIsResourcesDropdownOpen(prev => !prev)}
+                  className={`flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#00d9ff] ${isResourcesDropdownOpen ? 'text-[#00d9ff]' : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}
+                >
+                  Resources
+                  <svg className={`w-3 h-3 transition-transform duration-200 ${isResourcesDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div className={`absolute left-0 mt-3 w-[180px] bg-[#0a0e27]/95 backdrop-blur-lg border border-white/10 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-200 z-50 ${isResourcesDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2 pointer-events-none'}`}>
+                  <div className="py-2">
+                    {[
+                      { label: 'About Us', path: 'About' },
+                      { label: 'How It Works', path: 'HowItWorks' },
+                      { label: 'Blog', path: 'Blog' }
+                    ].map((item) => (
+                      <Link
+                        key={item.label}
+                        to={createPageUrl(item.path)}
+                        onClick={() => {
+                          handleNavClick(item.path);
+                          setIsResourcesDropdownOpen(false);
+                        }}
+                        className="block px-4 py-2.5 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Creator Studio Dropdown */}
+              <div className="relative" ref={creatorStudioDropdownRef}>
+                <button
+                  onClick={() => setIsCreatorStudioDropdownOpen(prev => !prev)}
+                  className={`flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#00d9ff] ${isCreatorStudioDropdownOpen ? 'text-[#00d9ff]' : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}
+                >
+                  Creator Studio
+                  <svg className={`w-3 h-3 transition-transform duration-200 ${isCreatorStudioDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <div className={`absolute left-0 mt-3 w-[230px] bg-[#0a0e27]/95 backdrop-blur-lg border border-white/10 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-200 z-50 ${isCreatorStudioDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2 pointer-events-none'}`}>
+                  <div className="py-2">
+                    {[
+                      { label: 'Content Insights' },
+                      { label: 'Content Creation' },
+                      { label: 'Content Publishing' },
+                      { label: 'Content Performance', badge: 'SOON' },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        onClick={() => setIsCreatorStudioDropdownOpen(false)}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-white/5 transition-colors group text-left"
+                      >
+                        <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{item.label}</span>
+                        {item.badge && (
+                          <span className="ml-auto text-[9px] font-black bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 text-white px-2 py-0.5 rounded-full shadow-[0_0_12px_rgba(244,63,94,0.4)] animate-pulse-vibrant border border-white/20 uppercase tracking-tighter">
+                            {item.badge}
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Remaining Links (Pricing, Contact Us) */}
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
@@ -222,6 +313,9 @@ export default function Layout({ children, currentPageName }) {
                   {link.name}
                 </Link>
               ))}
+
+
+
               {/* Social Dropdown Button */}
               <div className="relative" ref={socialDropdownRef}>
                 <button
@@ -302,6 +396,15 @@ export default function Layout({ children, currentPageName }) {
                   ))}
                 </div>
               </div>
+
+              {/* Book a Demo Button */}
+              <button
+                onClick={() => setIsDemoModalOpen(true)}
+                className="text-sm font-semibold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 px-3 py-2 rounded-xl border border-cyan-500/20 hover:bg-cyan-500/10"
+              >
+                <Calendar className="w-4 h-4" />
+                Book a demo
+              </button>
 
               {user ? (
                 <div className="relative" ref={headerDropdownRef}>
@@ -419,27 +522,6 @@ export default function Layout({ children, currentPageName }) {
                         </div>
                       )}
 
-                      {/* Free Beta Access Section */}
-                      <div className={`mb-4 p-4 rounded-2xl border ${theme === 'dark' ? 'bg-[#0a0e27]/30 border-cyan-500/10' : 'bg-gray-50/50 border-gray-200'} flex items-center justify-between`}>
-                        <div className="flex flex-col text-left">
-                          <span className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'} font-bold text-xs uppercase tracking-wider`}>Free Beta Access</span>
-                          <span className="text-[10px] text-gray-500 font-semibold">{isBetaEnrolled ? 'Enrollment Active' : 'Not Enrolled'}</span>
-                        </div>
-                        <button
-                          onClick={() => {
-                            if (!isBetaEnrolled) {
-                              setBetaModalOpen(true);
-                            } else {
-                              setIsBetaEnrolled(false);
-                              if (user?.email) localStorage.setItem(`${user.email}_isBetaEnrolled`, 'false');
-                              toast.info("Beta access disabled");
-                            }
-                          }}
-                          className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${isBetaEnrolled ? 'bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]' : 'bg-gray-700'}`}
-                        >
-                          <div className={`absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-transform duration-300 ${isBetaEnrolled ? 'translate-x-5' : 'translate-x-0'}`} />
-                        </button>
-                      </div>
 
                       <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent -mx-6 mb-4" />
 
@@ -533,6 +615,46 @@ export default function Layout({ children, currentPageName }) {
         {mobileMenuOpen && (
           <div className="lg:hidden bg-[#0f1535] border-t border-white/5">
             <div className="px-6 py-4 space-y-3">
+
+              {/* Mobile Resources Accordion */}
+              <div>
+                <button
+                  onClick={() => setIsMobileResourcesOpen(!isMobileResourcesOpen)}
+                  className="w-full flex items-center justify-between py-2 text-base font-medium text-gray-300 hover:text-white transition-colors"
+                >
+                  Resources
+                  <svg className={`w-4 h-4 transition-transform duration-200 ${isMobileResourcesOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isMobileResourcesOpen && (
+                  <div className="pl-4 py-2 space-y-3 border-l border-white/10 ml-2 mt-1">
+                    {[
+                      { label: 'About Us', path: 'About' },
+                      { label: 'How It Works', path: 'HowItWorks' },
+                      { label: 'Blog', path: 'Blog' }
+                    ].map((item) => (
+                      <Link
+                        key={item.label}
+                        to={createPageUrl(item.path)}
+                        onClick={() => {
+                          handleNavClick(item.path);
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`block text-sm font-medium transition-colors ${currentPageName === item.path ? 'text-[#00d9ff]' : 'text-gray-400 hover:text-gray-200'}`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Fixed Creator Studio Text (No sub-navigation on mobile for now since it's a showcase) */}
+              <div className="block py-2 text-base font-medium text-gray-300">
+                Creator Studio
+              </div>
+
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
@@ -627,13 +749,14 @@ export default function Layout({ children, currentPageName }) {
                     <img src="/logo.jpeg" alt="IncuBrix" className="h-full w-auto object-contain" />
                   </div>
                 </Link>
-                <p className="text-gray-400 text-sm max-w-xs leading-relaxed">
-                  The all-in-one AI platform for creators. Turn ideas into high-quality content instantly.
+              <div className="space-y-4 text-sm text-gray-400">
+                <p className="max-w-xs leading-relaxed">
+                  4 TAMPINES STREET 73,<br />
+                  Singapore 528824
                 </p>
-              </div>
-              <div className="space-y-2 text-sm text-gray-400 mb-4">
-                <p>IncuBrix Pte. Ltd.</p>
-                <p>Singapore</p>
+                <p className="font-medium text-gray-200">
+                  IncuBrix Pte. Ltd.
+                </p>
                 <p>
                   <a
                     href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@incubrix.com"
@@ -645,39 +768,10 @@ export default function Layout({ children, currentPageName }) {
                   </a>
                 </p>
               </div>
-              {user ? (
-                <div className="relative" ref={footerDropdownRef}>
-                  <Button
-                    onClick={() => setIsFooterDropdownOpen(prev => !prev)}
-                    className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:opacity-90 text-white text-sm flex items-center gap-2"
-                  >
-                    <User className="w-4 h-4" />
-                    {(useNicknameAsDisplay && nickname) ? nickname : (user.name ? user.name.split(' ')[0] : (user.email ? user.email.split('@')[0] : 'Account'))}
-                  </Button>
-                  {/* Footer Dropdown on Click - Positioned BELOW the button and simplified to only Logout */}
-                  <div className={`absolute left-0 top-full mt-2 w-[180px] bg-gradient-to-br from-[#111a4a] via-[#0a0e27] to-[#05091d] border border-cyan-400/30 rounded-2xl shadow-2xl transition-all z-50 backdrop-blur-xl ${isFooterDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2 pointer-events-none'}`}>
-                    <div className="p-4 flex flex-col items-center">
-                      <button
-                        onClick={() => { logout(); setIsFooterDropdownOpen(false); toast.success("Logged out successfully"); }}
-                        className="w-full py-2 rounded bg-red-900 hover:bg-red-800 text-white transition-colors text-xs font-semibold"
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <Button
-                  onClick={() => setAuthModalOpen(true)}
-                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:opacity-90 text-white text-sm flex items-center gap-2"
-                >
-                  <User className="w-4 h-4" />
-                  Get Started
-                </Button>
-              )}
             </div>
+          </div>
 
-            {/* Resources */}
+          {/* Resources */}
             <div>
               <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>Resources</h3>
               <ul className="space-y-2">
@@ -699,35 +793,24 @@ export default function Layout({ children, currentPageName }) {
               </ul>
             </div>
 
-            {/* Tools */}
-            <div>
-              <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>Tools</h3>
+            {/* IncuBrix Creator Studio */}
+            <div className="col-span-1">
+              <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mb-4`}>
+                IncuBrix Creator Studio
+              </h3>
               <ul className="space-y-2">
-                <li>
-                  <Link to={createPageUrl('Home') + '?f=tts'} onClick={() => handleNavClick('Home')} className={`text-sm transition-colors hover:text-[#00d9ff] ${currentPageName === 'Home' && location.search.includes('f=tts') ? 'text-[#00d9ff] font-semibold' : 'text-gray-400'}`}>
-                    Text to Speech
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl('Home') + '?f=stv'} onClick={() => handleNavClick('Home')} className={`text-sm transition-colors hover:text-[#00d9ff] ${currentPageName === 'Home' && location.search.includes('f=stv') ? 'text-[#00d9ff] font-semibold' : 'text-gray-400'}`}>
-                    Speech to Video
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl('Home') + '?f=scribe'} onClick={() => handleNavClick('Home')} className={`text-sm transition-colors hover:text-[#00d9ff] ${currentPageName === 'Home' && location.search.includes('f=scribe') ? 'text-[#00d9ff] font-semibold' : 'text-gray-400'}`}>
-                    Scribe ⭐
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl('Home') + '?f=cr'} onClick={() => handleNavClick('Home')} className={`text-sm transition-colors hover:text-[#00d9ff] ${currentPageName === 'Home' && location.search.includes('f=cr') ? 'text-[#00d9ff] font-semibold' : 'text-gray-400'}`}>
-                    Content Repurposer
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl('Home') + '?f=pub'} onClick={() => handleNavClick('Home')} className={`text-sm transition-colors hover:text-[#00d9ff] ${currentPageName === 'Home' && location.search.includes('f=pub') ? 'text-[#00d9ff] font-semibold' : 'text-gray-400'}`}>
-                    Publisher
-                  </Link>
-                </li>
+                {[
+                  { name: 'Content Insights', query: 'insights' },
+                  { name: 'Content Creation', query: 'creation' },
+                  { name: 'Content Publishing', query: 'publishing' },
+                  { name: 'Content Performance', query: 'performance' },
+                ].map((tool) => (
+                  <li key={tool.query}>
+                    <span className="text-sm text-gray-400 cursor-default">
+                      {tool.name}
+                    </span>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -748,11 +831,6 @@ export default function Layout({ children, currentPageName }) {
                 <li>
                   <Link to={createPageUrl('NeedHelp') + '#faq'} onClick={() => handleNavClick('NeedHelp')} className={`text-sm transition-colors hover:text-[#00d9ff] ${currentPageName === 'NeedHelp' && location.hash === '#faq' ? 'text-[#00d9ff] font-semibold' : 'text-gray-400'}`}>
                     FAQ
-                  </Link>
-                </li>
-                <li>
-                  <Link to={createPageUrl('Safety') + '?f=sft'} onClick={() => handleNavClick('Safety')} className={`text-sm transition-colors hover:text-[#00d9ff] ${currentPageName === 'Safety' && location.search.includes('f=sft') ? 'text-[#00d9ff] font-semibold' : 'text-gray-400'}`}>
-                    Safety
                   </Link>
                 </li>
               </ul>
@@ -804,6 +882,10 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </div>
       </footer>
+      <ScheduleDemoModal 
+        isOpen={isDemoModalOpen} 
+        onClose={() => setIsDemoModalOpen(false)} 
+      />
     </div>
   );
 }

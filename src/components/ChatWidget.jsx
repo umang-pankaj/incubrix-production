@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, ChevronRight, HelpCircle, ChevronLeft, CheckCircle2 } from 'lucide-react';
+import { X, Send, ChevronRight, HelpCircle, ChevronLeft, CheckCircle2, MessageCircle, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -375,7 +375,7 @@ export default function ChatWidget() {
                                     <>
                                         <div className="relative">
                                             <div className="w-10 h-10 rounded-full border-2 border-cyan-500/30 overflow-hidden shadow-lg shadow-cyan-500/20">
-                                                <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover" />
+                                                <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
                                             </div>
                                             <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#0a0e27] rounded-full"></span>
                                         </div>
@@ -422,7 +422,7 @@ export default function ChatWidget() {
                                                 <div className="flex items-center justify-between gap-2">
                                                     <div className="flex items-center gap-2.5 min-w-0">
                                                         <div className="w-7 h-7 rounded-full border border-cyan-500/30 overflow-hidden shrink-0">
-                                                            <img src="/assets/rixi-avatar.png" alt="" className="w-full h-full object-cover" />
+                                                            <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
                                                         </div>
                                                         <div className="min-w-0">
                                                             <p className="text-xs font-semibold text-white truncate">
@@ -454,7 +454,7 @@ export default function ChatWidget() {
 
                                     <div className="mb-6 text-center">
                                         <div className="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-cyan-500/30 overflow-hidden shadow-2xl shadow-cyan-500/20">
-                                            <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover" />
+                                            <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
                                         </div>
                                         <div className="text-center space-y-1 mb-4">
                                             <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
@@ -620,7 +620,7 @@ export default function ChatWidget() {
                                                 {(msg.source === 'ai' || msg.source === 'faq') && (
                                                     <div className="text-[9px] text-gray-600 mt-1 ml-1 flex items-center gap-1 uppercase tracking-tighter font-medium">
                                                         <div className="w-3 h-3 rounded-full overflow-hidden border border-cyan-500/10">
-                                                            <img src="/assets/rixi-avatar.png" alt="" className="w-full h-full object-cover" />
+                                                            <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
                                                         </div>
                                                         {msg.source === 'ai' ? 'AI Answer' : 'Official FAQ'}
                                                     </div>
@@ -823,7 +823,7 @@ export default function ChatWidget() {
 
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="w-5 h-5 rounded-full overflow-hidden border border-cyan-500/30 shadow-sm shadow-cyan-500/20">
-                                    <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover" />
+                                    <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
                                 </div>
                                 <span className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-widest">Assistant Rixi</span>
                             </div>
@@ -866,7 +866,7 @@ export default function ChatWidget() {
                     }
                 `}
             >
-                {isOpen ? <X className="w-6 h-6" /> : <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover" />}
+                {isOpen ? <X className="w-6 h-6" /> : <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />}
 
                 {!isOpen && isHomePage && localStorage.getItem(user?.email ? `${user.email}_${POPUP_DISMISSED_KEY}` : POPUP_DISMISSED_KEY) !== 'true' && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4">

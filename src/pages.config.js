@@ -56,7 +56,6 @@ import HowItWorks from './pages/HowItWorks';
 import NeedHelp from './pages/NeedHelp';
 import Pricing from './pages/Pricing';
 import Privacy from './pages/Privacy';
-import Safety from './pages/Safety';
 import Team from './pages/Team';
 import Terms from './pages/Terms';
 import __Layout from './Layout.jsx';
@@ -72,7 +71,6 @@ export const PAGES = {
     "NeedHelp": NeedHelp,
     "Pricing": Pricing,
     "Privacy": Privacy,
-    "Safety": Safety,
     "Team": Team,
     "Terms": Terms,
 }
