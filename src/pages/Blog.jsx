@@ -65,7 +65,7 @@ export default function Blog() {
             transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-10 px-6 py-24">
           <div className="text-center mb-10">
             <h1 className="text-4xl md:text-4xl lg:text-6xl font-bold mb-6">
               <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-500 bg-clip-text text-transparent">

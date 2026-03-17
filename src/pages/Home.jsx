@@ -23,7 +23,7 @@ import {
   PenTool,
   BarChart3
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import ScheduleDemoModal from '../components/ScheduleDemoModal';
 import BetaSignupModal from '../components/BetaSignupModal';
 import { useAuth } from '@/lib/AuthContext';
@@ -121,6 +121,270 @@ const creatorTypes = [
   }
 ];
 
+const DashboardPreview = ({ theme }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const [activeIndex, setActiveIndex] = React.useState(0);
+
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["6deg", "-6deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-6deg", "6deg"]);
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % 4);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  const isDark = theme === 'dark';
+
+  const BlueprintLabel = ({ label, detail, isActive, onHover, color, position }) => {
+    const posStyles = {
+      'top-left': 'top-0 left-0 -translate-x-[15%] -translate-y-12',
+      'top-right': 'top-0 right-0 translate-x-[15%] -translate-y-12 text-right',
+      'bottom-left': 'bottom-0 left-0 -translate-x-[15%] translate-y-12',
+      'bottom-right': 'bottom-0 right-0 translate-x-[15%] translate-y-12 text-right'
+    };
+
+    return (
+      <motion.div 
+        initial={false}
+        animate={{ 
+          opacity: isActive ? 1 : 0.3,
+          scale: isActive ? 1 : 0.9,
+          y: isActive ? 0 : (position.includes('top') ? 10 : -10)
+        }}
+        onMouseEnter={onHover}
+        className={`absolute ${posStyles[position]} z-50 flex flex-col group/bp cursor-pointer max-w-[240px] pointer-events-auto`}
+      >
+        <div className={`px-5 py-3.5 rounded-2xl border bg-slate-900/95 backdrop-blur-2xl border-${color}-400/30 shadow-2xl transition-all duration-700 ${isActive ? `border-${color}-400/80 shadow-${color}-500/20` : 'hover:border-white/20'}`}>
+          <div className={`flex items-center gap-2 mb-1.5 ${position.includes('right') ? 'justify-end' : ''}`}>
+             {!position.includes('right') && <div className={`w-2 h-2 rounded-full ${isActive ? `bg-${color}-400` : 'bg-gray-500'}`} />}
+             <p className={`text-[12px] font-black uppercase tracking-[0.2em] ${isActive ? `text-${color}-400` : 'text-gray-400'}`}>{label}</p>
+             {position.includes('right') && <div className={`w-2 h-2 rounded-full ${isActive ? `bg-${color}-400` : 'bg-gray-500'}`} />}
+          </div>
+          <p className="text-[13px] font-semibold text-white/95 leading-snug tracking-tight">{detail}</p>
+        </div>
+      </motion.div>
+    );
+  };
+
+  const ResultVisual = ({ type, isActive, color }) => {
+    if (!isActive) return null;
+    
+    return (
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.5, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className={`absolute z-30 pointer-events-none p-3 rounded-xl bg-${color}-400/10 border border-${color}-400/30 backdrop-blur-md shadow-lg shadow-${color}-500/10`}
+        style={{
+          top: type === 'insight' ? '25%' : type === 'audio' ? '42%' : type === 'video' ? '38%' : '72%',
+          left: type === 'insight' ? '15%' : type === 'audio' ? '45%' : type === 'video' ? '82%' : '58%',
+        }}
+      >
+        {type === 'insight' && (
+          <div className="flex items-end gap-1 h-8">
+            {[30, 60, 45, 80, 55, 100].map((h, i) => (
+              <motion.div 
+                key={i} 
+                animate={{ height: [`${h}%`, `${h+10}%`, `${h}%`] }} 
+                transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
+                className={`w-1.5 bg-${color}-400 rounded-t-sm`} 
+              />
+            ))}
+          </div>
+        )}
+        {type === 'audio' && (
+          <div className="flex items-center gap-1 w-12 h-8">
+             {[40, 90, 60, 100, 30, 80].map((h, i) => (
+               <motion.div 
+                 key={i} 
+                 animate={{ scaleY: [1, 1.5, 1] }} 
+                 transition={{ duration: 1, repeat: Infinity, delay: i * 0.1 }}
+                 className={`w-1 h-full bg-${color}-400 rounded-full`} 
+               />
+             ))}
+          </div>
+        )}
+        {type === 'video' && (
+          <div className="relative w-10 h-8 rounded-md overflow-hidden bg-black/40 border border-white/20">
+             <motion.div 
+               animate={{ opacity: [0.3, 0.7, 0.3] }}
+               transition={{ duration: 2, repeat: Infinity }}
+               className={`absolute inset-0 bg-gradient-to-tr from-${color}-400/20 to-transparent`}
+             />
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-white/30 flex items-center justify-center">
+                <div className="w-0 h-0 border-t-[3px] border-t-transparent border-l-[5px] border-l-white border-b-[3px] border-b-transparent ml-0.5" />
+             </div>
+          </div>
+        )}
+        {type === 'reach' && (
+          <div className="relative w-10 h-10 flex items-center justify-center">
+             {[1, 2, 3].map((i) => (
+               <motion.div 
+                 key={i}
+                 initial={{ scale: 0.5, opacity: 0 }}
+                 animate={{ scale: [0.5, 1.5, 0.5], opacity: [0, 0.5, 0] }}
+                 transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+                 className={`absolute inset-0 rounded-full border border-${color}-400/50`}
+               />
+             ))}
+             <div className={`w-2 h-2 rounded-full bg-${color}-400`} />
+          </div>
+        )}
+      </motion.div>
+    );
+  };
+
+  const LeadLine = ({ isActive, color, x1, y1, x2, y2 }) => (
+    <svg className="absolute inset-0 w-full h-full pointer-events-none z-40 overflow-visible">
+      <motion.line
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={{ 
+          pathLength: isActive ? 1 : 0, 
+          opacity: isActive ? 0.3 : 0 
+        }}
+        transition={{ duration: 0.8, ease: "easeInOut" }}
+        x1={x1} y1={y1} x2={x2} y2={y2}
+        stroke={`currentColor`}
+        strokeWidth="1"
+        strokeDasharray="4 4"
+        className={`text-${color}-400`}
+      />
+    </svg>
+  );
+
+  return (
+    <div className="relative py-24 px-12 lg:px-24">
+      {/* Blueprint Layer - Connectors and Labels */}
+      <div className="absolute inset-0 z-50 pointer-events-none">
+        {/* Scribe Connector */}
+        <LeadLine color="cyan" isActive={activeIndex === 0} x1="10%" y1="10%" x2="20%" y2="40%" />
+        <BlueprintLabel 
+          position="top-left"
+          label="Scribe"
+          detail="AI Content Strategy & Strategic Growth Insights"
+          isActive={activeIndex === 0}
+          onHover={() => setActiveIndex(0)}
+          color="cyan"
+        />
+
+        {/* Speech to Video Connector */}
+        <LeadLine color="blue" isActive={activeIndex === 2} x1="90%" y1="10%" x2="80%" y2="50%" />
+        <BlueprintLabel 
+          position="top-right"
+          label="Speech to Video"
+          detail="Automate Visuals & Viral Video Generation"
+          isActive={activeIndex === 2}
+          onHover={() => setActiveIndex(2)}
+          color="blue"
+        />
+
+        {/* Text to Speech Connector */}
+        <LeadLine color="purple" isActive={activeIndex === 1} x1="10%" y1="90%" x2="45%" y2="58%" />
+        <BlueprintLabel 
+          position="bottom-left"
+          label="Text to Speech"
+          detail="Natural AI Voices & Studio-Grade AI Narration"
+          isActive={activeIndex === 1}
+          onHover={() => setActiveIndex(1)}
+          color="purple"
+        />
+
+        {/* Publisher Connector */}
+        <LeadLine color="emerald" isActive={activeIndex === 3} x1="90%" y1="90%" x2="60%" y2="85%" />
+        <BlueprintLabel 
+          position="bottom-right"
+          label="Publisher"
+          detail="One-Click Publishing & Global Audience Reach"
+          isActive={activeIndex === 3}
+          onHover={() => setActiveIndex(3)}
+          color="emerald"
+        />
+      </div>
+
+      <motion.div
+        style={{
+          perspective: "1200px",
+          rotateX,
+          rotateY,
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="relative w-full max-w-[850px] mx-auto group"
+      >
+        {/* Result Visuals Overlay */}
+        <ResultVisual type="insight" isActive={activeIndex === 0} color="cyan" />
+        <ResultVisual type="audio" isActive={activeIndex === 1} color="purple" />
+        <ResultVisual type="video" isActive={activeIndex === 2} color="blue" />
+        <ResultVisual type="reach" isActive={activeIndex === 3} color="emerald" />
+
+        {/* Main Image Container */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className={`relative aspect-[16/10] rounded-[2.5rem] p-2 border ${isDark ? 'bg-[#0a0e27]/40 border-white/10' : 'bg-white/40 border-gray-200'} shadow-[0_60px_120px_rgba(0,0,0,0.7)] backdrop-blur-3xl`}
+        >
+          <div className="relative w-full h-full rounded-[2rem] overflow-hidden border border-white/5 bg-[#0a0e27]">
+            <img 
+              src="/assets/dashboard-showcase.png" 
+              alt="IncuBrix Outcome Dashboard"
+              className="w-full h-full object-cover opacity-80"
+            />
+            
+            {/* Ambient Darken for contrast */}
+            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+            
+            {/* Dashboard Hotspots */}
+            <div className="absolute inset-0 pointer-events-none">
+              <motion.div 
+                animate={{ scale: activeIndex === 0 ? [1, 1.4, 1] : 1, opacity: activeIndex === 0 ? 1 : 0.3 }}
+                className="absolute top-[35%] left-[10%] w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_15px_#22d3ee]"
+              />
+              <motion.div 
+                animate={{ scale: activeIndex === 1 ? [1, 1.4, 1] : 1, opacity: activeIndex === 1 ? 1 : 0.3 }}
+                className="absolute top-[52%] left-[42%] w-3 h-3 rounded-full bg-purple-400 shadow-[0_0_15px_#a78bfa]"
+              />
+              <motion.div 
+                animate={{ scale: activeIndex === 2 ? [1, 1.4, 1] : 1, opacity: activeIndex === 2 ? 1 : 0.3 }}
+                className="absolute top-[48%] left-[78%] w-3 h-3 rounded-full bg-blue-400 shadow-[0_0_15px_#3b82f6]"
+              />
+              <motion.div 
+                animate={{ scale: activeIndex === 3 ? [1, 1.4, 1] : 1, opacity: activeIndex === 3 ? 1 : 0.3 }}
+                className="absolute top-[82%] left-[55%] w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_15px_#34d399]"
+              />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Outer Glows */}
+        <div className="absolute -inset-20 bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none" />
+      </motion.div>
+    </div>
+  );
+};
+
 function SidebarToolsPanel({ onExploreTool }) {
   const [activeTool, setActiveTool] = React.useState(0);
   const [activeSubTool, setActiveSubTool] = React.useState(0);
@@ -150,7 +414,7 @@ function SidebarToolsPanel({ onExploreTool }) {
         <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
       </div>
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Section heading */}
         <div className="text-center mb-16">
           <h2 className={`text-3xl md:text-4xl font-extrabold mb-4 tracking-tight ${theme === 'dark' ? 'bg-gradient-to-r from-white via-cyan-300 to-blue-400 bg-clip-text text-transparent' : 'text-gray-900'}`}>
@@ -183,9 +447,9 @@ function SidebarToolsPanel({ onExploreTool }) {
                 <motion.button
                   key={idx}
                   onClick={() => setActiveTool(idx)}
-                  whileHover={{ scale: 1.02, x: 4 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`relative flex items-center gap-4 px-6 py-8 rounded-2xl transition-all duration-300 min-w-[200px] lg:min-w-0 w-full group`}
+                  whileHover={t.badge ? {} : { scale: 1.02, x: 4 }}
+                  whileTap={t.badge ? {} : { scale: 0.98 }}
+                  className={`relative flex items-center gap-4 px-6 py-8 rounded-2xl transition-all duration-300 min-w-[200px] lg:min-w-0 w-full group ${t.badge ? 'cursor-default opacity-60' : 'cursor-pointer'}`}
                   style={isActive
                     ? {
                         background: `linear-gradient(135deg, ${t.accent}25, ${t.accent}10)`,
@@ -212,7 +476,7 @@ function SidebarToolsPanel({ onExploreTool }) {
                     </span>
                   </div>
                   {t.badge && (
-                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-pink-500 to-rose-500 text-[9px] font-black text-white px-3 py-1.5 rounded-full shadow-lg border border-white/20 z-20">
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-rose-500 text-[10px] font-black text-white px-2.5 py-1 rounded-lg shadow-lg border border-white/20 z-20 tracking-tight">
                       {t.badge}
                     </div>
                   )}
@@ -269,9 +533,17 @@ function SidebarToolsPanel({ onExploreTool }) {
                   </div>
 
                   <div className="relative z-10 text-center px-6">
+                  <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest"
+            >
+              Core Capabilities
+            </motion.div>
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
+                      initial={{ scale: 0.9, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.5 }}
                       className="mb-8"
                     >
@@ -915,9 +1187,9 @@ export default function Home() {
   return (
     <div className="bg-background text-foreground overflow-hidden transition-colors duration-300">
       {/* Hero Section */}
-      <section className="relative pt-14 pb-6 px-6">
+      <section className="relative h-[105vh] lg:h-[115vh] -mt-20 flex items-center justify-center pt-20 px-6 overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0">
           <motion.div
             className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-cyan-500/30 rounded-full blur-[120px]"
             animate={{
@@ -949,7 +1221,7 @@ export default function Home() {
         </div>
 
         {/* Hero Visual Overlay */}
-        <div className="absolute inset-0 overflow-hidden opacity-20 mix-blend-overlay">
+        <div className="absolute inset-0 opacity-30 mix-blend-overlay">
           <motion.img
             src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80"
             alt="AI Network"
@@ -958,87 +1230,87 @@ export default function Home() {
             transition={{ duration: 30, repeat: Infinity }}
           />
         </div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(10,14,39,0.4)_100%)] pointer-events-none" />
 
         {/* Hero Content */}
-        <div className="relative z-10 max-w-5xl mx-auto text-center pt-10 pb-4">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-          >
-            {/* Eyebrow Badge */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            
+            {/* Left Column: Text Content */}
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.8 }}
-              className="flex justify-center mb-7"
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="text-center lg:text-left"
             >
-              <div
-                className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-[11px] font-black tracking-[0.25em] uppercase relative overflow-hidden group transition-all duration-500"
-                style={{
-                  background: theme === 'light'
-                    ? 'rgba(255, 255, 255, 0.7)'
-                    : 'rgba(255, 255, 255, 0.03)',
-                  border: '1.5px solid rgba(34, 211, 238, 0.3)',
-                  color: theme === 'light' ? '#0e7490' : '#67e8f9',
-                  backdropFilter: 'blur(12px)',
-                  boxShadow: theme === 'light' 
-                    ? '0 10px 25px -5px rgba(6, 182, 212, 0.1)' 
-                    : '0 20px 40px -15px rgba(0, 0, 0, 0.7)',
-                }}
+              {/* Eyebrow Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.8 }}
+                className="flex justify-center lg:justify-start mb-7"
               >
-                {/* Subtle animated gradient background on hover */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                
+                <div
+                  className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-[11px] font-black tracking-[0.3em] uppercase relative overflow-hidden group transition-all duration-500"
+                  style={{
+                    background: theme === 'light'
+                      ? 'rgba(255, 255, 255, 0.7)'
+                      : 'rgba(255, 255, 255, 0.05)',
+                    border: '1.5px solid rgba(34, 211, 238, 0.4)',
+                    color: theme === 'light' ? '#0e7490' : '#67e8f9',
+                    backdropFilter: 'blur(20px)',
+                    boxShadow: theme === 'light' 
+                      ? '0 10px 25px -5px rgba(6, 182, 212, 0.1)' 
+                      : '0 0 30px rgba(34, 211, 238, 0.15)',
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <span className="relative z-10">CREATOR GROWTH PLATFORM</span>
+                </div>
+              </motion.div>
 
-
-                
-                <span className="relative z-10">CREATOR GROWTH PLATFORM</span>
-              </div>
-            </motion.div>
-
-            {/* Headline */}
-            <motion.h1
-              className="font-extrabold mb-6 tracking-tight text-center"
-              style={{ lineHeight: 1.08, fontSize: 'clamp(2.6rem, 6vw, 5rem)' }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 1, ease: "easeOut" }}
-            >
-              <span
-                className="block"
-                style={{ letterSpacing: '-0.02em', color: theme === 'light' ? '#0f172a' : '#ffffff' }}
+              {/* Headline */}
+              <motion.h1
+                className="font-extrabold mb-6 tracking-tight"
+                style={{ lineHeight: 1.05, fontSize: 'clamp(2.6rem, 5vw, 4.5rem)' }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25, duration: 1, ease: "easeOut" }}
               >
-                Create With Purpose.
-              </span>
-              <span
-                className="block bg-clip-text text-transparent"
-                style={{
-                  backgroundImage: 'linear-gradient(90deg, #22d3ee 0%, #a5f3fc 40%, #818cf8 80%, #22d3ee 100%)',
-                  backgroundSize: '200% auto',
-                  letterSpacing: '-0.02em',
-                }}
+                <span
+                  className="block"
+                  style={{ letterSpacing: '-0.03em', color: theme === 'light' ? '#0f172a' : '#ffffff' }}
+                >
+                  Create With Purpose.
+                </span>
+                <span
+                  className="block bg-clip-text text-transparent"
+                  style={{
+                    backgroundImage: 'linear-gradient(90deg, #22d3ee 0%, #a5f3fc 40%, #818cf8 80%, #22d3ee 100%)',
+                    backgroundSize: '200% auto',
+                    letterSpacing: '-0.03em',
+                  }}
+                >
+                  Grow Your Influence.
+                </span>
+              </motion.h1>
+
+              {/* Subtitle */}
+              <motion.p
+                className={`text-base md:text-lg mb-10 font-normal max-w-xl mx-auto lg:mx-0 leading-relaxed ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.55, duration: 1 }}
               >
-                Grow Your Influence.
-              </span>
-            </motion.h1>
+                Plan, create, manage, and publish content.
+              </motion.p>
 
-            {/* Subtitle */}
-            <motion.p
-              className={`text-base md:text-lg mb-10 font-normal max-w-xl mx-auto leading-relaxed ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.55, duration: 1 }}
-            >
-              Plan, create, manage, and publish content.
-            </motion.p>
-
-            <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.85, duration: 1 }}
-            >
+              <motion.div
+                className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.85, duration: 1 }}
+              >
               {/* Primary CTA: Start Your Journey */}
               <motion.div
                 whileHover={{ scale: 1.06 }}
@@ -1050,7 +1322,6 @@ export default function Home() {
                   onClick={handleBetaClick}
                   className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-5 text-base font-bold rounded-2xl shadow-2xl shadow-cyan-500/40 border border-cyan-300/30"
                 >
-
                   <span className="relative flex items-center gap-2">
                     Start Your Journey
                   </span>
@@ -1067,8 +1338,20 @@ export default function Home() {
                   Schedule a Demo <ArrowRight className="ml-1.5 w-4 h-4 inline" />
                 </Button>
               </motion.div>
+              </motion.div>
             </motion.div>
-          </motion.div>
+            
+            {/* Right Column: Dashboard Preview */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
+              className="relative"
+            >
+              <DashboardPreview theme={theme} />
+            </motion.div>
+
+          </div>
         </div>
 
 

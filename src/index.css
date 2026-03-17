@@ -67,14 +67,14 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    zoom: 0.8;
-    /* Replicate 80% zoom level globally */
+    zoom: 0.96;
+    /* Replicate 96% zoom level globally (20% increase from 0.8) */
   }
 
   @media (min-width: 1024px) {
     body {
-      zoom: 0.72;
-      /* Reduced desktop size by 10% from 0.8 */
+      zoom: 0.87;
+      /* Increased desktop size by ~20% (0.72 * 1.2 = 0.864) */
     }
   }
 }
@@ -258,4 +258,20 @@
    =================================================== */
 .light .via-cyan-500\/20 {
   --tw-gradient-via: rgba(6, 182, 212, 0.15) !important;
+}
+
+/* ===================================================
+   ANIMATION UTILITIES
+   =================================================== */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 5s ease infinite;
 }

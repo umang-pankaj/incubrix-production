@@ -99,7 +99,7 @@ export default function Team() {
             transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
           />
         </div>
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

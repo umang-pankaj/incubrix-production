@@ -23,7 +23,9 @@ import {
   Briefcase,
   PenTool,
   Monitor,
-  Clock
+  Clock,
+  Layers,
+  Zap
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -284,7 +286,7 @@ export default function About() {
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-500" />
         </div>
 
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             className="grid md:grid-cols-2 gap-8 items-center"
             initial={{ opacity: 0 }}
@@ -352,53 +354,123 @@ export default function About() {
       </section>
 
       {/* Why IncuBrix Exists */}
-      <section className="py-24 px-6 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none" />
-
-        <div className="max-w-6xl mx-auto relative z-10">
+      <section className="py-32 px-6 relative overflow-hidden">
+        {/* Animated Background Orbs */}
+        <div className="absolute inset-0 pointer-events-none">
           <motion.div
-            className="text-center mb-20"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.1, 0.15, 0.1],
+              x: [0, 50, 0],
+              y: [0, 30, 0]
+            }}
+            transition={{ duration: 10, repeat: Infinity }}
+            className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-red-500/10 rounded-full blur-[120px]"
+          />
+          <motion.div
+            animate={{
+              scale: [1.2, 1, 1.2],
+              opacity: [0.08, 0.12, 0.08],
+              x: [0, -40, 0],
+              y: [0, -60, 0]
+            }}
+            transition={{ duration: 15, repeat: Infinity }}
+            className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[150px]"
+          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(10,14,39,0.5)_100%)]" />
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <motion.div
+            className="text-center mb-24"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
           >
-            <motion.span
-              className="inline-block px-4 py-1.5 mb-6 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold uppercase tracking-[0.3em]"
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-6 py-2 mb-8 rounded-full bg-red-500/5 border border-red-500/20 backdrop-blur-xl group hover:border-red-500/40 transition-all duration-500"
+              style={{ boxShadow: '0 0 20px rgba(239, 68, 68, 0.1)' }}
             >
-              The Creator's Dilemma
-            </motion.span>
-            <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-white">
-              Why <span className="text-cyan-400">IncuBrix</span> Exists
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-red-400 text-[11px] font-black uppercase tracking-[0.4em]">The Creator's Dilemma</span>
+            </motion.div>
+            
+            <h2 className="text-5xl md:text-7xl font-black mb-8 tracking-tight text-white leading-[1.05]">
+              Why <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-white to-cyan-400 bg-[length:200%_auto] animate-gradient-x">IncuBrix</span> Exists
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">Traditional content creation is broken. We're here to fix it.</p>
+            <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              Traditional content creation is <span className="text-red-400/80 italic font-medium">fragmented and exhausting.</span> <br className="hidden md:block" /> We're here to unify your creative journey.
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {[
-              { title: 'Tool Overload', desc: 'Creators juggle 3+ different tools for creation, scheduling, and analytics.' },
-              { title: 'More Effort', desc: 'Hours spent on repetitive tasks and creating multiple content formats.' },
-              { title: 'Less Reach', desc: 'Limited presence across formats and platforms reduces growth.' }
-            ].map((problem, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: idx * 0.15 }}
-                whileHover={{ y: -10 }}
-              >
-                <div className="bg-[#151d45]/20 backdrop-blur-md border border-red-500/10 p-10 rounded-[2.5rem] text-center h-full hover:border-red-500/40 hover:bg-black/40 transition-all duration-500 group relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 blur-3xl group-hover:bg-red-500/10 transition-colors" />
-                  <h3 className="text-2xl font-black mb-4 text-white group-hover:text-red-400 transition-colors">{problem.title}</h3>
-                  <p className="text-gray-400 text-base leading-relaxed group-hover:text-gray-200 transition-colors">{problem.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+              { 
+                title: 'Tool Overload', 
+                desc: 'Creators juggle 3+ different tools for creation, scheduling, and analytics, leading to friction and fatigue.',
+                icon: Layers,
+                color: 'red'
+              },
+              { 
+                title: 'High Effort', 
+                desc: 'Manual labor spent on repetitive tasks and repurposing prevents you from focusing on your true creative vision.',
+                icon: Clock,
+                color: 'cyan'
+              },
+              { 
+                title: 'Limited Reach', 
+                desc: 'Inability to scale across platforms and formats means your best ideas never reach their full global potential.',
+                icon: Zap,
+                color: 'indigo'
+              }
+            ].map((problem, idx) => {
+              const Icon = problem.icon;
+              const accentColor = problem.color === 'red' ? 'rgba(239, 68, 68, 0.4)' : problem.color === 'cyan' ? 'rgba(34, 211, 238, 0.4)' : 'rgba(129, 140, 248, 0.4)';
+              const glowColor = problem.color === 'red' ? 'rgba(239, 68, 68, 0.1)' : problem.color === 'cyan' ? 'rgba(34, 211, 238, 0.1)' : 'rgba(129, 140, 248, 0.1)';
 
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.7, delay: idx * 0.2 }}
+                  whileHover={{ y: -15, scale: 1.02 }}
+                >
+                  <div 
+                    className="relative h-full bg-gradient-to-b from-white/[0.03] to-white/[0.01] backdrop-blur-3xl border border-white/5 rounded-[3rem] p-12 text-center group transition-all duration-700 hover:border-white/20"
+                    style={{ boxShadow: `0 20px 40px rgba(0,0,0,0.3)` }}
+                  >
+                    {/* Hover Glow Effect */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[3rem]"
+                         style={{ background: `radial-gradient(circle at center, ${glowColor} 0%, transparent 70%)` }} 
+                    />
+
+                    {/* Icon Container */}
+                    <div className="relative mb-10 inline-flex">
+                      <div className="absolute inset-0 blur-2xl opacity-20 group-hover:opacity-50 transition-opacity" style={{ background: accentColor }} />
+                      <div className="relative w-20 h-20 rounded-[1.5rem] bg-white/[0.02] border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-all duration-500 rotate-3 group-hover:rotate-0">
+                        <Icon className="w-10 h-10" style={{ color: problem.color === 'red' ? '#f87171' : problem.color === 'cyan' ? '#22d3ee' : '#818cf8' }} />
+                      </div>
+                    </div>
+
+                    <h3 className="text-3xl font-black mb-6 text-white tracking-tight group-hover:translate-x-1 transition-transform">{problem.title}</h3>
+                    <p className="text-gray-400 text-[17px] leading-relaxed group-hover:text-gray-200 transition-colors font-medium">
+                      {problem.desc}
+                    </p>
+
+                    {/* Bottom accent line */}
+                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-12 h-1 rounded-full opacity-20 group-hover:w-24 group-hover:opacity-60 transition-all duration-700"
+                         style={{ background: accentColor }} />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -424,7 +496,7 @@ export default function About() {
               transition={{ duration: 0.5 }}
               className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest"
             >
-              <Sparkles className="w-3 h-3" /> Core Capabilities
+              Core Capabilities
             </motion.div>
             <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-white leading-[1.1]">
               The <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Ultimate</span> Creator Toolkit
@@ -495,7 +567,7 @@ export default function About() {
           <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
         </div>
 
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             className="text-center mb-20"
             initial={{ opacity: 0, y: 20 }}
@@ -595,7 +667,7 @@ export default function About() {
       <section className="py-24 px-6 relative overflow-hidden bg-[#0c1233]">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e27] via-transparent to-[#0a0e27] opacity-60" />
 
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 20 }}
@@ -676,7 +748,7 @@ export default function About() {
       <section className="py-24 px-6 bg-[#0f1535] relative">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/5 via-transparent to-transparent opacity-50" />
 
-        <div className="max-w-6xl mx-auto relative z-10">
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 20 }}

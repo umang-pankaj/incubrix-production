@@ -42,13 +42,13 @@ export default function HowItWorks() {
         'Get recommendations on what to create next'
       ],
       gradient: 'from-cyan-500 to-blue-500',
-      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&q=80'
+      image: '/assets/how-it-works/step1-insights.png'
     },
     {
       step: 2,
       icon: Mic,
       title: 'Create Content',
-      description: 'Input your idea or existing content and transform it into multiple formats (original or AI-enhanced) while preserving your unique voice and perspective.',
+      description: 'Input your idea or content and let the platform transform it into multiple formats (original or AI-enhanced) while preserving your unique voice and perspective. Convert text to audio, text to video, and repurpose content across platforms like LinkedIn, Reels, and Newsletters.',
       features: [
         'Text to Audio (scripts to podcasts or voice content)',
         'Text to Video (scripts to short or long-form videos)',
@@ -56,33 +56,33 @@ export default function HowItWorks() {
         'Multi-format repurposing (LinkedIn, Reels, Newsletter)'
       ],
       gradient: 'from-blue-500 to-indigo-500',
-      image: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&q=80'
+      image: '/assets/how-it-works/step2-creation.png'
     },
     {
       step: 3,
       icon: Calendar,
       title: 'Publish Everywhere',
-      description: 'Distribute content across platforms from one place without switching between tools.',
+      description: 'Distribute content across platforms from one place without switching between tools (centralized creator hub).',
       features: [
         'Publish across multiple platforms',
         'Schedule content at the right time (Soon to be available)',
         'Preview how content appears before publishing'
       ],
       gradient: 'from-indigo-500 to-purple-500',
-      image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&q=80'
+      image: '/assets/how-it-works/step3-publishing.png'
     },
     {
       step: 4,
       icon: BarChart3,
       title: 'Track & Grow',
-      description: 'Monitor your engagement and reach across platforms to understand your audience and get actionable insights to grow your impact.',
+      description: 'Monitor your engagement and reach across platforms to understand your audience and get actionable insights to grow your impact and achieve your goals.',
       features: [
         'Monitor engagement and reach',
         'Compare performance across platforms',
         'Get insights to improve future content'
       ],
       gradient: 'from-purple-500 to-pink-500',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80',
+      image: '/assets/how-it-works/step4-growth.png',
       comingSoon: true
     }
   ];
@@ -156,7 +156,7 @@ export default function HowItWorks() {
           <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px]" />
         </div>
 
-        <div ref={containerRef} className="max-w-6xl mx-auto relative z-10 py-12">
+        <div ref={containerRef} className="max-w-7xl mx-auto relative z-10 py-12">
           {/* Vertical Center Line Background */}
           <div className="hidden lg:block absolute left-1/2 top-0 bottom-0 w-[2px] bg-slate-800/40 transform -translate-x-1/2" />
           
@@ -228,7 +228,7 @@ export default function HowItWorks() {
 
                   <p className="text-lg text-gray-400 mb-8 max-w-lg">{item.description}</p>
 
-                  <ul className={`space-y-4 mb-8 max-w-lg ${idx % 2 === 0 ? 'lg:mr-auto lg:ml-auto lg:text-right' : ''}`}>
+                  <ul className={`space-y-4 mb-8 max-w-lg ${idx % 2 === 0 ? 'lg:ml-auto' : ''}`}>
                     {item.features.map((feature, featureIdx) => (
                       <motion.li
                         key={featureIdx}
@@ -241,7 +241,7 @@ export default function HowItWorks() {
                         <div className="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
                           <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                         </div>
-                        <span className="text-gray-300 font-medium">{feature}</span>
+                        <span className="text-gray-200 font-medium">{feature}</span>
                       </motion.li>
                     ))}
                   </ul>
@@ -288,28 +288,16 @@ export default function HowItWorks() {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* Benefits Overview */}
-      <section className="py-12 px-6 bg-[#0a0e27] relative overflow-hidden">
-        <div className="absolute inset-0">
-          <motion.div
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          >
-            <div className="w-96 h-96 mx-auto bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-full blur-[120px]" />
-          </motion.div>
-        </div>
-
+      </section>      {/* Benefits Overview */}
+      <section className="py-24 px-6 bg-[#0a0e27] relative overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
-            className="text-center mb-10"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
               Expected Results
             </h2>
           </motion.div>
@@ -321,14 +309,14 @@ export default function HowItWorks() {
                 stat: '<10 Minutes',
                 label: 'Time to Create Content',
                 description: 'From idea to polished content in record time.',
-                gradient: 'from-cyan-500 to-blue-500'
+                gradient: 'from-cyan-400 to-blue-500'
               },
               {
                 icon: BarChart3,
                 stat: '5X More',
                 label: 'Insights & Control of Content',
                 description: 'Unprecedented visibility into your creator performance.',
-                gradient: 'from-blue-500 to-indigo-500'
+                gradient: 'from-blue-400 to-indigo-500'
               },
               {
                 icon: Share2,
@@ -344,31 +332,18 @@ export default function HowItWorks() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -10, scale: 1.02 }}
+                whileHover={{ y: -10 }}
               >
-                <Card className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 p-8 text-center hover:border-cyan-500/60 transition-all relative overflow-hidden group h-full">
-                  <motion.div
-                    className={`absolute inset-0 bg-gradient-to-br ${benefit.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}
-                  />
-                  <motion.div
-                    className={`w-14 h-14 bg-gradient-to-br ${benefit.gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-cyan-500/50`}
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.6 }}
-                  >
+                <div className="bg-[#151d45]/20 border border-white/5 p-12 text-center hover:border-cyan-500/20 transition-all relative overflow-hidden group h-full rounded-[1.5rem] flex flex-col items-center">
+                  <div className={`w-14 h-14 bg-gradient-to-br ${benefit.gradient} rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-cyan-500/20`}>
                     <benefit.icon className="w-7 h-7 text-white" />
-                  </motion.div>
-                  <motion.div
-                    className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2"
-                    initial={{ scale: 0 }}
-                    whileInView={{ scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.2, type: "spring" }}
-                  >
+                  </div>
+                  <div className={`text-4xl font-black bg-gradient-to-r ${benefit.gradient} bg-clip-text text-transparent mb-4 tracking-tight`}>
                     {benefit.stat}
-                  </motion.div>
-                  <div className="text-xl font-semibold mb-2 text-white">{benefit.label}</div>
-                  <p className="text-gray-400">{benefit.description}</p>
-                </Card>
+                  </div>
+                  <div className="text-xl font-bold mb-3 text-white tracking-tight">{benefit.label}</div>
+                  <p className="text-gray-400 text-sm leading-relaxed">{benefit.description}</p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -376,105 +351,76 @@ export default function HowItWorks() {
       </section>
 
       {/* Demo Section */}
-      <section id="demo" className="py-12 px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e27] via-cyan-950/20 to-[#050510]" />
-        <motion.div
-          className="absolute inset-0"
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360]
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        >
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-[150px]" />
-        </motion.div>
-
-        <div className="max-w-5xl mx-auto relative z-10">
+      <section id="demo" className="py-24 px-6 relative overflow-hidden bg-[#0a0e27]">
+        <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
-            className="text-center mb-8"
+            className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-4xl font-bold mb-6">
+            <h2 className="text-4xl md:text-5xl font-black mb-6 text-white tracking-tight">
               Ready to See It in Action?
             </h2>
-            <p className="text-xl text-gray-400">
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto font-normal leading-relaxed opacity-80">
               See IncuBrix in action and discover how it helps creators turn ideas into consistent content and long-term growth.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Prerecorded Demo Card */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              whileHover={{ y: -10 }}
+              transition={{ duration: 0.7 }}
             >
-              <Card className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 p-8 hover:border-cyan-500/60 transition-all h-full relative overflow-hidden group">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                />
-                <div className="relative z-10">
-                  <motion.div
-                    className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/50"
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <Video className="w-8 h-8 text-white" />
-                  </motion.div>
-                  <h3 className="text-2xl font-semibold mb-3 text-white">Watch Pre-recorded Demo</h3>
-                  <p className="text-gray-400 mb-6">
-                    Get a quick overview of the platform at your own pace
-                  </p>
+              <div className="bg-[#151d45]/20 border border-white/5 hover:border-cyan-500/10 transition-all h-full relative overflow-hidden group rounded-[2.5rem] p-12 flex flex-col items-start text-left">
+                <div className="w-16 h-16 rounded-2xl bg-blue-500/20 border border-white/10 flex items-center justify-center mb-8 shadow-2xl">
+                  <Video className="w-8 h-8 text-blue-400" />
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-white tracking-tight">Watch Pre-recorded Demo</h3>
+                <p className="text-gray-400 mb-12 leading-relaxed text-lg">
+                  Get a quick overview of the platform at your own pace
+                </p>
+                <div className="w-full mt-auto">
                   <Button
                     disabled
-                    className="w-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 py-6 text-lg font-semibold rounded-xl cursor-not-allowed opacity-70"
+                    className="w-full h-16 bg-white/[0.03] hover:bg-white/[0.05] border border-white/5 text-gray-500 text-lg font-bold rounded-2xl cursor-not-allowed uppercase tracking-widest"
                   >
                     Coming Soon
                   </Button>
-                  <p className="text-[10px] text-center mt-3 text-cyan-500/40 uppercase tracking-[0.2em] font-bold">
-                    Official demo coming soon
-                  </p>
+                  <p className="text-[10px] text-center mt-6 text-gray-600 uppercase tracking-[0.4em] font-black">Official Demo Coming Soon</p>
                 </div>
-              </Card>
+              </div>
             </motion.div>
 
+            {/* Live Demo Card */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              whileHover={{ y: -10 }}
+              transition={{ duration: 0.7 }}
             >
-              <Card className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 p-8 hover:border-cyan-500/60 transition-all h-full relative overflow-hidden group">
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                />
-                <div className="relative z-10">
-                  <motion.div
-                    className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-cyan-500/50"
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <Calendar className="w-8 h-8 text-white" />
-                  </motion.div>
-                  <h3 className="text-2xl font-semibold mb-3 text-white">Schedule a Live Demo</h3>
-                  <p className="text-gray-400 mb-6">
-                    Book a personalized 30-minute session with our team
-                  </p>
+              <div className="bg-[#151d45]/20 border border-white/5 hover:border-blue-500/10 transition-all h-full relative overflow-hidden group rounded-[2.5rem] p-12 flex flex-col items-start text-left">
+                <div className="w-16 h-16 rounded-2xl bg-cyan-500/20 border border-white/10 flex items-center justify-center mb-8 shadow-2xl">
+                  <Calendar className="w-8 h-8 text-cyan-400" />
+                </div>
+                <h3 className="text-2xl font-bold mb-4 text-white tracking-tight">Schedule a Live Demo</h3>
+                <p className="text-gray-400 mb-12 leading-relaxed text-lg">
+                  Book a personalized 30-minute session with our team
+                </p>
+                <div className="w-full mt-auto">
                   <Button
                     onClick={() => setIsModalOpen(true)}
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:opacity-90 text-white py-6 text-lg font-semibold rounded-xl shadow-lg shadow-cyan-500/30"
+                    className="w-full h-16 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white text-lg font-bold rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98]"
                   >
                     Schedule a Demo
                   </Button>
                 </div>
-              </Card>
+              </div>
             </motion.div>
           </div>
-
         </div>
       </section>
 
