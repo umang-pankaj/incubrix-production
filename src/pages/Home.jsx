@@ -834,38 +834,79 @@ function SidebarToolsPanel({ onExploreTool }) {
                       )}
 
                       {activeToolData.name === 'Content Repurposer' && (
-                        <div className="flex flex-col items-center gap-6 w-full">
-                           <div className="relative">
-                              {/* Long form container */}
-                              <div className="w-64 h-32 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center relative">
-                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
-                                 <motion.div 
-                                   animate={{ x: [-100, 100] }}
-                                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                                   className="absolute h-full w-[2px] bg-pink-500/50"
+                        <div key="repurposer-animation-container" className="flex flex-col items-center gap-8 w-full">
+                           <div className="relative group/repurpose">
+                              {/* Main Video Source */}
+                              <div className="w-72 h-40 rounded-2xl border border-white/10 bg-black/40 relative overflow-hidden shadow-2xl z-10">
+                                 <img 
+                                   src="/assets/repurposer/repurposer-base.png" 
+                                   alt="Source Video" 
+                                   className="w-full h-full object-cover opacity-60"
                                  />
-                                 <Video className="w-8 h-8 text-white/10" />
+                                 
+                                 {/* Cutting Scan Line */}
+                                 <motion.div 
+                                   initial={{ x: 0 }}
+                                   animate={{ x: [0, 288] }}
+                                   transition={{ 
+                                     duration: 6, 
+                                     repeat: Infinity, 
+                                     repeatDelay: 2, 
+                                     ease: "linear" 
+                                   }}
+                                   style={{ left: 0 }}
+                                   className="absolute inset-y-0 w-1 bg-gradient-to-b from-pink-500 via-rose-500 to-pink-500 shadow-[0_0_30px_rgba(244,63,94,2)] z-30"
+                                 >
+                                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-pink-600 rounded-full p-2.5 shadow-2xl border-2 border-white/30">
+                                     <Scissors className="w-4 h-4 text-white" />
+                                   </div>
+                                 </motion.div>
+
+                                 {/* Scanning Effect Overlay */}
+                                 <motion.div 
+                                   animate={{ opacity: [0.1, 0.3, 0.1] }}
+                                   transition={{ duration: 2, repeat: Infinity }}
+                                   className="absolute inset-0 bg-gradient-to-r from-pink-500/5 to-transparent pointer-events-none"
+                                 />
                               </div>
-                              
-                              <motion.div 
-                                animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.1, 1] }}
-                                transition={{ duration: 1, repeat: Infinity }}
-                                className="absolute -bottom-4 right-1/2 translate-x-1/2 bg-pink-600 rounded-full p-2 shadow-xl border-2 border-white/20"
-                              >
-                                 <Scissors className="w-4 h-4 text-white" />
-                              </motion.div>
                            </div>
 
-                           <div className="flex justify-center gap-3">
-                              {[1, 2, 3].map(i => (
+                           {/* Generated Clips Breakdown */}
+                           <div className="flex justify-center gap-4">
+                              {[
+                                { pos: 'left', dropAt: 0.25 },
+                                { pos: 'center', dropAt: 0.5 },
+                                { pos: 'right', dropAt: 0.75 }
+                              ].map((clip, i) => (
                                 <motion.div
-                                  key={i}
-                                  initial={{ opacity: 0, y: 10 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: 1.5 + (i * 0.2), repeat: Infinity, repeatDelay: 3 }}
-                                  className="w-14 h-24 rounded-lg border border-pink-500/20 bg-pink-500/10 flex items-center justify-center"
+                                  key={`clip-${i}`}
+                                  initial={{ opacity: 0, y: -40 }}
+                                  animate={{ 
+                                    opacity: [0, 0, 1, 1, 0],
+                                    y: [-40, -40, 0, 0, 0],
+                                    scale: [0.8, 0.8, 1, 1, 0.9]
+                                  }}
+                                  transition={{ 
+                                    duration: 8,
+                                    times: [0, clip.dropAt - 0.05, clip.dropAt, 0.9, 1],
+                                    repeat: Infinity,
+                                    ease: "easeOut"
+                                  }}
+                                  className="w-20 h-32 rounded-xl border border-pink-500/30 bg-black/60 relative overflow-hidden shadow-lg group/clip"
                                 >
-                                  <Video className="w-4 h-4 text-pink-400/30" />
+                                  <img 
+                                    src="/assets/repurposer/repurposer-base.png" 
+                                    alt={`Clip ${i+1}`}
+                                    className="w-full h-full object-cover opacity-80"
+                                    style={{ 
+                                      objectPosition: clip.pos === 'left' ? '20% 50%' : clip.pos === 'center' ? '50% 50%' : '80% 50%' 
+                                    }}
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-pink-900/40 to-transparent" />
+                                  <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[8px] font-black text-white/80 tracking-widest uppercase">
+                                    <span>CLIP {i+1}</span>
+                                    <Video className="w-2 h-2 text-pink-400" />
+                                  </div>
                                 </motion.div>
                               ))}
                            </div>
@@ -1114,7 +1155,6 @@ function ShowcaseCarousel({ cards }) {
 }
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isBetaOpen, setIsBetaOpen] = React.useState(false);
   const { isAuthenticated, setAuthModalOpen, theme } = useAuth();
 
@@ -1126,9 +1166,6 @@ export default function Home() {
     setIsBetaOpen(true);
   };
 
-  const handleDemoClick = () => {
-    setIsModalOpen(true);
-  };
 
   const handleExploreTool = () => {
     if (!isAuthenticated) {
@@ -1243,39 +1280,13 @@ export default function Home() {
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="text-center lg:text-left"
             >
-              {/* Eyebrow Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.8 }}
-                className="flex justify-center lg:justify-start mb-7"
-              >
-                <div
-                  className="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-[11px] font-black tracking-[0.3em] uppercase relative overflow-hidden group transition-all duration-500"
-                  style={{
-                    background: theme === 'light'
-                      ? 'rgba(255, 255, 255, 0.7)'
-                      : 'rgba(255, 255, 255, 0.05)',
-                    border: '1.5px solid rgba(34, 211, 238, 0.4)',
-                    color: theme === 'light' ? '#0e7490' : '#67e8f9',
-                    backdropFilter: 'blur(20px)',
-                    boxShadow: theme === 'light' 
-                      ? '0 10px 25px -5px rgba(6, 182, 212, 0.1)' 
-                      : '0 0 30px rgba(34, 211, 238, 0.15)',
-                  }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  <span className="relative z-10">CREATOR GROWTH PLATFORM</span>
-                </div>
-              </motion.div>
-
               {/* Headline */}
               <motion.h1
-                className="font-extrabold mb-6 tracking-tight"
-                style={{ lineHeight: 1.05, fontSize: 'clamp(2.6rem, 5vw, 4.5rem)' }}
+                className="font-extrabold mb-8 tracking-tight"
+                style={{ lineHeight: 1.05, fontSize: 'clamp(2.8rem, 5.5vw, 5rem)' }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25, duration: 1, ease: "easeOut" }}
+                transition={{ delay: 0.1, duration: 1, ease: "easeOut" }}
               >
                 <span
                   className="block"
@@ -1297,12 +1308,12 @@ export default function Home() {
 
               {/* Subtitle */}
               <motion.p
-                className={`text-base md:text-lg mb-10 font-normal max-w-xl mx-auto lg:mx-0 leading-relaxed ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}
+                className={`text-lg md:text-xl mb-12 font-normal max-w-2xl mx-auto lg:mx-0 leading-relaxed ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.55, duration: 1 }}
+                transition={{ delay: 0.3, duration: 1 }}
               >
-                Plan, create, manage, and publish content.
+                Plan, Create, Manage and Publish Content.
               </motion.p>
 
               <motion.div
@@ -1325,17 +1336,6 @@ export default function Home() {
                   <span className="relative flex items-center gap-2">
                     Start Your Journey
                   </span>
-                </Button>
-              </motion.div>
-
-              {/* Secondary CTA: Schedule Demo */}
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={handleDemoClick}
-                  variant="ghost"
-                  className="text-cyan-300 hover:text-white hover:bg-cyan-500/15 px-7 py-5 text-sm font-semibold rounded-2xl border border-cyan-400/30 hover:border-cyan-400/60 transition-all"
-                >
-                  Schedule a Demo <ArrowRight className="ml-1.5 w-4 h-4 inline" />
                 </Button>
               </motion.div>
               </motion.div>
@@ -1551,10 +1551,6 @@ export default function Home() {
       </section>
 
 
-      <ScheduleDemoModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
       <BetaSignupModal
         isOpen={isBetaOpen}
         onClose={() => setIsBetaOpen(false)}

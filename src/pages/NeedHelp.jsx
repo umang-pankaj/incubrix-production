@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Mail, Send, CheckCircle2, ChevronDown, Paperclip, X, Image as ImageIcon } from 'lucide-react';
+import { Mail, Send, CheckCircle2, ChevronDown, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -14,7 +14,6 @@ export default function NeedHelp() {
     email: '',
     message: ''
   });
-  const [attachments, setAttachments] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ticketId, setTicketId] = useState('');
@@ -27,7 +26,6 @@ export default function NeedHelp() {
       timeout = setTimeout(() => {
         setSubmitted(false);
         setFormData({ name: '', email: '', message: '' });
-        setAttachments([]);
         setTicketId('');
       }, 5000);
     }
@@ -44,39 +42,6 @@ export default function NeedHelp() {
       );
   };
 
-  const handleFileChange = async (e) => {
-    const files = Array.from(e.target.files);
-    const validFiles = [];
-
-    for (const file of files) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(`${file.name} is too large. Max size is 5MB.`);
-        continue;
-      }
-
-      const reader = new FileReader();
-      const base64Promise = new Promise((resolve) => {
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.readAsDataURL(file);
-      });
-
-      const content = await base64Promise;
-      validFiles.push({
-        filename: file.name,
-        content: content,
-        type: file.type,
-        disposition: 'attachment'
-      });
-    }
-
-    setAttachments(prev => [...prev, ...validFiles]);
-    // Reset input
-    e.target.value = '';
-  };
-
-  const removeAttachment = (index) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,7 +63,6 @@ export default function NeedHelp() {
           name: formData.name,
           email: formData.email,
           message: formData.message,
-          attachments: attachments
         }),
       });
 
@@ -235,9 +199,9 @@ export default function NeedHelp() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Let's Build
+            Get in Touch
             <span className="block bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              Something Amazing
+              With Our Team
             </span>
           </motion.h1>
           <motion.p
@@ -333,51 +297,6 @@ export default function NeedHelp() {
                     />
                   </div>
 
-                  {/* Attachment Section */}
-                  <div className="space-y-3">
-                    <Label className="text-white flex items-center gap-2">
-                      <Paperclip className="w-4 h-4 text-cyan-400" /> Attach Screenshots (Optional)
-                    </Label>
-
-                    <div className="flex flex-wrap gap-3">
-                      <AnimatePresence>
-                        {attachments.map((file, idx) => (
-                          <motion.div
-                            key={idx}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            className="flex items-center gap-2 bg-[#0f1535] border border-cyan-500/30 rounded-lg px-3 py-2 text-xs text-gray-300"
-                          >
-                            <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
-                            <span className="max-w-[120px] truncate">{file.filename}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeAttachment(idx)}
-                              className="hover:text-red-400 p-0.5 rounded-full hover:bg-white/5 transition-colors"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </motion.div>
-                        ))}
-                      </AnimatePresence>
-
-                      <label className="flex items-center justify-center p-2 rounded-lg border-2 border-dashed border-cyan-500/20 hover:border-cyan-500/50 hover:bg-cyan-500/5 cursor-pointer transition-all group">
-                        <input
-                          type="file"
-                          multiple
-                          accept="image/*"
-                          onChange={handleFileChange}
-                          className="hidden"
-                        />
-                        <div className="flex items-center gap-2 text-sm text-cyan-400/70 group-hover:text-cyan-400 px-2">
-                          <ImageIcon className="w-4 h-4" />
-                          <span>Add Screenshot</span>
-                        </div>
-                      </label>
-                    </div>
-                    <p className="text-[11px] text-gray-500">Max size 5MB per file. Formats: JPG, PNG, GIF.</p>
-                  </div>
 
                   <motion.div
                     whileHover={{ scale: 1.02 }}

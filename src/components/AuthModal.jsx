@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, ArrowLeft, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
@@ -21,6 +21,7 @@ export default function AuthModal({ open, onOpenChange }) {
   const [forgotPasswordStep, setForgotPasswordStep] = useState('email'); // 'email', 'otp', 'reset'
   const [showOtpSentPopup, setShowOtpSentPopup] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const { loginWithGoogle, loginWithLinkedIn } = useAuth();
 
   const handleGoogleSignIn = async () => {
@@ -88,22 +89,60 @@ export default function AuthModal({ open, onOpenChange }) {
       transition: { duration: 0.4 }
     }
   };
-
+ 
   const validateEmailFormat = (email) => {
-    return email.includes('@') && email.endsWith('.com');
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  const validatePasswordLength = (pass) => {
-    return pass.length >= 8;
+  const validatePasswordRules = (pass) => {
+    return {
+      length: pass.length >= 8,
+      number: /\d/.test(pass),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(pass)
+    };
+  };
+
+  const PasswordRules = ({ password, visible }) => {
+    if (!visible && !password) return null;
+    const rules = validatePasswordRules(password);
+    
+    const RuleItem = ({ label, met }) => (
+      <div className={`flex items-center gap-2 text-[11px] transition-colors ${met ? 'text-emerald-400' : 'text-gray-500'}`}>
+        <div className={`w-1 h-1 rounded-full ${met ? 'bg-emerald-400' : 'bg-gray-600'}`} />
+        <span>{label}</span>
+      </div>
+    );
+
+    return (
+      <motion.div 
+        initial={{ opacity: 0, y: -5 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-3 space-y-2 bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-sm shadow-inner"
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <Sparkles className="w-3 h-3 text-cyan-400" />
+          <p className="text-[10px] uppercase font-black text-cyan-400/80">Security Requirements</p>
+        </div>
+        <div className="grid grid-cols-1 gap-1.5">
+          <RuleItem label="8+ Characters" met={rules.length} />
+          <RuleItem label="Includes Number" met={rules.number} />
+          <RuleItem label="Special Character (@#...)" met={rules.special} />
+        </div>
+      </motion.div>
+    );
   };
 
   const handleSignIn = async () => {
+    if (!email) {
+      setError('Enter email address');
+      return;
+    }
     if (!validateEmailFormat(email)) {
-      setError('invalid email');
+      setError('Please enter a valid email address');
       return;
     }
     if (!password) {
-      setError('Please enter your password.');
+      setError('Enter password');
       return;
     }
     setError('');
@@ -115,18 +154,29 @@ export default function AuthModal({ open, onOpenChange }) {
   };
 
   const handleSignUp = async () => {
+    if (!email) {
+      setError('Enter email address');
+      return;
+    }
     if (!validateEmailFormat(email)) {
-      setError('invalid email');
+      setError('Please enter a valid email address');
       return;
     }
-    if (!password || !confirmPassword) {
-      setError('Please enter password and confirm password.');
+    if (!password) {
+      setError('Enter password');
       return;
     }
-    if (!validatePasswordLength(password)) {
-      setError('Password must contain at least 8 characters.');
+    if (!confirmPassword) {
+      setError('Please confirm your password');
       return;
     }
+    
+    const rules = validatePasswordRules(password);
+    if (!rules.length || !rules.number || !rules.special) {
+      setError('Password must meet all requirements');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
@@ -188,8 +238,9 @@ export default function AuthModal({ open, onOpenChange }) {
         setError('Please enter password and confirm password.');
         return;
       }
-      if (!validatePasswordLength(password)) {
-        setError('Password must contain at least 8 characters.');
+      const rules = validatePasswordRules(password);
+      if (!rules.length || !rules.number || !rules.special) {
+        setError('Password must meet all requirements');
         return;
       }
       if (password !== confirmPassword) {
@@ -206,29 +257,38 @@ export default function AuthModal({ open, onOpenChange }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#151d45] border-cyan-500/20 text-white max-w-[900px] w-[95vw] p-0 overflow-hidden shadow-2xl rounded-2xl">
-        <div className="flex flex-col md:flex-row w-full min-h-[600px] md:h-auto md:min-h-[680px] max-h-[95vh]">
+      <DialogContent className="bg-[#151d45] border-cyan-500/20 text-white max-w-[900px] w-[95vw] p-0 overflow-hidden shadow-2xl rounded-3xl border-0">
+        <div className="flex flex-col md:flex-row w-full min-h-[600px] md:h-auto md:min-h-[700px] max-h-[95vh]">
           {/* Left Panel - Branding */}
           <div className="hidden md:flex flex-col flex-1 items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#151d45] to-[#0f172a] relative overflow-hidden p-10 border-r border-cyan-500/10">
             {/* Simple abstract background shapes */}
             <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
             
-            <div className="relative z-10 flex flex-col items-center text-center">
-              <div className="w-32 h-32 mb-8 relative">
+            <div className="relative z-10 flex flex-col items-center text-center max-w-[280px]">
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="w-28 h-28 mb-10 relative group"
+              >
+                <div className="absolute inset-0 bg-cyan-400/20 rounded-3xl blur-2xl group-hover:bg-cyan-400/40 transition-all duration-700" />
                 <img 
                   src="/assets/incubrix-logo.jpg" 
-                  alt="IncuBrix Logo" 
-                  className="w-full h-full object-contain rounded-2xl drop-shadow-[0_0_15px_rgba(61,229,255,0.2)]"
+                  alt="IncuBrix" 
+                  className="w-full h-full object-contain rounded-2xl relative z-10 shadow-2xl"
                 />
-              </div>
-              <h2 className="text-4xl font-bold tracking-tight text-white mb-3">IncuBrix</h2>
-              <p className="text-cyan-400 text-sm font-medium tracking-widest uppercase">Creator Studio</p>
+              </motion.div>
+              <h2 className="text-3xl font-black tracking-tight text-white mb-2">IncuBrix</h2>
+              <div className="h-0.5 w-12 bg-cyan-500/40 mb-4 rounded-full" />
+              <p className="text-gray-400 text-sm font-medium leading-relaxed">
+                Empowering creators with AI-driven studio tools.
+              </p>
             </div>
           </div>
 
-          {/* Right Panel - Form (450px wide) */}
-          <div className="w-full md:w-[450px] flex flex-col p-6 md:p-8 relative bg-[#151d45]">
+          {/* Right Panel - Form */}
+          <div className="w-full md:w-[480px] flex flex-col p-8 md:p-10 relative bg-[#151d45] border-l border-white/5">
             {view !== 'login' && (
               <button 
                 onClick={() => setView('login')}
@@ -420,30 +480,48 @@ export default function AuthModal({ open, onOpenChange }) {
                     </motion.div>
                   )}
 
-                  {forgotPasswordStep === 'reset' && (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
                       <div>
                         <label className="block text-[13px] font-medium text-gray-400 mb-1.5">New Password</label>
-                        <input 
-                          type="password" 
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          className="w-full bg-black/20 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
-                          placeholder="••••••••"
-                        />
+                        <div className="relative">
+                          <input 
+                            type={showPassword ? "text" : "password"} 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onFocus={() => setIsPasswordFocused(true)}
+                            onBlur={() => setIsPasswordFocused(false)}
+                            className="w-full bg-black/20 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                            placeholder="••••••••"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                          >
+                            {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        <PasswordRules password={password} visible={isPasswordFocused} />
                       </div>
                       <div>
                         <label className="block text-[13px] font-medium text-gray-400 mb-1.5">Confirm New Password</label>
-                        <input 
-                          type="password" 
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full bg-black/20 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors"
-                          placeholder="••••••••"
-                        />
+                        <div className="relative">
+                          <input 
+                            type={showPassword ? "text" : "password"} 
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className={`w-full bg-black/20 border ${password && confirmPassword ? (password === confirmPassword ? 'border-emerald-500/50' : 'border-red-500/50') : 'border-gray-700'} rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-colors`}
+                            placeholder="••••••••"
+                          />
+                          {password && confirmPassword && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                              {password === confirmPassword ? 
+                                <span className="text-emerald-400 text-[10px] font-bold uppercase tracking-tighter">Match</span> : 
+                                <span className="text-red-400 text-[10px] font-bold uppercase tracking-tighter">No Match</span>
+                              }
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </motion.div>
-                  )}
 
                   <div className="pt-4">
                     <button 
@@ -495,6 +573,8 @@ export default function AuthModal({ open, onOpenChange }) {
                           type={showPassword ? "text" : "password"} 
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
+                          onFocus={() => setIsPasswordFocused(true)}
+                          onBlur={() => setIsPasswordFocused(false)}
                           className="w-full bg-black/20 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-transparent focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
                           placeholder="••••••••"
                         />
@@ -506,6 +586,7 @@ export default function AuthModal({ open, onOpenChange }) {
                           {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                         </button>
                       </div>
+                      <PasswordRules password={password} visible={isPasswordFocused} />
                     </motion.div>
 
                     <motion.div
@@ -519,9 +600,17 @@ export default function AuthModal({ open, onOpenChange }) {
                           type={showPassword ? "text" : "password"} 
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          className="w-full bg-black/20 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-transparent focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                          className={`w-full bg-black/20 border ${password && confirmPassword ? (password === confirmPassword ? 'border-emerald-500/50' : 'border-red-500/50') : 'border-gray-700'} rounded-xl px-4 py-3 text-white placeholder-transparent focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all`}
                           placeholder="••••••••"
                         />
+                        {password && confirmPassword && (
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                            {password === confirmPassword ? 
+                              <span className="bg-emerald-500/10 text-emerald-400 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded border border-emerald-500/20">Match</span> : 
+                              <span className="bg-red-500/10 text-red-400 text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded border border-red-500/20">No Match</span>
+                            }
+                          </div>
+                        )}
                       </div>
                     </motion.div>
 

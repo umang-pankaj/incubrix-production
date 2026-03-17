@@ -188,20 +188,18 @@ export default function HowItWorks() {
 
                 {/* Content Block */}
                 <motion.div
-                  className={`flex-1 w-full lg:w-1/2 flex flex-col ${idx % 2 === 0 ? 'lg:items-end lg:text-right lg:pr-12 order-2 lg:order-1' : 'lg:items-start lg:text-left lg:pl-12 order-2 lg:order-2'}`}
+                  className={`flex-1 w-full lg:w-1/2 flex flex-col ${idx % 2 === 0 ? 'lg:items-end lg:text-left lg:pr-12 order-2 lg:order-1' : 'lg:items-start lg:text-left lg:pl-12 order-2 lg:order-2'}`}
                   initial={{ opacity: 0, x: idx % 2 === 0 ? -50 : 50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                 >
-                  <div className={`flex items-center gap-4 mb-6 ${idx % 2 === 0 ? 'lg:flex-row-reverse' : 'flex-row'}`}>
-                    <motion.div
+                  <div className="flex items-center gap-4 mb-6">
+                    <div
                       className={`w-14 h-14 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/30 flex-shrink-0`}
-                      whileHover={{ rotate: 360, scale: 1.1 }}
-                      transition={{ duration: 0.6 }}
                     >
                       <item.icon className="w-7 h-7 text-white" />
-                    </motion.div>
+                    </div>
                     
                     {/* Mobile Step Badge (visible md and down) */}
                     <div className="lg:hidden flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/30">
@@ -232,7 +230,7 @@ export default function HowItWorks() {
                     {item.features.map((feature, featureIdx) => (
                       <motion.li
                         key={featureIdx}
-                        className={`flex items-center gap-3 ${idx % 2 === 0 ? 'lg:flex-row-reverse' : 'flex-row'}`}
+                        className="flex items-center gap-3 flex-row"
                         initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -241,7 +239,7 @@ export default function HowItWorks() {
                         <div className="w-6 h-6 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
                           <CheckCircle2 className="w-4 h-4 text-cyan-400" />
                         </div>
-                        <span className="text-gray-200 font-medium">{feature}</span>
+                        <span className="text-gray-200 font-medium text-left">{feature}</span>
                       </motion.li>
                     ))}
                   </ul>
