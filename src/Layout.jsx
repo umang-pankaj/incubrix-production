@@ -17,7 +17,6 @@ export default function Layout({ children, currentPageName }) {
   // Profile states - initialized as empty/default and synced via useEffect
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [isBioExpanded, setIsBioExpanded] = useState(false);
-  const [bio, setBio] = useState('Founder @ IncuBrix | Content Creator');
   const [nickname, setNickname] = useState('');
   const [useNicknameAsDisplay, setUseNicknameAsDisplay] = useState(false);
   const [isBetaEnrolled, setIsBetaEnrolled] = useState(false);
@@ -95,37 +94,17 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
-  const handleBioChange = (e) => {
-    const val = e.target.value;
-    const wordCount = val.trim() === '' ? 0 : val.trim().split(/\s+/).length;
-    if (wordCount <= 100) {
-      setBio(val);
-      if (user?.email) {
-        localStorage.setItem(`${user.email}_bio`, val);
-      }
-    } else {
-      const words = val.trim().split(/\s+/).slice(0, 100).join(" ");
-      setBio(words);
-      if (user?.email) {
-        localStorage.setItem(`${user.email}_bio`, words);
-      }
-      toast.error("Bio restricted to 100 words", { id: 'bio-limit' });
-    }
-  };
-
   // Safe loading effect (no side effects that save data)
   useEffect(() => {
     if (user?.email) {
       const email = user.email;
       setProfilePhoto(localStorage.getItem(`${email}_profilePhoto`) || null);
-      setBio(localStorage.getItem(`${email}_bio`) || 'Founder @ IncuBrix | Content Creator');
       setNickname(localStorage.getItem(`${email}_nickname`) || '');
       setUseNicknameAsDisplay(localStorage.getItem(`${email}_useNicknameAsDisplay`) === 'true');
       setIsBetaEnrolled(localStorage.getItem(`${email}_isBetaEnrolled`) === 'true');
     } else {
       // Clear data on logout
       setProfilePhoto(null);
-      setBio('Founder @ IncuBrix | Content Creator');
       setNickname('');
       setUseNicknameAsDisplay(false);
       setIsBetaEnrolled(false);
@@ -227,13 +206,13 @@ export default function Layout({ children, currentPageName }) {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-4 xl:space-x-8">
 
               {/* Resources Dropdown */}
               <div className="relative" ref={resourcesDropdownRef}>
                 <button
                   onClick={() => setIsResourcesDropdownOpen(prev => !prev)}
-                  className={`flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#00d9ff] ${isResourcesDropdownOpen ? 'text-[#00d9ff]' : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}
+                  className={`flex items-center gap-1 text-xs xl:text-sm font-medium transition-colors hover:text-[#00d9ff] ${isResourcesDropdownOpen ? 'text-[#00d9ff]' : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}
                 >
                   Resources
                   <svg className={`w-3 h-3 transition-transform duration-200 ${isResourcesDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -245,7 +224,7 @@ export default function Layout({ children, currentPageName }) {
                   <div className="py-2">
                     {[
                       { label: 'About Us', path: 'About' },
-                      { label: 'How It Works', path: 'HowItWorks' },
+                      { label: 'How IncuBrix Works', path: 'HowItWorks' },
                       { label: 'Blog', path: 'Blog' }
                     ].map((item) => (
                       <Link
@@ -268,7 +247,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="relative" ref={creatorStudioDropdownRef}>
                 <button
                   onClick={() => setIsCreatorStudioDropdownOpen(prev => !prev)}
-                  className={`flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-[#00d9ff] ${isCreatorStudioDropdownOpen ? 'text-[#00d9ff]' : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}
+                  className={`flex items-center gap-1 text-xs xl:text-sm font-medium transition-colors hover:text-[#00d9ff] ${isCreatorStudioDropdownOpen ? 'text-[#00d9ff]' : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}
                 >
                   Creator Studio
                   <svg className={`w-3 h-3 transition-transform duration-200 ${isCreatorStudioDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -307,7 +286,7 @@ export default function Layout({ children, currentPageName }) {
                   key={link.path}
                   to={createPageUrl(link.path)}
                   onClick={() => handleNavClick(link.path)}
-                  className={`text-sm font-medium transition-colors hover:text-[#00d9ff] ${currentPageName === link.path ? 'text-[#00d9ff]' : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                  className={`text-xs xl:text-sm font-medium transition-colors hover:text-[#00d9ff] ${currentPageName === link.path ? 'text-[#00d9ff]' : theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                     }`}
                 >
                   {link.name}
@@ -320,7 +299,7 @@ export default function Layout({ children, currentPageName }) {
               <div className="relative" ref={socialDropdownRef}>
                 <button
                   onClick={() => setIsSocialDropdownOpen(prev => !prev)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all border ${isSocialDropdownOpen
+                  className={`flex items-center gap-1 px-2 xl:px-3 py-2 rounded-xl text-xs xl:text-sm font-semibold transition-all border ${isSocialDropdownOpen
                     ? 'bg-white/10 border-cyan-500/40 text-white'
                     : 'border-white/10 text-gray-300 hover:text-white hover:border-white/20 hover:bg-white/5'
                     }`}
@@ -400,7 +379,7 @@ export default function Layout({ children, currentPageName }) {
               {/* Book a Demo Button */}
               <button
                 onClick={() => setIsDemoModalOpen(true)}
-                className="text-sm font-semibold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 px-3 py-2 rounded-xl border border-cyan-500/20 hover:bg-cyan-500/10"
+                className="text-xs xl:text-sm font-semibold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 px-2 xl:px-3 py-2 rounded-xl border border-cyan-500/20 hover:bg-cyan-500/10"
               >
                 <Calendar className="w-4 h-4" />
                 Book a demo
@@ -427,10 +406,14 @@ export default function Layout({ children, currentPageName }) {
                             onClick={handlePhotoClick}
                             className="relative group/avatar"
                           >
-                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-400 via-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-black shadow-[0_0_20px_rgba(6,182,212,0.4)] group-hover/avatar:opacity-80 transition-opacity">
-                              {user.name ? user.name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U')}
+                            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-400 via-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-black shadow-[0_0_20px_rgba(6,182,212,0.4)] group-hover/avatar:opacity-80 transition-opacity overflow-hidden">
+                              {profilePhoto ? (
+                                <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+                              ) : (
+                                (user.name ? user.name.charAt(0).toUpperCase() : (user.email ? user.email.charAt(0).toUpperCase() : 'U'))
+                              )}
                             </div>
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity z-10">
                               <Camera className="w-5 h-5 text-white" />
                             </div>
                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#0f173d] border border-cyan-500/30 rounded-full flex items-center justify-center shadow-lg">
@@ -463,20 +446,31 @@ export default function Layout({ children, currentPageName }) {
 
                       {isBioExpanded && (
                         <div className={`mb-6 p-4 rounded-2xl border ${theme === 'dark' ? 'bg-[#0a0e27]/50 border-white/5' : 'bg-gray-50/50 border-gray-200'} transition-all animate-in slide-in-from-top-2 duration-300`}>
-                          <div className="mb-4">
+                          <div className="">
                             <p className={`text-[10px] font-bold uppercase tracking-widest ${theme === 'dark' ? 'text-cyan-400/60' : 'text-cyan-600/60'} mb-2 text-left`}>Nickname</p>
-                            <input
-                              type="text"
-                              value={nickname}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                setNickname(val);
-                                if (user?.email) localStorage.setItem(`${user.email}_nickname`, val);
-                              }}
-                              className={`w-full bg-transparent border-b ${theme === 'dark' ? 'border-white/10 text-white' : 'border-gray-200 text-gray-900'} focus:border-cyan-500 focus:ring-0 text-sm p-0 pb-1 font-medium outline-none`}
-                              placeholder="Enter nickname..."
-                            />
-                            <div className="flex items-start gap-2 mt-2">
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={nickname}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setNickname(val);
+                                  if (user?.email) localStorage.setItem(`${user.email}_nickname`, val);
+                                }}
+                                className={`flex-1 bg-transparent border-b ${theme === 'dark' ? 'border-white/10 text-white' : 'border-gray-200 text-gray-900'} focus:border-cyan-500 focus:ring-0 text-sm p-0 pb-1 font-medium outline-none`}
+                                placeholder="Enter nickname..."
+                              />
+                              <button
+                                onClick={() => {
+                                  setIsBioExpanded(false);
+                                  toast.success("Profile updated!");
+                                }}
+                                className="px-3 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-white text-[10px] font-bold uppercase transition-all"
+                              >
+                                Save
+                              </button>
+                            </div>
+                            <div className="flex items-start gap-2 mt-3">
                               <input
                                 type="checkbox"
                                 id="use-nickname-toggle"
@@ -489,34 +483,8 @@ export default function Layout({ children, currentPageName }) {
                                 className="mt-0.5 h-3 w-3 rounded border-white/10 bg-white/5 text-cyan-500 focus:ring-cyan-500/50 cursor-pointer"
                               />
                               <label htmlFor="use-nickname-toggle" className="text-[9px] text-cyan-400/60 text-left leading-tight cursor-pointer select-none">
-                                Use this nickname as your display name on the account section on the home page.
+                                Use this nickname as your display name.
                               </label>
-                            </div>
-                          </div>
-                          <div>
-                            <div className="flex justify-between items-center mb-2">
-                              <p className={`text-[10px] font-bold uppercase tracking-widest ${theme === 'dark' ? 'text-cyan-400/60' : 'text-cyan-600/60'} text-left`}>Your Bio</p>
-                              <span className={`text-[9px] font-bold ${bio.trim() === '' ? 0 : bio.trim().split(/\s+/).length >= 95 ? 'text-red-400' : 'text-gray-500'}`}>
-                                {bio.trim() === '' ? 0 : bio.trim().split(/\s+/).length}/100 Words
-                              </span>
-                            </div>
-                            <textarea
-                              value={bio}
-                              onChange={handleBioChange}
-                              className={`w-full bg-transparent border-none focus:ring-0 text-sm p-0 resize-none ${theme === 'dark' ? 'text-white' : 'text-gray-900'} min-h-[60px] font-medium leading-relaxed`}
-                              placeholder="Add your bio here..."
-                            />
-                            <div className="flex justify-between items-center mt-4">
-                              <span className="text-[10px] text-gray-500 font-bold uppercase">Click to edit</span>
-                              <button
-                                onClick={() => {
-                                  setIsBioExpanded(false);
-                                  toast.success("Profile updated!");
-                                }}
-                                className="px-4 py-1.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-white text-[10px] font-bold uppercase transition-all shadow-lg hover:shadow-cyan-500/20"
-                              >
-                                Save Changes
-                              </button>
                             </div>
                           </div>
                         </div>
@@ -604,7 +572,7 @@ export default function Layout({ children, currentPageName }) {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-gray-300 hover:text-white"
+              className="md:hidden p-2 text-gray-300 hover:text-white"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -613,7 +581,7 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-[#0f1535] border-t border-white/5">
+          <div className="md:hidden bg-[#0f1535] border-t border-white/5">
             <div className="px-6 py-4 space-y-3">
 
               {/* Mobile Resources Accordion */}
@@ -631,7 +599,7 @@ export default function Layout({ children, currentPageName }) {
                   <div className="pl-4 py-2 space-y-3 border-l border-white/10 ml-2 mt-1">
                     {[
                       { label: 'About Us', path: 'About' },
-                      { label: 'How It Works', path: 'HowItWorks' },
+                      { label: 'How IncuBrix Works', path: 'HowItWorks' },
                       { label: 'Blog', path: 'Blog' }
                     ].map((item) => (
                       <Link
@@ -726,7 +694,7 @@ export default function Layout({ children, currentPageName }) {
           toast.success("Successfully enrolled in Beta!");
         }}
       />
-      <Toaster position="top-center" theme={theme === 'light' ? 'light' : 'dark'} />
+      <Toaster richColors position="top-center" theme={theme === 'light' ? 'light' : 'dark'} />
 
       {/* Main Content */}
       <main className="pt-20">
@@ -782,7 +750,7 @@ export default function Layout({ children, currentPageName }) {
                 </li>
                 <li>
                   <Link to={createPageUrl('HowItWorks') + '?f=hiw'} onClick={() => handleNavClick('HowItWorks')} className={`text-sm transition-colors hover:text-[#00d9ff] ${currentPageName === 'HowItWorks' && location.search.includes('f=hiw') ? 'text-[#00d9ff] font-semibold' : 'text-gray-400'}`}>
-                    How It Works
+                    How IncuBrix Works
                   </Link>
                 </li>
                 <li>

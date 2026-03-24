@@ -3,7 +3,7 @@ import { Scale, ShieldCheck, AlertTriangle, FileText, Mail, Globe } from 'lucide
 import { motion } from 'framer-motion';
 
 export default function Terms() {
-  const lastUpdated = "27 January 2026";
+  const lastUpdated = "24 March 2026";
 
   const sections = [
     {
@@ -52,7 +52,7 @@ export default function Terms() {
           <li>4.1 You must provide accurate and complete information when creating an Account.</li>
           <li>4.2 You are responsible for all activity conducted through your Account, whether authorized or not.</li>
           <li>4.3 You must safeguard your credentials and notify IncuBrix immediately of unauthorized access or security incidents.</li>
-          <li>4.4 IncuBrix may impose limits, suspend, or terminate Accounts to protect the Platform, Users, or legal compliance.</li>
+          <li>4.4 IncuBrix may investigate suspected violations of this Agreement and may remove Content, limit functionality, suspend access, or terminate Accounts where reasonably necessary to protect the Platform, users, third parties, or legal compliance. Where appropriate, we may provide notice, but we may act without prior notice in cases involving security, fraud, abuse, unlawful activity, or material risk.</li>
         </ul>
       )
     },
@@ -64,6 +64,7 @@ export default function Terms() {
           <p>5.1 The Platform provides AI-powered tools for content creation, transformation, automation, collaboration, analytics, monetization, and marketplace access.</p>
           <p>5.2 Certain features may be labeled beta, experimental, or preview and are provided “as is.”</p>
           <p>5.3 The Platform is provided on an “as available” basis. No SLA or uptime guarantee applies unless agreed in a separate written enterprise agreement.</p>
+          <p>5.4 <strong>Third-Party Dependencies</strong> – Certain features of the Platform depend on third-party providers and infrastructure. IncuBrix is not responsible for outages, interruptions, delays, feature changes, or failures caused by third-party services, although we will make reasonable efforts to manage and mitigate such issues.</p>
         </div>
       )
     },
@@ -102,8 +103,9 @@ export default function Terms() {
         <ul className="space-y-3 text-gray-300">
           <li><strong className="text-white">8.1 Ownership</strong> – You retain ownership of your Content.</li>
           <li><strong className="text-white">8.2 User Warranties</strong> – You represent that you own or have rights to submit Content and that it complies with law.</li>
-          <li><strong className="text-white">8.3 License to IncuBrix</strong> – You grant IncuBrix a worldwide, non-exclusive, royalty-free, transferable, and sublicensable license to host, store, process, modify, and use Content solely to operate, secure, improve, and provide the Platform and comply with legal obligations.</li>
-          <li><strong className="text-white">8.4 Moderation & Disclosure</strong> – IncuBrix may review, remove, or disclose Content to comply with law, court orders, or safety requirements.</li>
+          <li><strong className="text-white">8.3 User Responsibility for Content</strong> – You are solely responsible for your Content, including its legality, accuracy, rights clearance, and compliance with applicable laws. IncuBrix does not endorse, verify, or assume responsibility for User Content or third-party content made available through the Platform.</li>
+          <li><strong className="text-white">8.4 License to IncuBrix</strong> – You grant IncuBrix a worldwide, non-exclusive, royalty-free, transferable, and sublicensable license to host, store, process, modify, and use Content solely to operate, secure, improve, and provide the Platform and comply with legal obligations.</li>
+          <li><strong className="text-white">8.5 Moderation & Disclosure</strong> – IncuBrix may review, remove, or disclose Content to comply with law, court orders, or safety requirements.</li>
         </ul>
       )
     },
@@ -121,10 +123,11 @@ export default function Terms() {
             <p className="text-gray-300 text-sm">9.2 AI Outputs do not constitute legal, medical, financial, or professional advice.</p>
           </div>
           <ul className="list-disc list-inside space-y-2 ml-4 text-gray-300 mt-2">
-            <li>9.3 You are solely responsible for reviewing and validating AI Outputs before use.</li>
-            <li>9.4 IncuBrix does not guarantee originality or non-infringement of AI Outputs.</li>
-            <li>9.5 <strong>AI Training</strong> – Aggregated and anonymized data may be used to improve the Platform. Enterprise customers may opt out via written agreement.</li>
-            <li>9.6 <strong>Third-Party Models</strong> – Certain AI features rely on third-party providers. IncuBrix disclaims liability for third-party AI behavior while remaining responsible for platform integration.</li>
+            <li>9.3 You are solely responsible for reviewing, editing, validating, and determining whether AI Outputs are appropriate before using, publishing, sharing, or relying on them.</li>
+            <li>9.4 <strong>Synthetic Media and Disclosure</strong> – You must not use the Platform to create or distribute deceptive or unlawful synthetic media, including impersonation or undisclosed deepfakes. Where required by law or industry practice, you are responsible for obtaining consent and providing appropriate disclosure.</li>
+            <li>9.5 IncuBrix does not guarantee originality or non-infringement of AI Outputs.</li>
+            <li>9.6 <strong>AI Training</strong> – Aggregated and anonymized data may be used to improve the Platform. Personally identifiable user data is not used to train AI models unless explicitly agreed under a separate enterprise agreement.</li>
+            <li>9.7 <strong>Third-Party Models</strong> – Certain AI features rely on third-party providers. IncuBrix disclaims liability for third-party AI behavior while remaining responsible for platform integration.</li>
           </ul>
         </div>
       )
@@ -132,7 +135,7 @@ export default function Terms() {
     {
       id: "commercial",
       title: "10. Commercial vs Personal Use",
-      content: "Commercial use of AI Outputs, monetization, resale, or client-facing deployment may require a paid subscription or enterprise agreement. Free or trial plans may be limited to personal or internal use unless otherwise stated."
+      content: "Certain features, outputs, publishing capabilities, monetization tools, client work, team collaboration, API access, or business use may require a paid subscription or enterprise agreement. Free or trial plans may be limited to personal, evaluation, or internal use unless otherwise stated on the pricing page or in Supplemental Terms."
     },
     {
       id: "marketplace",
@@ -142,6 +145,7 @@ export default function Terms() {
           <li>11.1 Creators and Partners act independently. IncuBrix is not an agent, employer, or fiduciary.</li>
           <li>11.2 Marketplace transactions occur solely between Users and Partners.</li>
           <li>11.3 IncuBrix may charge platform fees or commissions as disclosed.</li>
+          <li>11.4 IncuBrix does not guarantee any particular creative, publishing, monetization, audience growth, engagement, traffic, commercial, or revenue outcome from use of the Platform.</li>
         </ul>
       )
     },
@@ -151,9 +155,10 @@ export default function Terms() {
       content: (
         <ul className="list-disc list-inside space-y-2 ml-4 text-gray-300">
           <li>12.1 Certain features may use credits, tokens, or usage-based billing.</li>
-          <li>12.2 All fees and credits are non-transferable and non-refundable. IncuBrix uses Stripe as its payment partner; by using the Platform, you agree to be bound by Stripe's transactional rules.</li>
-          <li>12.3 Refunds are only available in the event of a transactional fault or processing error from our payment partner, Stripe, which will be handled automatically.</li>
-          <li>12.4 Fees are billed in advance and subscriptions may auto-renew unless canceled.</li>
+          <li>12.2 Paid plans are billed in advance on a recurring basis and renew automatically unless canceled before the next renewal date. Prices may exclude applicable taxes unless otherwise stated.</li>
+          <li>12.3 If a subscription is upgraded, downgraded, or changed, charges may be prorated or adjusted in the current or next billing cycle, as applicable.</li>
+          <li>12.4 Fees, credits, and subscriptions are generally non-refundable except where required by law or in the case of verified billing errors, duplicate charges, or unauthorized transactions. IncuBrix may, at its discretion, provide credits, refunds, or other adjustments in appropriate circumstances.</li>
+          <li>12.5 You are responsible for maintaining a valid payment method. IncuBrix may suspend access to paid features if payment cannot be processed.</li>
         </ul>
       )
     },
@@ -260,7 +265,7 @@ export default function Terms() {
       )
     }
   ];
-  const [activeSection, setActiveSection] = React.useState(null);
+  const [activeSection, setActiveSection] = React.useState('introduction');
 
   React.useEffect(() => {
     const observer = new IntersectionObserver(
@@ -271,13 +276,17 @@ export default function Terms() {
           }
         });
       },
-      { threshold: 0.5, rootMargin: "-10% 0px -70% 0px" }
+      { threshold: 0, rootMargin: "-120px 0px -70% 0px" }
     );
 
     sections.forEach((section) => {
       const element = document.getElementById(section.id);
       if (element) observer.observe(element);
     });
+
+    // Also observe introduction
+    const intro = document.getElementById('introduction');
+    if (intro) observer.observe(intro);
 
     return () => observer.disconnect();
   }, []);
@@ -306,7 +315,7 @@ export default function Terms() {
       </div>
 
       {/* Introduction */}
-      <section id="introduction" className="py-12 px-6 border-b border-white/5 bg-[#050510]/30 scroll-mt-8">
+      <section id="introduction" className="py-12 px-6 border-b border-white/5 bg-[#050510]/30 scroll-mt-32">
         <div className="max-w-3xl mx-auto text-lg leading-relaxed text-gray-300">
           <p className="mb-6">
             These Terms of Service (“Agreement” or “Terms”) govern your access to and use of the IncuBrix platform
@@ -371,7 +380,7 @@ export default function Terms() {
           <div className="flex-1 max-w-3xl">
             <div className="space-y-16">
               {sections.map((section) => (
-                <div key={section.id} id={section.id} className="scroll-mt-8">
+                <div key={section.id} id={section.id} className="scroll-mt-32">
                   <h2 className="text-xl md:text-2xl font-bold text-white mb-6 flex items-center gap-3 border-l-4 border-cyan-500 pl-4 py-1">
                     {section.title}
                   </h2>

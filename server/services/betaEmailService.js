@@ -24,7 +24,10 @@ class BetaEmailService {
 
         const msg = {
             to: user.email,
-            from: this.senderEmail,
+            from: {
+                name: 'Incubrix Team',
+                email: this.senderEmail
+            },
             subject: "You're on the Incubrix Beta List 🚀",
             html: `
                 <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0a0e27; color: #ffffff; border-radius: 12px; overflow: hidden;">
@@ -79,7 +82,10 @@ class BetaEmailService {
 
         const msg = {
             to: this.adminEmail,
-            from: this.senderEmail,
+            from: {
+                name: 'Incubrix Beta',
+                email: this.senderEmail
+            },
             subject: `[BETA SIGNUP] New registration: ${user.name}`,
             html: `
                 <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">

@@ -1,73 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Mail, Send, CheckCircle2, ChevronDown, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/AuthContext';
+
+const CATEGORIES = [
+  { id: 'feedback', label: 'General Feedback' },
+  { id: 'bug', label: 'Bug Report' },
+  { id: 'feature', label: 'Feature Request' },
+  { id: 'account', label: 'Account Issue' },
+];
 
 export default function NeedHelp() {
+  const { theme } = useAuth();
+  const location = useLocation();
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (location.hash === '#faq') {
+      const element = document.getElementById('faq');
+      if (element) {
+        // Small timeout to ensure DOM is ready and layout has settled
+        const timeoutId = setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        return () => clearTimeout(timeoutId);
+      }
+    }
+  }, [location.hash]);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    category: 'General Feedback',
+    message: '',
+    attachments: [],
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ticketId, setTicketId] = useState('');
-  const [openFaq, setOpenFaq] = useState(null);
-
-  // Auto-reset success message after 5 seconds
-  React.useEffect(() => {
-    let timeout;
-    if (submitted) {
-      timeout = setTimeout(() => {
-        setSubmitted(false);
-        setFormData({ name: '', email: '', message: '' });
-        setTicketId('');
-      }, 5000);
-    }
-    return () => clearTimeout(timeout);
-  }, [submitted]);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
   const validateEmail = (email) => {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
+    // Simple, bundler-safe email validation
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
   };
 
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (formData.attachments.length + files.length > 3) {
+      toast.error('Maximum 3 files allowed');
+      return;
+    }
+    const newAttachments = files.map((file) => ({
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB',
+      file,
+    }));
+    setFormData((prev) => ({
+      ...prev,
+      attachments: [...prev.attachments, ...newAttachments],
+    }));
+  };
+
+  const removeFile = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index),
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateEmail(formData.email)) {
       toast.error('Please enter a valid email address.');
       return;
     }
-
     setLoading(true);
-
     try {
       const response = await fetch(`${BACKEND_URL}/api/support/ticket`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
+          category: formData.category,
           message: formData.message,
         }),
       });
-
       const data = await response.json();
-
       if (response.ok) {
         setTicketId(data.ticketId);
         setSubmitted(true);
@@ -83,329 +111,266 @@ export default function NeedHelp() {
     }
   };
 
-  const faqs = [
-    {
-      question: "How long does it take to get a response?",
-      answer: "Our support team typically responds within 24 hours during business days. For urgent matters, we prioritize responses and aim to get back to you within 4-6 hours."
-    },
-    {
-      question: "What platforms does IncuBrix integrate with?",
-      answer: "IncuBrix currently integrates with LinkedIn, YouTube, podcasts, and newsletters. We're actively working on adding support for X, Instagram, TikTok, and Medium in our upcoming releases."
-    },
-    {
-      question: "Can I schedule a live demo?",
-      answer: "Absolutely! You can schedule a personalized 30-minute demo with our team by visiting our Demo page or booking directly through our Calendly link. We'll walk you through the platform and answer all your questions."
-    },
-    {
-      question: "Is there a free trial available?",
-      answer: "Yes! We offer a 14-day free trial for all new users. No credit card required. You'll have full access to all features during the trial period to explore how IncuBrix can transform your creator journey."
-    },
-    {
-      question: "How secure is my content and data?",
-      answer: "We take security seriously. All data is encrypted end-to-end, we're GDPR and CCPA compliant, and we never share your content with third parties. Your intellectual property and personal information are fully protected on our platform."
-    }
-  ];
-
   if (submitted) {
     return (
-      <div className="bg-[#0a0e27] text-white min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0e27] to-black">
-          <motion.div
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-cyan-500/20 to-blue-500/30 rounded-full blur-[150px]"
-            animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.3, 0.6, 0.3],
-              rotate: [0, 180, 360]
-            }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Card className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 p-12 max-w-2xl text-center relative z-10">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-cyan-500/50"
+      <div className="bg-[#0a0e27] text-white min-h-screen flex items-center justify-center px-6">
+        <div className="w-full max-w-lg">
+          <Card className="bg-[#10173a] border-cyan-500/20 p-12 text-center shadow-2xl">
+            <h2 className="text-3xl font-bold mb-4">Message Received</h2>
+            <p className="text-lg text-gray-300 mb-8">
+              Ticket ID: <span className="text-cyan-400 font-bold">{ticketId}</span>.<br />
+              Our support team will respond to{' '}
+              <span className="text-cyan-400">{formData.email}</span> within 24 hours.
+            </p>
+            <Button
+              onClick={() => {
+                setSubmitted(false);
+                setFormData({
+                  name: '',
+                  email: '',
+                  category: 'General Feedback',
+                  message: '',
+                  attachments: [],
+                });
+              }}
+              className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-8"
             >
-              <CheckCircle2 className="w-10 h-10 text-white" />
-            </motion.div>
-            <motion.h2
-              className="text-3xl font-bold mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              Message Sent!
-            </motion.h2>
-            <motion.p
-              className="text-lg text-gray-300 mb-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-            >
-              Thank you for reaching out. Your Ticket ID is <span className="text-cyan-400 font-bold">{ticketId}</span>. Our support team will respond within 24 hours.
-            </motion.p>
-            <motion.p
-              className="text-gray-400"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              We've sent a confirmation to <span className="text-cyan-400 font-semibold">{formData.email}</span>
-            </motion.p>
+              Back to Support
+            </Button>
           </Card>
-        </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#0a0e27] text-white min-h-screen">
-      <section className="relative py-8 px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0e27] to-black">
-          <motion.div
-            className="absolute top-1/4 left-1/3 w-[460px] h-[460px] bg-gradient-to-br from-cyan-500/28 to-blue-500/24 rounded-full blur-[120px]"
-            animate={{
-              scale: [1, 1.3, 1.1, 1],
-              opacity: [0.4, 0.6, 0.5, 0.4],
-              x: [0, 80, -50, 0],
-              y: [0, -50, 40, 0],
-              rotate: [0, 90, 270, 360]
-            }}
-            transition={{ duration: 17, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute bottom-1/4 right-1/3 w-[500px] h-[500px] bg-gradient-to-br from-indigo-500/26 to-purple-500/28 rounded-full blur-[130px]"
-            animate={{
-              scale: [1.3, 1, 1.5, 1.3],
-              opacity: [0.6, 0.3, 0.7, 0.6],
-              x: [0, -90, 60, 0],
-              y: [0, 70, -60, 0],
-              rotate: [360, 180, 0, 360]
-            }}
-            transition={{ duration: 19, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.h1
-            className="text-4xl md:text-4xl font-bold mb-6"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            Get in Touch
-            <span className="block bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              With Our Team
-            </span>
-          </motion.h1>
-          <motion.p
-            className="text-xl text-gray-300"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-          >
-            Our team is here to answer your questions and support your creator journey
-          </motion.p>
-        </div>
-      </section>
+    <div className="bg-[#0a0e27] text-white min-h-screen relative">
+      <div className="max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col items-center">
 
-      <section id="contact-form" className="py-8 px-6 bg-[#0a0e27] relative overflow-hidden">
-        <div className="max-w-5xl mx-auto relative z-10">
-          <div className="flex justify-center mb-8">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              whileHover={{ y: -10 }}
-              className="max-w-md w-full"
-            >
-              <a
-                href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@incubrix.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block h-full cursor-pointer relative z-50"
-              >
-                <Card className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 p-8 h-full hover:border-cyan-500/60 transition-all relative overflow-hidden group">
-                  <div className="relative z-10">
-                    <Mail className="w-10 h-10 text-cyan-400 mb-4" />
-                    <h3 className="text-xl font-semibold mb-2 text-white">Email Support</h3>
-                    <p className="text-gray-400 mb-4">
-                      Get help via email. We respond within 24 hours.
-                    </p>
-                    <span className="text-cyan-400 group-hover:text-cyan-300 transition-colors font-medium">
-                      contact@incubrix.com
-                    </span>
-                  </div>
-                </Card>
-              </a>
-            </motion.div>
+        {/* ── Header ── */}
+        <div className="text-center mb-12 md:mb-16">
+          <div className="inline-block px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-black uppercase tracking-[0.3em] mb-6">
+            Support Center
           </div>
+          <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
+            How can we <span className="text-cyan-400">help you</span> today?
+          </h1>
+          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto">
+            Whether you found a bug, have an idea, or just want to say hi, our team is ready to listen.
+          </p>
+        </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <Card className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 p-8 md:p-12 relative overflow-hidden">
-              <div className="relative z-10">
-                <h2 className="text-3xl font-bold mb-8 text-center text-white">Need Help?</h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="name" className="text-white">Name *</Label>
-                      <Input
-                        id="name"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="bg-[#0f1535] border-cyan-500/30 text-white mt-2"
-                        placeholder="Your name"
-                      />
-                    </div>
+        {/* ── Form Card ── */}
+        <div className="w-full max-w-3xl">
+          <Card className="bg-[#0d1330] border-white/5 p-8 md:p-12 rounded-[2rem] shadow-2xl">
+            <div className="mb-10">
+              <h2 className="text-3xl font-black text-white">Need Help?</h2>
+              <p className="text-gray-400 text-sm mt-2">
+                Fill out the form below and we'll get back to you within 24 hours.
+              </p>
+            </div>
 
-                    <div>
-                      <Label htmlFor="email" className="text-white">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="bg-[#0f1535] border-cyan-500/30 text-white mt-2"
-                        placeholder="your@email.com"
-                      />
-                    </div>
-                  </div>
+            <form onSubmit={handleSubmit} className="space-y-8">
 
-                  <div>
-                    <Label htmlFor="message" className="text-white">Your Query *</Label>
-                    <Textarea
-                      id="message"
-                      required
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      className="bg-[#0f1535] border-cyan-500/30 text-white mt-2 min-h-32"
-                      placeholder="Tell us how we can help you..."
-                    />
-                  </div>
-
-
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:opacity-90 text-white py-6 text-lg font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/30"
-                    >
-                      {loading ? (
-                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <Send className="w-5 h-5" />
-                      )}
-                      {loading ? 'Sending...' : 'Send Message'}
-                    </Button>
-                  </motion.div>
-                </form>
+              {/* Name + Email */}
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <Label className="text-gray-400 text-[10px] font-black uppercase tracking-widest ml-1">Full Name</Label>
+                  <Input
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="h-14 bg-white/5 border-white/10 rounded-xl text-white focus:border-cyan-500/50 transition-all font-medium placeholder:text-gray-600"
+                    placeholder="e.g. Alex Creator"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label className="text-gray-400 text-[10px] font-black uppercase tracking-widest ml-1">Email Address</Label>
+                  <Input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="h-14 bg-white/5 border-white/10 rounded-xl text-white focus:border-cyan-500/50 transition-all font-medium placeholder:text-gray-600"
+                    placeholder="alex@incubrix.com"
+                  />
+                </div>
               </div>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
 
-      <section id="faq" className="py-8 px-6 bg-[#0f1535] relative overflow-hidden">
-        <div className="max-w-4xl mx-auto relative z-10">
-          <motion.h2
-            className="text-3xl md:text-4xl font-bold mb-4 text-center bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            Frequently Asked Questions
-          </motion.h2>
-
-          <div className="space-y-4 mt-12">
-            {faqs.map((faq, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-              >
-                <Card
-                  className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 overflow-hidden cursor-pointer hover:border-cyan-500/60 transition-all"
-                  onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+              {/* Topic Dropdown */}
+              <div className="space-y-3 relative">
+                <Label className="text-gray-400 text-[10px] font-black uppercase tracking-widest ml-1">Topic</Label>
+                <div
+                  onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                  className="h-14 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between px-5 cursor-pointer hover:border-white/20 transition-all"
                 >
-                  <div className="p-6">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-semibold text-white pr-4">{faq.question}</h3>
-                      <motion.div
-                        animate={{ rotate: openFaq === idx ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
+                  <span className="font-bold text-white uppercase tracking-wider text-xs">{formData.category}</span>
+                  <span className={`text-gray-500 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`}>▼</span>
+                </div>
+                {isCategoryOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 p-2 bg-[#0a0e27] border border-white/10 rounded-xl shadow-2xl z-50">
+                    {CATEGORIES.map((cat) => (
+                      <div
+                        key={cat.id}
+                        onClick={() => {
+                          setFormData({ ...formData, category: cat.label });
+                          setIsCategoryOpen(false);
+                        }}
+                        className={`p-4 rounded-lg hover:bg-white/5 cursor-pointer transition-all ${formData.category === cat.label ? 'bg-white/5' : ''}`}
                       >
-                        <ChevronDown className="w-5 h-5 text-cyan-400" />
-                      </motion.div>
-                    </div>
-                    <AnimatePresence>
-                      {openFaq === idx && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <p className="text-gray-400 mt-4 leading-relaxed">{faq.answer}</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                        <span className="font-bold text-gray-300 uppercase tracking-wider text-[10px]">{cat.label}</span>
+                      </div>
+                    ))}
                   </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+                )}
+              </div>
 
-      <section className="py-8 px-6 bg-[#0a0e27]">
-        <div className="max-w-4xl mx-auto">
-          <motion.h2
-            className="text-3xl font-bold mb-8 text-center"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            Other Ways to Get Help
-          </motion.h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { title: "Documentation", desc: "Browse our comprehensive guides and tutorials" },
-              { title: "Video Tutorials", desc: "Watch step-by-step video guides" },
-              { title: "Community Forum", desc: "Connect with other creators using IncuBrix" }
-            ].map((resource, idx) => (
-              <motion.div
-                key={idx}
-                whileHover={{ y: -10 }}
+              {/* Message */}
+              <div className="space-y-3">
+                <Label className="text-gray-400 text-[10px] font-black uppercase tracking-widest ml-1">Message</Label>
+                <Textarea
+                  required
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="min-h-[160px] bg-white/5 border-white/10 rounded-2xl text-white focus:border-cyan-500/50 transition-all font-medium p-5 placeholder:text-gray-600"
+                  placeholder="Describe your issue or suggestion in detail..."
+                />
+
+              </div>
+
+              {/* Attachments */}
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <Label className="text-gray-400 text-[10px] font-black uppercase tracking-widest ml-1">
+                    Attachments (Max 3)
+                  </Label>
+                  <span className="text-gray-500 text-[10px]">
+                    Supported: JPG · PNG · GIF · PDF · DOC · DOCX &nbsp;·&nbsp; Max 10 MB each
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {formData.attachments.map((file, i) => (
+                    <div key={i} className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-white truncate">{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(i)}
+                        className="text-rose-400 font-bold text-[10px] ml-2 shrink-0"
+                      >
+                        REMOVE
+                      </button>
+                    </div>
+                  ))}
+                  {formData.attachments.length < 3 && (
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      className="p-3 border border-dashed border-white/10 rounded-lg flex items-center justify-center cursor-pointer hover:border-cyan-500/40 transition-all"
+                    >
+                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Add File</span>
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+                  multiple
+                  accept="image/*,.pdf,.doc,.docx"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-16 bg-cyan-600 hover:bg-cyan-500 text-white text-lg font-black uppercase tracking-widest rounded-xl transition-all"
               >
-                <Card className="bg-gradient-to-br from-[#151d45] to-[#0a0e27] border-cyan-500/20 p-6 text-center h-full hover:border-cyan-500/60 transition-all">
-                  <h3 className="font-semibold text-lg mb-2 text-white">{resource.title}</h3>
-                  <p className="text-gray-400 text-sm mb-4">{resource.desc}</p>
-                  <span className="text-cyan-400 text-sm">Coming soon</span>
-                </Card>
-              </motion.div>
+                {loading ? 'Processing...' : 'Submit Message'}
+              </Button>
+            </form>
+          </Card>
+        </div>
+
+        {/* ── FAQ Section ── */}
+        <div id="faq" className="mt-24 w-full max-w-4xl scroll-mt-24">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-black text-white mb-4 uppercase tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <div className="h-1 w-20 bg-cyan-500 mx-auto rounded-full" />
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: "What is IncuBrix and how does it help creators?",
+                a: "IncuBrix is an all-in-one creator platform that helps you plan, create, publish, and analyze your content—so you can grow faster without juggling multiple tools."
+              },
+              {
+                q: "Do I need technical or editing skills to use IncuBrix?",
+                a: "No. IncuBrix is designed to be simple and intuitive—whether you're creating videos, generating voiceovers, or publishing content, everything is streamlined for ease of use."
+              },
+              {
+                q: "Which platforms can I publish my content to?",
+                a: "You can publish across multiple platforms like YouTube, Instagram, Facebook, and more—all from one place, with just a single click."
+              },
+              {
+                q: "How does IncuBrix help me grow my content?",
+                a: "IncuBrix analyzes your content to identify gaps, trends, and opportunities—helping you create better content, improve engagement, and scale your reach."
+              },
+              {
+                q: "Is my data secure when I connect my accounts?",
+                a: "Yes. We use secure authentication methods, and your credentials are never stored. You can also disconnect your accounts anytime."
+              },
+              {
+                q: "How quickly can I get started?",
+                a: "You can get started in minutes—just sign up, connect your accounts, and begin creating and publishing content right away."
+              }
+            ].map((item, idx) => (
+              <FaqItem key={idx} question={item.q} answer={item.a} />
             ))}
           </div>
         </div>
-      </section>
+      </div>
+    </div>
+  );
+}
+
+function FaqItem({ question, answer }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  return (
+    <div 
+      className={`group rounded-2xl border transition-all duration-300 ${
+        isOpen 
+          ? 'bg-[#0d1330] border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.1)]' 
+          : 'bg-[#0a0e27] border-white/5 hover:border-white/10'
+      }`}
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between p-6 text-left"
+      >
+        <span className={`text-lg font-bold transition-colors ${isOpen ? 'text-cyan-400' : 'text-white'}`}>
+          {question}
+        </span>
+        <div className={`flex-shrink-0 ml-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+          <svg className={`w-5 h-5 ${isOpen ? 'text-cyan-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
+      
+      <motion.div
+        initial={false}
+        animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        <div className="px-6 pb-6 text-gray-400 leading-relaxed font-medium">
+          {answer}
+        </div>
+      </motion.div>
     </div>
   );
 }

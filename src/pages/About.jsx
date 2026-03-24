@@ -558,7 +558,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* How IncuBrix Works */}
       <section className="py-32 px-6 bg-[#0a0e27] relative overflow-hidden">
         {/* Background Decorative Elements */}
         <div className="absolute inset-0">
@@ -618,6 +618,7 @@ export default function About() {
                 key={idx}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
+                whileHover={{ y: -8 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
                 className="relative z-10 group"
@@ -627,7 +628,6 @@ export default function About() {
                     {/* Simplified Background Container */}
                     <motion.div
                       className="w-28 h-28 rounded-3xl bg-[#151d45]/40 backdrop-blur-md border border-white/10 flex items-center justify-center relative shadow-2xl transition-all duration-500 group-hover:border-cyan-500/30 group-hover:bg-[#151d45]/60"
-                      whileHover={{ y: -8 }}
                     >
                       {/* Floating Step Badge - Corner Pill Style */}
                       <div className="absolute -top-3 -right-3 px-3 py-1 rounded-full bg-[#0ea5e9] text-white font-black text-[10px] tracking-tighter shadow-lg shadow-cyan-500/40 z-20">

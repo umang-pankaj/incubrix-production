@@ -84,5 +84,31 @@
     "contactNumber": "+91 9876543210",
     "status": "Pending",
     "createdAt": "2026-03-06T10:24:36.307Z"
+  },
+  {
+    "id": 10,
+    "name": "Umang",
+    "channelName": null,
+    "email": "umangpankaj1003@gmail.com",
+    "channelLinks": null,
+    "contactNumber": null,
+    "creatorType": "solopreneurs",
+    "primaryPlatform": "newsletter",
+    "linkedinUrl": null,
+    "status": "Pending",
+    "createdAt": "2026-03-23T09:27:33.162Z"
+  },
+  {
+    "id": 11,
+    "name": "Umang",
+    "channelName": null,
+    "email": "umangpankaj0810@gmail.com",
+    "channelLinks": null,
+    "contactNumber": null,
+    "creatorType": "youtubers",
+    "primaryPlatform": "youtube",
+    "linkedinUrl": null,
+    "status": "Pending",
+    "createdAt": "2026-03-23T09:38:56.249Z"
   }
 ]

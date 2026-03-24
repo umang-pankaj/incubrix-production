@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Video, Mic, TrendingUp, Scissors, Share2, Pencil } from 'lucide-react';
+import { Sparkles, Video, Mic, TrendingUp, Scissors, Share2, Pencil, Search } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 
 export default function Dashboard() {
@@ -37,7 +37,7 @@ export default function Dashboard() {
           {[
             { icon: Mic, title: 'Text to Speech', desc: 'Turn written content into natural AI voices.', color: '#06b6d4', bg: '#06b6d415' },
             { icon: Video, title: 'Speech to Video', desc: 'Create videos from audio or scripts.', color: '#3b82f6', bg: '#3b82f615' },
-            { icon: Pencil, title: 'Scribe', desc: 'AI content strategy and portfolio intelligence.', color: '#a78bfa', bg: '#a78bfa15' },
+            { icon: Search, title: 'Content Insights', desc: 'AI content strategy and portfolio intelligence.', color: '#a78bfa', bg: '#a78bfa15' },
             { icon: Scissors, title: 'Content Repurposer', desc: 'Extract viral clips from long form videos.', color: '#8b5cf6', bg: '#8b5cf615' },
             { icon: Share2, title: 'Publisher', desc: 'One-click multi-platform social publishing.', color: '#06b6d4', bg: '#06b6d415' }
           ].map((tool, idx) => (

@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 
 class ChatService {
     constructor() {
-        this.scraper = new WebScraper(process.env.FRONTEND_URL || 'http://localhost:5173');
+        this.scraper = new WebScraper(process.env.FRONTEND_URL || 'http://localhost:5174');
         this.presets = [];
         this.faqData = [];
     }

@@ -1,0 +1,121 @@
+﻿[36mvite v6.3.6 [32mbuilding for production...[36m[39m
+node.exe : [baseline-b
+rowser-mapping] The 
+data in this module 
+is over two months 
+old.  To ensure 
+accurate Baseline 
+data, please update: 
+`npm i baseline-browse
+r-mapping@latest -D`
+At line:1 char:1
++ & "C:\Program Files\
+nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : 
+NotSpecified: ([    
+baseline-brows...ping 
+   @latest 
+-D`:String) [    ], 
+RemoteException
+    + 
+FullyQualifiedError   
+ Id : 
+NativeCommandErr    or
+ 
+transforming...
+Browserslist: 
+browsers data 
+(caniuse-lite) is 6 
+months old. Please 
+run:
+  npx update-browsersl
+ist-db@latest
+  Why you should do 
+it regularly: https://
+github.com/browserslis
+t/update-db#readme
+[32mÔ£ô[39m 75 modules transformed.
+[31mÔ£ù[39m Build 
+failed in 2.68s
+[31merror during 
+build:
+[31mInvalid regular 
+expression: /^(([^<>()
+[\]\\.,;:\s@"]+(\.([^<
+>()[\]\\.,;:\s@"]+)*)|
+(".+"))@((\[[0-9]{1,3}
+\.[0-9]{1,3}\.[0-9]{1,
+3}\.[0-9]{1,3}\])|(([a
+-zA-Z\-0-9]+\.)+[a-zA-
+Z]{2,}))$/: 
+Unterminated 
+group[31m
+    at new RegExp 
+(<anonymous>)
+    at 
+Array.literalRegExp (f
+ile:///C:/Users/umang/
+Downloads/incubrix%20(
+1)/node_modules/rollup
+/dist/es/shared/node-e
+ntry.js:16163:22)
+    at convertNode (fi
+le:///C:/Users/umang/D
+ownloads/incubrix%20(1
+)/node_modules/rollup/
+dist/es/shared/node-en
+try.js:16357:28)
+    at 
+convertNodeList (file:
+///C:/Users/umang/Down
+loads/incubrix%20(1)/n
+ode_modules/rollup/dis
+t/es/shared/node-entry
+.js:16368:38)
+    at 
+Array.callExpression (
+file:///C:/Users/umang
+/Downloads/incubrix%20
+(1)/node_modules/rollu
+p/dist/es/shared/node-
+entry.js:15857:26)
+    at convertNode (fi
+le:///C:/Users/umang/D
+ownloads/incubrix%20(1
+)/node_modules/rollup/
+dist/es/shared/node-en
+try.js:16357:28)
+    at Array.arrowFunc
+tionExpression (file:/
+//C:/Users/umang/Downl
+oads/incubrix%20(1)/no
+de_modules/rollup/dist
+/es/shared/node-entry.
+js:15819:21)
+    at convertNode (fi
+le:///C:/Users/umang/D
+ownloads/incubrix%20(1
+)/node_modules/rollup/
+dist/es/shared/node-en
+try.js:16357:28)
+    at Array.variableD
+eclarator (file:///C:/
+Users/umang/Downloads/
+incubrix%20(1)/node_mo
+dules/rollup/dist/es/s
+hared/node-entry.js:16
+329:49)
+    at convertNode (fi
+le:///C:/Users/umang/D
+ownloads/incubrix%20(1
+)/node_modules/rollup/
+dist/es/shared/node-en
+try.js:16357:28)[39m

@@ -281,9 +281,6 @@ export default function AuthModal({ open, onOpenChange }) {
               </motion.div>
               <h2 className="text-3xl font-black tracking-tight text-white mb-2">IncuBrix</h2>
               <div className="h-0.5 w-12 bg-cyan-500/40 mb-4 rounded-full" />
-              <p className="text-gray-400 text-sm font-medium leading-relaxed">
-                Empowering creators with AI-driven studio tools.
-              </p>
             </div>
           </div>
 

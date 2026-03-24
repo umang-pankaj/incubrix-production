@@ -2,19 +2,19 @@
     {
         "id": "pricing",
         "label": "Pricing & Plans",
-        "answer": "### Pricing & Plans\n\nWe offer flexible pricing to suit your needs:\n\n*   **Starter**: $29/mo - For individuals\n*   **Pro**: $79/mo - For growing teams\n*   **Enterprise**: Custom - For large organizations\n\n[View Full Pricing](/pricing)",
+        "answer": "### Pricing & Plans\n\nWe offer flexible pricing to suit your needs:\n\n*   **Free**: $0/mo — Explore the platform\n*   **Starter**: $29/mo — For growing creators\n*   **Creator**: $69/mo — For consistent creators\n*   **Pro**: $129/mo — For professionals\n*   **Business**: Custom — Contact sales\n\n[View Full Pricing](/pricing)",
         "type": "preset"
     },
     {
         "id": "how_it_works",
         "label": "How IncuBrix Works",
-        "answer": "### How IncuBrix Works\n\n1.  **Connect**: Link your existing platforms.\n2.  **Build**: Use our drag-and-drop tools.\n3.  **Launch**: Deploy instantly to the web.\n\nIt's that simple! [Watch a Demo](/demo)",
+        "answer": "### How IncuBrix Works\n\n1.  **Get Content Insights**: Use Scribe to find what works.\n2.  **Create Content**: Turn text into audio, video, and repurposed clips.\n3.  **Publish Everywhere**: One-click distribution across all platforms.\n4.  **Track & Grow**: Monitor reach and engagement with unified analytics.\n\n[Learn More](/how-it-works)",
         "type": "preset"
     },
     {
         "id": "platforms",
         "label": "Supported Platforms",
-        "answer": "### Supported Platforms\n\nIncuBrix currently supports:\n\n*   Web (React, Vue, Angular)\n*   Mobile (React Native, Flutter)\n*   Desktop (Electron)\n\nWe are constantly adding more!",
+        "answer": "### Supported Platforms\n\nIncuBrix currently supports publishing to:\n\n*   LinkedIn\n*   YouTube\n*   Instagram\n*   Twitter / X\n*   And more platforms coming soon!\n\nWe are constantly expanding our integrations.",
         "type": "preset"
     },
     {
@@ -26,7 +26,7 @@
     {
         "id": "something_else",
         "label": "Something Else",
-        "answer": "Sure! Please type your question below and I'll do my best to verify it using our knowledge base or connect you with support.",
+        "answer": "Sure! Please type your question below and I'll do my best to help using our knowledge base or connect you with support.",
         "type": "action",
         "action": "enable_input"
     }

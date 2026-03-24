@@ -3,9 +3,55 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Zap, Crown, Rocket, User, Star, ChevronDown } from 'lucide-react';
+import { Check, Zap, Crown, Rocket, User, Star, ChevronDown, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/AuthContext';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+
+const featureTooltips = {
+  'Upload': 'The number of video/audio files you can upload to the platform each month.',
+  'Transcribe': 'Convert your audio or video speech into text automatically.',
+  'Repurpose': 'Transform long-form content into engaging short-form clips automatically.',
+  'TTS (v3)': 'Text-to-Speech (Version 3). High-quality, ultra-realistic AI voice generation.',
+  'Render': 'The total duration of video you can export or process on our cloud servers.',
+  'Watermarked exports': 'All exported videos will contain a small Incubrix watermark.',
+  'Concurrency': 'The number of tasks (like rendering or transcribing) you can run at the exact same time.'
+};
+
+const renderFeatureText = (text) => {
+  let matchedKeyword = null;
+  for (const keyword of Object.keys(featureTooltips)) {
+    if (text.includes(keyword)) {
+      matchedKeyword = keyword;
+      break;
+    }
+  }
+
+  if (matchedKeyword) {
+    return (
+      <span className="flex items-center gap-1.5 flex-wrap">
+        <span>{text}</span>
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger type="button" className="focus:outline-none">
+              <Info className="w-3.5 h-3.5 text-gray-400 hover:text-cyan-400 cursor-pointer transition-colors" />
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[220px] text-xs bg-[#0a0e27] border-cyan-500/30 text-gray-300 p-2.5 shadow-2xl rounded-lg z-[100]">
+              <p className="font-semibold text-white mb-1.5 pb-1.5 border-b border-white/10">{matchedKeyword}</p>
+              <p className="leading-relaxed">{featureTooltips[matchedKeyword]}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </span>
+    );
+  }
+  return <span>{text}</span>;
+};
 
 export default function Pricing() {
   // Monthly billing only as annual is currently unavailable
@@ -41,7 +87,7 @@ export default function Pricing() {
         'Watermarked exports',
         '1 Concurrency'
       ],
-      cta: 'Start Your Journey',
+      cta: 'Get Started for Free',
       popular: false
     },
     {
@@ -58,7 +104,7 @@ export default function Pricing() {
         '12 platform publish/mo',
         '2 Concurrency'
       ],
-      cta: 'Start Free Trial',
+      cta: 'Choose Starter',
       popular: false
     },
     {
@@ -75,7 +121,7 @@ export default function Pricing() {
         '30 platform publish/mo',
         '3 Concurrency'
       ],
-      cta: 'Start Free Trial',
+      cta: 'Choose Creator',
       popular: true
     },
     {
@@ -92,7 +138,7 @@ export default function Pricing() {
         '70 platform publish/mo',
         '5 Concurrency'
       ],
-      cta: 'Start Free Trial',
+      cta: 'Choose Pro',
       popular: false
     },
     {
@@ -178,114 +224,139 @@ export default function Pricing() {
       <section id="plans" className="py-8 px-6 relative z-10 scroll-mt-8">
         <div className="max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-            {plans.map((plan, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{
-                  y: -12,
-                  scale: 1.02,
-                  zIndex: 20,
-                  transition: { duration: 0.3, ease: "easeOut" }
-                }}
-                whileTap={{ scale: 0.98 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="relative group h-full"
-              >
-                {plan.popular && (
-                  <div className="absolute -inset-[2px] bg-gradient-to-r from-cyan-500 to-blue-500 rounded-[22px] opacity-20 group-hover:opacity-100 transition-opacity blur-[2px] z-0" />
-                )}
-
-                <Card
-                  className={`bg-[#0f1535]/80 backdrop-blur-xl p-6 h-full flex flex-col border transition-all duration-300 relative z-10 ${plan.name === highlightPlan
-                    ? `border-cyan-400 shadow-[0_0_50px_rgba(6,182,212,0.6)] ring-2 ring-cyan-400/50 scale-[1.02]`
-                    : (plan.popular
-                      ? 'border-cyan-500 shadow-[0_0_40px_-10px_rgba(6,182,212,0.3)]'
-                      : 'border-white/10 hover:border-cyan-500/50')
-                    }`}
+            {plans.map((plan, idx) => {
+              const isCurrentPlan = user && plan.name === (user?.plan || 'Free');
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  whileHover={isCurrentPlan ? {} : {
+                    y: -12,
+                    scale: 1.02,
+                    zIndex: 20,
+                    transition: { duration: 0.3, ease: "easeOut" }
+                  }}
+                  whileTap={isCurrentPlan ? {} : { scale: 0.98 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className="relative group h-full"
                 >
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap shadow-lg shadow-cyan-500/20 z-20">
-                      Most Popular
-                    </div>
+                  {plan.popular && !isCurrentPlan && (
+                    <div className="absolute -inset-[2px] bg-gradient-to-r from-cyan-500 to-blue-500 rounded-[22px] opacity-20 group-hover:opacity-100 transition-opacity blur-[2px] z-0" />
                   )}
 
-                  {plan.name === highlightPlan && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap shadow-lg shadow-green-500/20 z-30 ring-2 ring-white/20">
-                      Current Plan
-                    </div>
-                  )}
+                  <Card
+                    className={`bg-[#0f1535]/80 backdrop-blur-xl p-6 h-full flex flex-col border transition-all duration-300 relative z-10 ${
+                      isCurrentPlan
+                        ? 'border-white/20 shadow-none ring-0 scale-[1.00]'
+                        : plan.name === highlightPlan
+                          ? 'border-cyan-400 shadow-[0_0_50px_rgba(6,182,212,0.6)] ring-2 ring-cyan-400/50 scale-[1.02]'
+                          : plan.popular
+                            ? 'border-cyan-500 shadow-[0_0_40px_-10px_rgba(6,182,212,0.3)]'
+                            : 'border-white/10 hover:border-cyan-500/50'
+                    }`}
+                  >
+                    {plan.popular && !isCurrentPlan && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap shadow-lg shadow-cyan-500/20 z-20">
+                        Most Popular
+                      </div>
+                    )}
 
-                  <div className="flex items-center gap-3 mb-4">
-                    <motion.div
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.8 }}
-                      className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0"
-                    >
-                      <plan.icon className="w-5 h-5 text-white" />
-                    </motion.div>
-                    <div className="flex flex-col min-w-0">
-                      <h3 className="text-lg font-bold text-white truncate">{plan.name}</h3>
-                      {plan.subtitle && (
-                        <span className="text-[9px] text-cyan-400 font-medium uppercase tracking-wider">
-                          {plan.subtitle}
-                        </span>
+                    {isCurrentPlan && (
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest whitespace-nowrap shadow-lg shadow-green-500/20 z-30 ring-2 ring-white/20">
+                        Current Plan
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-3 mb-4">
+                      <motion.div
+                        whileHover={{ rotate: 360 }}
+                        transition={{ duration: 0.8 }}
+                        className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0"
+                      >
+                        <plan.icon className="w-5 h-5 text-white" />
+                      </motion.div>
+                      <div className="flex flex-col min-w-0">
+                        <h3 className="text-lg font-bold text-white truncate">{plan.name}</h3>
+                        {plan.subtitle && (
+                          <span className="text-[9px] text-cyan-400 font-medium uppercase tracking-wider">
+                            {plan.subtitle}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <p className="text-gray-400 text-sm mb-6 line-clamp-2">{plan.description}</p>
+
+                    <div className="mb-6 h-10">
+                      {typeof plan.price === 'number' ? (
+                        <div className="flex items-baseline gap-1">
+                          <motion.span
+                            key={billingCycle + plan.price}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="text-4xl font-bold text-white block"
+                          >
+                            ${plan.price}
+                          </motion.span>
+                          <span className="text-gray-400 text-xs">
+                            /mo
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-4xl font-bold text-white">{plan.price}</span>
                       )}
                     </div>
-                  </div>
 
-                  <p className="text-gray-400 text-sm mb-6 line-clamp-2">{plan.description}</p>
-
-                  <div className="mb-6 h-10">
-                    {typeof plan.price === 'number' ? (
-                      <div className="flex items-baseline gap-1">
-                        <motion.span
-                          key={billingCycle + plan.price}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="text-4xl font-bold text-white block"
+                    <ul className="space-y-3 mb-8 flex-1">
+                      {plan.features.map((feature, featureIdx) => (
+                        <motion.li
+                          key={featureIdx}
+                          initial={{ opacity: 0, x: -5 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.2 + featureIdx * 0.05 }}
+                          className="flex items-start gap-2 text-xs"
                         >
-                          ${plan.price}
-                        </motion.span>
-                        <span className="text-gray-400 text-xs">
-                          /mo
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-4xl font-bold text-white">{plan.price}</span>
+                          <Check className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0 mt-0.5" />
+                          <span className="text-gray-300 group-hover:text-white transition-colors">
+                            {renderFeatureText(feature)}
+                          </span>
+                        </motion.li>
+                      ))}
+                    </ul>
+
+                    {/* CTA — hidden for the user's current plan */}
+                    {!isCurrentPlan && (
+                      plan.name === 'Business' ? (
+                        <a
+                          href={`https://mail.google.com/mail/?view=cm&fs=1&to=contact@incubrix.com&su=${encodeURIComponent('Business Plan Enquiry — IncuBrix')}&body=${encodeURIComponent("Hi IncuBrix Team,\n\nI'm interested in the Business Plan and would like to discuss pricing, onboarding, and how it fits our scale.\n\nLooking forward to hearing from you.\n\nBest regards,")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-auto block"
+                        >
+                          <Button className="w-full py-4 text-sm font-bold rounded-xl transition-all duration-300 bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-cyan-500/50">
+                            {plan.cta}
+                          </Button>
+                        </a>
+                      ) : (
+                        <Link to={createPageUrl('Signup')} className="mt-auto">
+                          <Button
+                            className={`w-full py-4 text-sm font-bold rounded-xl transition-all duration-300 ${
+                              plan.popular
+                                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white shadow-lg shadow-cyan-500/20'
+                                : 'bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-cyan-500/50'
+                            }`}
+                          >
+                            {plan.cta}
+                          </Button>
+                        </Link>
+                      )
                     )}
-                  </div>
-
-                  <ul className="space-y-3 mb-8 flex-1">
-                    {plan.features.map((feature, featureIdx) => (
-                      <motion.li
-                        key={featureIdx}
-                        initial={{ opacity: 0, x: -5 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 + featureIdx * 0.05 }}
-                        className="flex items-start gap-2 text-xs"
-                      >
-                        <Check className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-300 group-hover:text-white transition-colors">{feature}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-
-                  <Link to={createPageUrl(plan.name === 'Business' ? 'NeedHelp' : 'Signup')} className="mt-auto">
-                    <Button
-                      className={`w-full py-4 text-sm font-bold rounded-xl transition-all duration-300 ${plan.popular
-                        ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:scale-[1.02] active:scale-[0.98] text-white shadow-lg shadow-cyan-500/20'
-                        : 'bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-cyan-500/50'
-                        }`}
-                    >
-                      {plan.cta}
-                    </Button>
-                  </Link>
-                </Card>
-              </motion.div>
-            ))}
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   ArrowRight,
@@ -6,6 +8,8 @@ import {
   Video,
   Mic,
   FileText,
+  FileVideo,
+  FileAudio,
   Share2,
   Scissors,
   Pencil,
@@ -21,12 +25,19 @@ import {
   Briefcase,
   Monitor,
   PenTool,
-  BarChart3
+  BarChart3,
+  Headphones,
+  Rocket,
+  CheckCircle2,
+  User,
+  Facebook,
+  Twitch
 } from 'lucide-react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import ScheduleDemoModal from '../components/ScheduleDemoModal';
 import BetaSignupModal from '../components/BetaSignupModal';
 import { useAuth } from '@/lib/AuthContext';
+import { toast } from 'sonner';
 
 const SIDEBAR_TOOLS = [
   { 
@@ -35,7 +46,11 @@ const SIDEBAR_TOOLS = [
     title: 'Content Insights', 
     accent: '#06b6d4',
     tools: [
-      { name: 'Scribe', icon: Pencil, desc: 'AI editorial brain for portfolio strategy.' }
+      { 
+        name: 'Content Insights', 
+        icon: Search, 
+        desc: 'Unlock what to improve, what’s missing, and what’s next' 
+      }
     ]
   },
   { 
@@ -55,7 +70,7 @@ const SIDEBAR_TOOLS = [
     title: 'Content Publishing', 
     accent: '#3b82f6',
     tools: [
-      { name: 'Publisher', icon: Share2, desc: 'One-click social distribution.' }
+      { name: 'Publisher', icon: Share2, desc: 'Distribute content seamlessly across all platforms' }
     ]
   },
   { 
@@ -65,7 +80,7 @@ const SIDEBAR_TOOLS = [
     accent: '#ec4899',
     badge: 'COMING SOON',
     tools: [
-      { name: 'Unified Analytics Dashboard', icon: Search, desc: 'Real-time growth insights.' }
+      { name: 'Unified Analytics Dashboard', icon: Search, desc: 'Measure, analyze, and scale your content with data' }
     ]
   },
 ];
@@ -160,10 +175,10 @@ const DashboardPreview = ({ theme }) => {
 
   const BlueprintLabel = ({ label, detail, isActive, onHover, color, position }) => {
     const posStyles = {
-      'top-left': 'top-0 left-0 -translate-x-[15%] -translate-y-12',
-      'top-right': 'top-0 right-0 translate-x-[15%] -translate-y-12 text-right',
-      'bottom-left': 'bottom-0 left-0 -translate-x-[15%] translate-y-12',
-      'bottom-right': 'bottom-0 right-0 translate-x-[15%] translate-y-12 text-right'
+      'top-left': 'top-0 left-0 -translate-y-12 lg:-translate-x-[15%]',
+      'top-right': 'top-0 right-0 -translate-y-12 lg:translate-x-[15%] text-right',
+      'bottom-left': 'bottom-0 left-0 translate-y-12 lg:-translate-x-[15%]',
+      'bottom-right': 'bottom-0 right-0 translate-y-12 lg:translate-x-[15%] text-right'
     };
 
     return (
@@ -278,45 +293,45 @@ const DashboardPreview = ({ theme }) => {
     <div className="relative py-24 px-12 lg:px-24">
       {/* Blueprint Layer - Connectors and Labels */}
       <div className="absolute inset-0 z-50 pointer-events-none">
-        {/* Scribe Connector */}
+        {/* Content Insights Connector */}
         <LeadLine color="cyan" isActive={activeIndex === 0} x1="10%" y1="10%" x2="20%" y2="40%" />
         <BlueprintLabel 
           position="top-left"
-          label="Scribe"
-          detail="AI Content Strategy & Strategic Growth Insights"
+          label="Content Insights"
+          detail="Unlock what to improve, what’s missing, and what’s next"
           isActive={activeIndex === 0}
           onHover={() => setActiveIndex(0)}
           color="cyan"
         />
 
-        {/* Speech to Video Connector */}
+        {/* Content Creation Connector */}
         <LeadLine color="blue" isActive={activeIndex === 2} x1="90%" y1="10%" x2="80%" y2="50%" />
         <BlueprintLabel 
           position="top-right"
-          label="Speech to Video"
-          detail="Automate Visuals & Viral Video Generation"
+          label="Content Creation"
+          detail="Go from idea to ready-to-publish content instantly"
           isActive={activeIndex === 2}
           onHover={() => setActiveIndex(2)}
           color="blue"
         />
 
-        {/* Text to Speech Connector */}
+        {/* Content Performance Connector */}
         <LeadLine color="purple" isActive={activeIndex === 1} x1="10%" y1="90%" x2="45%" y2="58%" />
         <BlueprintLabel 
           position="bottom-left"
-          label="Text to Speech"
-          detail="Natural AI Voices & Studio-Grade AI Narration"
+          label="Content Performance"
+          detail="Measure, analyze, and scale your content with data"
           isActive={activeIndex === 1}
           onHover={() => setActiveIndex(1)}
           color="purple"
         />
 
-        {/* Publisher Connector */}
+        {/* Content Publishing Connector */}
         <LeadLine color="emerald" isActive={activeIndex === 3} x1="90%" y1="90%" x2="60%" y2="85%" />
         <BlueprintLabel 
           position="bottom-right"
-          label="Publisher"
-          detail="One-Click Publishing & Global Audience Reach"
+          label="Content Publishing"
+          detail="Distribute content seamlessly across all platforms"
           isActive={activeIndex === 3}
           onHover={() => setActiveIndex(3)}
           color="emerald"
@@ -388,23 +403,100 @@ const DashboardPreview = ({ theme }) => {
 function SidebarToolsPanel({ onExploreTool }) {
   const [activeTool, setActiveTool] = React.useState(0);
   const [activeSubTool, setActiveSubTool] = React.useState(0);
+  const [ttsStep, setTtsStep] = React.useState(0); // 0: typing, 1: click, 2: synthesis
+  const [insightsPhase, setInsightsPhase] = React.useState(0); // 0: Input, 1: Processing, 2: Output, 3: Final
+  const [publisherPhase, setPublisherPhase] = React.useState(0); // 0: Card, 1: Icons, 2: Connect, 3: Publish, 4: Success
+  const [performancePhase, setPerformancePhase] = React.useState(0); // 0: Icons, 1: Merge, 2: Metrics, 3: Insight, 4: Prediction
   const category = SIDEBAR_TOOLS[activeTool];
   const { theme } = useAuth();
+
+  const toolFeatures = {
+    'Content Insights': [
+      { title: 'We analyze your content' },
+      { title: 'We map your topics' },
+      { title: "We find what's missing" },
+      { title: 'We identify what\'s trending' }
+    ],
+    'Text to Speech': [
+      { title: 'Input your idea or script' },
+      { title: 'Customize voice & tone' },
+      { title: 'Generate ready-to-publish audio' }
+    ],
+    'Speech to Video': [
+      { title: 'Input text or audio' },
+      { title: 'Select or refine clips' },
+      { title: 'Generate ready-to-publish video' }
+    ],
+    'Content Repurposer': [
+      { title: 'Upload long-form content' },
+      { title: 'Auto-detect key moments' },
+      { title: 'Generate ready-to-share clips' }
+    ],
+    'Publisher': [
+      { title: 'Connect platforms' },
+      { title: 'Create content' },
+      { title: 'Publish or schedule' }
+    ],
+    'Unified Analytics Dashboard': [
+      { title: 'Connect your platforms' },
+      { title: 'Track performance in one place' },
+      { title: 'Get insights & growth trends' }
+    ],
+  };
+
+  const activeToolData = category.id === 'performance' ? null : (category.tools[activeSubTool] || category.tools[0]);
+
+  // TTS animation cycle
+  React.useEffect(() => {
+    const duration = ttsStep === 0 ? 3000 : ttsStep === 1 ? 1500 : 5000;
+    const timer = setTimeout(() => {
+      setTtsStep((s) => (s + 1) % 3);
+    }, duration);
+    return () => clearTimeout(timer);
+  }, [ttsStep]);
+  
+  // Content Insights animation cycle
+  React.useEffect(() => {
+    if (activeToolData?.name !== 'Content Insights') {
+      setInsightsPhase(0);
+      return;
+    }
+    
+    const intervals = [3000, 3500, 4500, 6000]; // Durations: Input, Processing, Output, Final
+    const timer = setTimeout(() => {
+      setInsightsPhase((s) => (s + 1) % 4);
+    }, intervals[insightsPhase]);
+    return () => clearTimeout(timer);
+  }, [insightsPhase, activeToolData?.name]);
+
+  // Publisher animation cycle
+  React.useEffect(() => {
+    if (activeToolData?.name !== 'Publisher') {
+      setPublisherPhase(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setPublisherPhase(prev => (prev + 1) % 5);
+    }, 2200);
+    return () => clearInterval(interval);
+  }, [activeToolData?.name]);
+
+  // Performance animation cycle
+  React.useEffect(() => {
+    if (category.id !== 'performance') {
+      setPerformancePhase(0);
+      return;
+    }
+    const interval = setInterval(() => {
+      setPerformancePhase(prev => (prev + 1) % 5);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [category.id]);
 
   // Reset subtool when category changes
   React.useEffect(() => {
     setActiveSubTool(0);
   }, [activeTool]);
-
-  const toolFeatures = {
-    'Scribe': ['Content Intelligence', 'Portfolio Indexer', 'AI Content Planner'],
-    'Text to Speech': ['Natural AI voices', 'Multi-language support', 'Studio-quality output'],
-    'Speech to Video': ['Auto video generation', 'Sync audio to visuals', 'One-click export'],
-    'Content Repurposer': ['Clip viral moments', 'AI-powered editing', 'Multi-format export'],
-    'Publisher': ['One-click multi-platform publish', 'Peak-time scheduling', 'Unified analytics'],
-  };
-
-  const activeToolData = category.id === 'performance' ? null : category.tools[activeSubTool];
 
   return (
     <section className={`py-20 px-6 relative overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-[#07091c]' : 'bg-[#f8fafc]'}`}>
@@ -433,7 +525,7 @@ function SidebarToolsPanel({ onExploreTool }) {
           className="flex flex-col lg:flex-row gap-8 items-stretch"
         >
           {/* Sidebar */}
-          <div className="w-full lg:w-[360px] shrink-0 rounded-3xl p-6 flex lg:flex-col lg:justify-start gap-4 overflow-x-auto lg:overflow-visible"
+          <div className="w-full lg:w-[360px] shrink-0 rounded-3xl p-4 flex lg:flex-col lg:justify-between gap-3 overflow-x-auto lg:overflow-visible h-[650px]"
             style={{
               background: theme === 'dark' ? 'rgba(15, 21, 53, 0.4)' : '#ffffff',
               border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.05)',
@@ -449,7 +541,7 @@ function SidebarToolsPanel({ onExploreTool }) {
                   onClick={() => setActiveTool(idx)}
                   whileHover={t.badge ? {} : { scale: 1.02, x: 4 }}
                   whileTap={t.badge ? {} : { scale: 0.98 }}
-                  className={`relative flex items-center gap-4 px-6 py-8 rounded-2xl transition-all duration-300 min-w-[200px] lg:min-w-0 w-full group ${t.badge ? 'cursor-default opacity-60' : 'cursor-pointer'}`}
+                  className={`group relative flex items-center gap-5 p-5 w-full rounded-[24px] text-left transition-all duration-500 border-2 flex-1 ${isActive ? 'bg-white shadow-[0_20px_40px_-12px_rgba(0,0,0,0.5)]' : 'bg-transparent border-transparent hover:bg-white/5'} ${t.badge ? 'cursor-default opacity-60' : 'cursor-pointer'}`}
                   style={isActive
                     ? {
                         background: `linear-gradient(135deg, ${t.accent}25, ${t.accent}10)`,
@@ -470,13 +562,13 @@ function SidebarToolsPanel({ onExploreTool }) {
                   >
                     <Icon className="w-7 h-7" style={{ color: isActive ? t.accent : '#64748b' }} />
                   </div>
-                  <div className="flex flex-col items-start translate-y-[1px]">
+                  <div className="flex flex-col items-start">
                     <span className={`text-[17px] font-black leading-tight transition-colors duration-300 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'}`}>
                       {t.title}
                     </span>
                   </div>
                   {t.badge && (
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-rose-500 text-[10px] font-black text-white px-2.5 py-1 rounded-lg shadow-lg border border-white/20 z-20 tracking-tight">
+                    <div className="absolute top-[12px] right-[12px] bg-gradient-to-r from-rose-500/20 to-pink-500/20 text-[9px] font-bold text-rose-300 px-2 py-0.5 rounded-full border border-rose-500/30 z-20 tracking-widest uppercase">
                       {t.badge}
                     </div>
                   )}
@@ -520,56 +612,169 @@ function SidebarToolsPanel({ onExploreTool }) {
               </div>
 
               {category.id === 'performance' ? (
-                <div className="flex-1 flex flex-col items-center justify-center relative">
-                  {/* Decorative Background Elements */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-                    <div className="w-[500px] h-[500px] bg-pink-500/10 rounded-full blur-[100px] animate-pulse" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-20">
-                      <div className="absolute top-[20%] left-[10%] w-32 h-20 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-sm" />
-                      <div className="absolute top-[30%] right-[15%] w-40 h-24 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-sm" />
-                      <div className="absolute bottom-[20%] left-[20%] w-48 h-32 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-sm" />
-                      <div className="absolute bottom-[25%] right-[10%] w-24 h-16 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-sm" />
+                <div className="flex-1 flex flex-col md:flex-row gap-12">
+                  {/* Left Side: Info */}
+                  <div className="flex-1">
+                    <div className="space-y-4">
+                      <p className="text-[11px] font-black tracking-[0.2em] text-cyan-400/80 uppercase">How It Works</p>
+                      <div className="grid grid-cols-1 gap-3">
+                        {(toolFeatures['Unified Analytics Dashboard'] || []).map((f, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.1 }}
+                            className="flex items-center gap-4 px-6 py-5 rounded-2xl bg-white/5 border border-white/5 group hover:border-white/10 hover:bg-white/[0.08] transition-all duration-300"
+                          >
+                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 group-hover:border-cyan-500/40 transition-colors shrink-0">
+                               <span className="text-xs font-black text-cyan-400">{i + 1}</span>
+                            </div>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-[15px] font-bold text-white group-hover:text-cyan-400 transition-colors tracking-tight">{f.title}</span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-12">
+                      <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                        className="inline-flex items-center px-8 py-3 rounded-full bg-gradient-to-r from-pink-500/20 to-rose-500/20 border border-pink-500/40 text-pink-300 font-bold text-sm tracking-widest uppercase shadow-[0_0_40px_-10px_rgba(236,72,153,0.5)]"
+                      >
+                        Coming Soon
+                      </motion.div>
                     </div>
                   </div>
 
-                  <div className="relative z-10 text-center px-6">
-                  <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-bold uppercase tracking-widest"
-            >
-              Core Capabilities
-            </motion.div>
-                    <motion.div
-                      initial={{ scale: 0.9, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.5 }}
-                      className="mb-8"
-                    >
-                      <h4 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
-                        Unified Analytics Dashboard
-                      </h4>
-                      <p className="text-gray-400 max-w-lg mx-auto leading-relaxed text-lg font-medium opacity-80">
-                        The heartbeat of your content strategy. Track growth, revenue, and audience engagement across 12+ platforms in one stunning interface.
-                      </p>
-                    </motion.div>
-
-                    <motion.div 
-                      whileHover={{ scale: 1.05 }}
-                      className="inline-flex items-center px-8 py-3 rounded-full bg-gradient-to-r from-pink-500/20 to-rose-500/20 border border-pink-500/40 text-pink-300 font-bold text-sm tracking-widest uppercase shadow-[0_0_40px_-10px_rgba(236,72,153,0.5)]"
-                    >
-                      Coming Soon
-                    </motion.div>
-
-                    {/* Feature Pills */}
-                    <div className="mt-12 flex flex-wrap justify-center gap-3">
-                      {['Real-time Insights', 'ROI Tracking', 'Audience Demographics', 'Predictive Growth'].map((label, idx) => (
-                        <div key={idx} className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-gray-400 uppercase tracking-wider backdrop-blur-md">
-                          {label}
-                        </div>
-                      ))}
+                  {/* Right Side: Animation Box */}
+                  <div className="flex-1 rounded-3xl bg-black/20 border border-white/5 p-8 flex items-center justify-center relative overflow-hidden group">
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none group-hover:opacity-20 transition-opacity">
+                       <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: `radial-gradient(circle at center, ${category.accent} 0%, transparent 75%)` }} />
                     </div>
+
+                    <AnimatePresence mode="wait">
+                      {/* Scene 1 & 2: Distributed Icons -> Merge */}
+                      {(performancePhase === 0 || performancePhase === 1) && (
+                        <motion.div 
+                          key="icons-layer"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="relative w-full h-full flex items-center justify-center"
+                        >
+                          {[
+                            { Icon: Youtube, color: '#ff0000', x: -120, y: -80 },
+                            { Icon: Instagram, color: '#e4405f', x: 120, y: -60 },
+                            { Icon: Twitch, color: '#9146ff', x: -100, y: 80 },
+                            { Icon: Facebook, color: '#1877f2', x: 100, y: 90 },
+                            { Icon: ({ className }) => (
+                              <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+                                <path d="M22.957 7.21c-.004-3.078-2.584-5.515-5.738-5.515-3.078 0-5.465 2.113-5.465 5.515 0 3.012 2.387 5.515 5.465 5.515 3.078 0 5.738-2.503 5.738-5.515zM2.852 22.5h2.162c.078 0 .145-.06.152-.137l.387-4.406c.004-.047.043-.082.09-.082h2.441c.078 0 .145.06.152.137l.387 4.406c.004.047.043.082.09.082h2.162c.086 0 .152-.07.145-.156l-.609-7.234a.148.148 0 0 0-.145-.137h-7a.148.148 0 0 0-.145.137l-.609 7.234c-.007.086.059.156.145.156z" />
+                              </svg>
+                            ), color: '#ff424d', x: 0, y: -120 }
+                          ].map((item, idx) => (
+                            <motion.div
+                              key={idx}
+                              initial={{ x: item.x, y: item.y, opacity: 0, scale: 0.5 }}
+                              animate={{ 
+                                x: performancePhase === 1 ? 0 : item.x, 
+                                y: performancePhase === 1 ? 0 : item.y,
+                                opacity: 1, 
+                                scale: performancePhase === 1 ? 0.2 : 1,
+                                filter: performancePhase === 1 ? 'blur(10px)' : 'blur(0px)'
+                              }}
+                              transition={{ duration: 0.8, ease: "circOut" }}
+                              className="absolute p-4 rounded-2xl bg-white/5 border border-white/10 shadow-2xl"
+                              style={{ color: item.color }}
+                            >
+                              <item.Icon className="w-8 h-8" />
+                            </motion.div>
+                          ))}
+                        </motion.div>
+                      )}
+
+                      {/* Scene 3, 4, 5: Dashboard Content */}
+                      {performancePhase >= 2 && (
+                        <motion.div 
+                          key="dashboard-layer"
+                          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          className="relative w-full max-w-[440px] h-[300px] rounded-[2.5rem] bg-[#050510]/80 border border-white/10 backdrop-blur-xl shadow-[0_0_100px_rgba(6,182,212,0.1)] p-8 flex flex-col gap-5"
+                        >
+                          {/* Top Metrics Row */}
+                          <div className="grid grid-cols-3 gap-6">
+                            {[
+                              { label: 'Followers', value: '1.2M', color: '#06b6d4' },
+                              { label: 'Views', value: '8.4M', color: '#ec4899' },
+                              { label: 'Revenue', value: '$42.5K', color: '#10b981' }
+                            ].map((stat, i) => (
+                              <div key={i} className="flex flex-col gap-0.5">
+                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">{stat.label}</span>
+                                <motion.span 
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ delay: 0.3 + i * 0.1 }}
+                                  className="text-xl font-black text-white leading-none"
+                                  style={{ textShadow: `0 0 15px ${stat.color}40` }}
+                                >
+                                  {stat.value}
+                                </motion.span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Charts Section */}
+                          <div className="flex-1 relative bg-black/40 rounded-2xl border border-white/5 p-3 overflow-hidden">
+                            <svg className="absolute inset-0 w-full h-full p-2" viewBox="0 0 400 150">
+                              {[
+                                { color: '#06b6d4', path: "M0 120 Q 50 110, 100 80 T 200 60 T 300 90 T 400 40", delay: 0 },
+                                { color: '#ec4899', path: "M0 130 Q 80 120, 150 100 T 250 110 T 350 70 T 400 80", delay: 0.2 },
+                                { color: '#8b5cf6', path: "M0 140 Q 60 130, 120 110 T 220 90 T 320 100 T 400 50", delay: 0.4 }
+                              ].map((chart, i) => (
+                                <motion.path
+                                  key={i}
+                                  d={chart.path}
+                                  fill="none"
+                                  stroke={chart.color}
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                  initial={{ pathLength: 0, opacity: 0 }}
+                                  animate={{ pathLength: 1, opacity: 1 }}
+                                  transition={{ duration: 1.5, delay: 0.5 + chart.delay, ease: "easeInOut" }}
+                                />
+                              ))}
+                            </svg>
+
+                            {/* Phase 3: Top Content Card */}
+                            {performancePhase >= 3 && (
+                               <motion.div 
+                                 initial={{ x: 30, opacity: 0 }}
+                                 animate={{ x: 0, opacity: 1 }}
+                                 className="absolute bottom-3 right-3 w-28 h-18 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md p-2 flex flex-col gap-1 shadow-2xl"
+                               >
+                                 <div className="w-full h-6 rounded-md bg-white/10 overflow-hidden">
+                                   <div className="w-full h-full bg-gradient-to-tr from-cyan-500/20 to-blue-500/20" />
+                                 </div>
+                                 <span className="text-[8px] font-bold text-white truncate">+24k Views</span>
+                               </motion.div>
+                            )}
+                          </div>
+
+                          {/* Scene 5: Prediction Element */}
+                          {performancePhase === 4 && (
+                            <motion.div 
+                              initial={{ y: 10, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              className="absolute top-4 right-4 flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20"
+                            >
+                               <Rocket className="w-2.5 h-2.5 text-emerald-400" />
+                               <span className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">+15% Growth</span>
+                            </motion.div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               ) : (
@@ -590,74 +795,92 @@ function SidebarToolsPanel({ onExploreTool }) {
 
                   <div className="flex-1 flex flex-col md:flex-row gap-12">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/10">
-                          {React.createElement(activeToolData.icon, { className: 'w-5 h-5', style: { color: category.accent } })}
+                      {category.tools.length > 1 && (
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/10">
+                            {activeToolData?.icon && React.createElement(activeToolData.icon, { className: 'w-5 h-5', style: { color: category.accent } })}
+                          </div>
+                          <h4 className="text-2xl font-black text-white">{activeToolData?.name}</h4>
                         </div>
-                      <h4 className="text-2xl font-black text-white">{activeToolData.name}</h4>
-                    </div>
-                    <div className="space-y-4">
-                      <p className="text-[11px] font-black tracking-[0.2em] text-cyan-400/80 uppercase">Key Capabilities</p>
+                      )}
+                      <div className="space-y-4">
+                        <p className="text-[11px] font-black tracking-[0.2em] text-cyan-400/80 uppercase">How It Works</p>
                         <div className="grid grid-cols-1 gap-3">
-                          {(toolFeatures[activeToolData.name] || []).map((f, i) => (
-                            <motion.div
-                              key={i}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: i * 0.1 }}
-                              className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-white/5 border border-white/5 group hover:border-white/10 transition-colors"
-                            >
-                              <div className="w-1.5 h-1.5 rounded-full" style={{ background: category.accent }} />
-                              <span className="text-xs text-gray-300 font-medium">{f}</span>
-                            </motion.div>
-                          ))}
+                          {(toolFeatures[activeToolData?.name] || []).map((f, i) => {
+                            const isObj = typeof f === 'object';
+                            const title = isObj ? f.title : (f.includes(': ') ? f.split(': ')[0] : f);
+                            const desc = isObj ? f.desc : (f.includes(': ') ? f.split(': ')[1] : null);
+                            const Icon = isObj ? f.icon : null;
+                            
+                            return (
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="flex items-center gap-4 px-6 py-5 rounded-2xl bg-white/5 border border-white/5 group hover:border-white/10 hover:bg-white/[0.08] transition-all duration-300"
+                              >
+                                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 group-hover:border-cyan-500/40 transition-colors shrink-0">
+                                   <span className="text-xs font-black text-cyan-400">{i + 1}</span>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[15px] font-bold text-white group-hover:text-cyan-400 transition-colors tracking-tight">{title}</span>
+                                  {desc && <span className="text-[11px] text-gray-400 font-medium leading-relaxed opacity-80">{desc}</span>}
+                                </div>
+                              </motion.div>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
 
                     <div className="flex-1 rounded-3xl bg-black/20 border border-white/5 p-8 flex items-center justify-center relative overflow-hidden group">
-                      <div className="absolute inset-0 opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity">
+                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none group-hover:opacity-20 transition-opacity">
                          <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundImage: `radial-gradient(circle at center, ${category.accent} 0%, transparent 75%)` }} />
                       </div>
-                      
-                      {activeToolData.name === 'Text to Speech' && (
-                        <div className="relative w-full aspect-video flex items-center justify-center">
-                          <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                            {[1, 2, 3].map((i) => (
+                                           {activeToolData.name === 'Text to Speech' && (
+                        <div className="relative w-full h-full flex items-center justify-center gap-6">
+                          {/* Document card with text lines */}
+                          <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6 }}
+                            className="w-20 h-24 rounded-2xl bg-[#1a2240] border border-white/10 flex flex-col items-start justify-center gap-2 px-3 py-3 shadow-xl"
+                          >
+                            {[70, 90, 55].map((w, i) => (
                               <motion.div
                                 key={i}
-                                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }}
-                                transition={{ duration: 3, repeat: Infinity, delay: i * 0.8 }}
-                                className="absolute rounded-full border border-cyan-500"
-                                style={{ width: i * 120, height: i * 120 }}
+                                className="h-1.5 rounded-full bg-white/20"
+                                style={{ width: `${w}%` }}
+                                animate={{ opacity: [0.4, 0.9, 0.4] }}
+                                transition={{ duration: 2, repeat: Infinity, delay: i * 0.3, ease: 'easeInOut' }}
                               />
                             ))}
-                          </div>
-                          <div className="relative z-10 flex items-center gap-8">
-                            <motion.div
-                              animate={{ y: [0, -5, 0] }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                              className="w-16 h-20 rounded-xl bg-white/5 border border-white/10 flex flex-col gap-2 p-3"
-                            >
-                              <div className="h-1.5 w-full bg-white/20 rounded-full" />
-                              <div className="h-1.5 w-2/3 bg-white/20 rounded-full" />
-                              <div className="h-1.5 w-3/4 bg-white/20 rounded-full" />
-                            </motion.div>
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1, repeat: Infinity }}
-                            >
-                              <ArrowRight className="w-6 h-6 text-cyan-500/50" />
-                            </motion.div>
-                            <div className="relative">
-                              <Mic className="w-12 h-12 text-cyan-400" />
-                              <div className="absolute -inset-4 border border-cyan-500/30 rounded-full animate-ping" />
-                            </div>
-                          </div>
+                          </motion.div>
+
+                          {/* Arrow */}
+                          <motion.div
+                            animate={{ x: [0, 4, 0] }}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                            className="text-gray-500"
+                          >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                              <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </motion.div>
+
+                          {/* Mic icon */}
+                          <motion.div
+                            animate={{ scale: [1, 1.06, 1] }}
+                            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                          >
+                            <Mic className="w-16 h-16 text-cyan-400 drop-shadow-[0_0_16px_rgba(6,182,212,0.5)]" />
+                          </motion.div>
                         </div>
                       )}
 
-                      {activeToolData.name === 'Speech to Video' && (
+
+                      {activeToolData?.name === 'Speech to Video' && (
                         <div className="relative w-full aspect-video flex items-center justify-center gap-6">
                            {/* Audio Waveform Side */}
                            <motion.div 
@@ -726,114 +949,159 @@ function SidebarToolsPanel({ onExploreTool }) {
                         </div>
                       )}
 
-                      {activeToolData.name === 'Scribe' && (
-                        <div className="relative w-full aspect-video flex items-center justify-center bg-gradient-to-br from-[#0f172a] to-[#070b1f] rounded-[2rem] border border-white/5 overflow-hidden">
+                      {activeToolData?.name === 'Content Insights' && (
+                        <div className="relative w-full h-full flex items-center justify-center bg-[#050510] rounded-[2rem] overflow-hidden">
                           {/* Background Grid */}
-                          <div className="absolute inset-0 opacity-10" 
-                            style={{ backgroundImage: 'radial-gradient(#22d3ee 0.5px, transparent 0.5px)', backgroundSize: '20px 20px' }} 
-                          />
+                          <div className="absolute inset-0 opacity-10 pointer-events-none" 
+                            style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
                           
-                          <div className="relative w-64 h-64 flex items-center justify-center">
-                            {/* Neural Network Pulse Rings */}
-                            {[1, 2, 3].map((i) => (
-                              <motion.div
-                                key={i}
-                                animate={{ 
-                                  scale: [1, 1.6],
-                                  opacity: [0.5, 0]
-                                }}
-                                transition={{ 
-                                  duration: 3, 
-                                  repeat: Infinity, 
-                                  delay: i * 1,
-                                  ease: "easeOut" 
-                                }}
-                                className="absolute rounded-full border border-cyan-500/30"
-                                style={{ width: 80, height: 80 }}
-                              />
-                            ))}
-
-                            {/* Center "Brain" Node */}
-                            <motion.div 
-                              animate={{ 
-                                boxShadow: ['0 0 20px rgba(34,211,238,0.2)', '0 0 40px rgba(34,211,238,0.5)', '0 0 20px rgba(34,211,238,0.2)']
-                              }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                              className="w-20 h-20 rounded-[2rem] bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center z-20 shadow-2xl relative"
-                            >
-                              <Zap className="w-10 h-10 text-white animate-pulse" />
-                              
-                              {/* Orbiting Data Particles */}
-                              {[...Array(6)].map((_, i) => (
-                                <motion.div
-                                  key={i}
-                                  animate={{ rotate: 360 }}
-                                  transition={{ 
-                                    duration: 4 + i, 
-                                    repeat: Infinity, 
-                                    ease: "linear" 
-                                  }}
-                                  className="absolute w-full h-full"
-                                >
-                                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-cyan-400 blur-[1px]" />
-                                </motion.div>
-                              ))}
-                            </motion.div>
-
-                            {/* Floating "Idea" Nodes being scanned */}
-                            {[
-                              { Icon: FileText, top: '15%', left: '20%' },
-                              { Icon: Video, top: '20%', right: '15%' },
-                              { Icon: Mic, bottom: '25%', left: '15%' },
-                              { Icon: Share2, bottom: '20%', right: '20%' }
-                            ].map((node, i) => (
-                              <motion.div
-                                key={i}
-                                initial={{ opacity: 0, scale: 0 }}
-                                animate={{ 
-                                  opacity: [0, 1, 0.4],
-                                  scale: [0.8, 1, 0.9],
-                                  y: [0, -10, 0]
-                                }}
-                                transition={{ 
-                                  duration: 4, 
-                                  repeat: Infinity, 
-                                  delay: i * 0.7,
-                                  ease: "easeInOut" 
-                                }}
-                                className="absolute p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm"
-                                style={{ top: node.top, left: node.left, right: node.right, bottom: node.bottom }}
+                          <AnimatePresence mode="wait">
+                            {/* Scene 1: Input */}
+                            {insightsPhase === 0 && (
+                              <motion.div 
+                                key="scene1"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="absolute inset-0 flex items-center justify-center"
                               >
-                                <node.Icon className="w-5 h-5 text-gray-400" />
-                                
-                                {/* Scanning Laser Line */}
+                                {/* Central Glowing Node */}
                                 <motion.div 
-                                  animate={{ x: ['-100%', '200%'] }}
-                                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-                                  className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent"
+                                  animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+                                  transition={{ duration: 2, repeat: Infinity }}
+                                  className="absolute w-16 h-16 rounded-full bg-cyan-500/20 border border-cyan-500/40 blur-xl z-0" 
                                 />
+                                <Search className="w-8 h-8 text-cyan-400 z-10" />
+                                
+                                {/* Flying Icons */}
+                                {[Youtube, FileVideo, FileAudio, FileText].map((Icon, idx) => (
+                                  <motion.div
+                                    key={idx}
+                                    initial={{ 
+                                      x: idx % 2 === 0 ? (idx === 0 ? -150 : 150) : (idx === 1 ? 150 : -150),
+                                      y: idx < 2 ? -100 : 100,
+                                      opacity: 0,
+                                      scale: 0.5
+                                    }}
+                                    animate={{ x: 0, y: 0, opacity: [0, 1, 0.2], scale: [0.5, 1, 0.5] }}
+                                    transition={{ duration: 2.5, repeat: Infinity, delay: idx * 0.4, ease: "easeInOut" }}
+                                    className="absolute p-3 rounded-xl bg-white/5 border border-white/10"
+                                  >
+                                    <Icon className="w-6 h-6 text-gray-400" />
+                                  </motion.div>
+                                ))}
                               </motion.div>
-                            ))}
-                          </div>
-                          
-                          {/* Bottom Stats/Feedback overlay */}
-                          <div className="absolute bottom-6 left-6 right-6 flex justify-between gap-3">
-                            {['Analyzing Trends', 'Indexing Portfolio', 'Drafting Strategy'].map((text, i) => (
-                              <motion.div
-                                key={i}
-                                animate={{ opacity: [0.3, 1, 0.3] }}
-                                transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
-                                className="flex items-center gap-2"
+                            )}
+
+                            {/* Scene 2: Processing (AI Engine) */}
+                            {insightsPhase === 1 && (
+                              <motion.div 
+                                key="scene2"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.1 }}
+                                className="absolute inset-0 flex items-center justify-center"
                               >
-                                <div className="w-1 h-1 rounded-full bg-cyan-500" />
-                                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">{text}</span>
+                                <motion.div 
+                                  animate={{ 
+                                    boxShadow: ['0 0 20px rgba(6,182,212,0.2)', '0 0 60px rgba(6,182,212,0.5)', '0 0 20px rgba(6,182,212,0.2)'],
+                                    scale: [1, 1.05, 1]
+                                  }}
+                                  transition={{ duration: 2, repeat: Infinity }}
+                                  className="w-32 h-32 rounded-full bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 flex items-center justify-center relative"
+                                >
+                                  <motion.div 
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                                    className="absolute inset-0 rounded-full border border-dashed border-cyan-500/20"
+                                  />
+                                  <Sparkles className="w-10 h-10 text-cyan-400" />
+                                </motion.div>
+
+                                {/* Floating Labels */}
+                                {["Analyzing Content", "Clustering Topics", "Detecting Gaps"].map((text, idx) => (
+                                  <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ 
+                                      opacity: [0, 1, 0], 
+                                      y: [-20, -60],
+                                      x: idx === 0 ? -80 : idx === 1 ? 80 : 0
+                                    }}
+                                    transition={{ duration: 3, repeat: Infinity, delay: idx * 1, ease: "easeOut" }}
+                                    className="absolute text-[10px] font-black uppercase tracking-widest text-cyan-200/60 whitespace-nowrap"
+                                  >
+                                    {text}
+                                  </motion.div>
+                                ))}
                               </motion.div>
-                            ))}
-                          </div>
+                            )}
+
+                            {/* Scene 3 & 4: Output / Final State */}
+                            {(insightsPhase === 2 || insightsPhase === 3) && (
+                              <motion.div 
+                                key="scene3"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="absolute inset-0 flex flex-col p-6 gap-3"
+                              >
+                                <motion.div 
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.2em] mb-1 flex items-center gap-2"
+                                >
+                                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                                  Insights Generated
+                                </motion.div>
+                                
+                                <div className="grid grid-cols-1 gap-3">
+                                  {[
+                                    { title: "Content Feedback", sub: "Improve engagement & retention", color: "cyan" },
+                                    { title: "Content Gaps", sub: "Topics you haven't covered yet", color: "blue" },
+                                    { title: "Trending Ideas", sub: "What to create next", color: "indigo" }
+                                  ].map((card, idx) => (
+                                    <motion.div
+                                      key={idx}
+                                      initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                                      animate={{ 
+                                        opacity: 1, 
+                                        x: 0, 
+                                        scale: 1,
+                                      }}
+                                      transition={{ delay: idx * 0.4, duration: 0.6 }}
+                                      whileHover={{ scale: 1.02, x: 5, backgroundColor: "rgba(255,255,255,0.08)" }}
+                                      className="p-3.5 rounded-xl bg-white/5 border border-white/10 flex flex-col gap-0.5 cursor-pointer transition-all duration-300 group"
+                                      style={{
+                                        boxShadow: insightsPhase === 3 ? `0 10px 30px -10px rgba(6,182,212,0.15)` : "none"
+                                      }}
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-sm font-bold text-white group-hover:text-cyan-400 transition-colors">{card.title}</span>
+                                        <div className={`w-1.5 h-1.5 rounded-full ${insightsPhase === 3 ? 'bg-cyan-400 shadow-[0_0_8px_#22d3ee]' : 'bg-gray-600'}`} />
+                                      </div>
+                                      <span className="text-[10px] text-gray-400 font-medium">{card.sub}</span>
+                                    </motion.div>
+                                  ))}
+                                </div>
+
+                                {insightsPhase === 3 && (
+                                  <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="mt-2 flex justify-center"
+                                  >
+                                    <div className="px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-[10px] font-bold text-cyan-400 uppercase tracking-widest animate-pulse">
+                                      Ready to Use
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       )}
 
-                      {activeToolData.name === 'Content Repurposer' && (
+                      {activeToolData?.name === 'Content Repurposer' && (
                         <div key="repurposer-animation-container" className="flex flex-col items-center gap-8 w-full">
                            <div className="relative group/repurpose">
                               {/* Main Video Source */}
@@ -913,41 +1181,181 @@ function SidebarToolsPanel({ onExploreTool }) {
                         </div>
                       )}
 
-                      {activeToolData.name === 'Publisher' && (
-                        <div className="relative w-full aspect-video flex items-center justify-center">
-                           <div className="relative w-40 h-40 flex items-center justify-center">
-                              <motion.div 
-                                animate={{ scale: [1, 1.05, 1], rotate: [0, 5, -5, 0] }} 
-                                transition={{ duration: 4, repeat: Infinity }}
-                                className="w-20 h-20 rounded-2xl bg-blue-500/10 border border-blue-500/40 flex items-center justify-center z-10 shadow-[0_0_50px_-10px_rgba(59,130,246,0.3)] backdrop-blur-sm"
+                      {activeToolData?.name === 'Publisher' && (
+                        <div className="relative w-full h-full flex flex-col items-center justify-center bg-[#050518] rounded-[2.5rem] overflow-hidden p-8">
+                           {/* Scene Background Grid */}
+                           <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+                                style={{ backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`, backgroundSize: '32px 32px' }} />
+
+                           <div className="relative w-full h-full flex items-center justify-center">
+                              {/* Central Post Card (Phase 0+) */}
+                              <motion.div
+                                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                                animate={{ 
+                                   opacity: 1, 
+                                   y: 0, 
+                                   scale: publisherPhase === 3 ? [1, 1.05, 1] : 1,
+                                   borderColor: publisherPhase === 4 ? 'rgba(34, 197, 94, 0.4)' : 'rgba(59, 130, 246, 0.2)'
+                                }}
+                                className="z-20 w-52 h-36 rounded-2xl bg-[#0a0e27] border border-blue-500/20 p-4 shadow-2xl flex flex-col gap-3 relative"
                               >
-                                 <Share2 className="w-10 h-10 text-blue-400" />
+                                 <div className="flex gap-2">
+                                    <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                       <User className="w-4 h-4 text-blue-400" />
+                                    </div>
+                                    <div className="flex-1 flex flex-col gap-1.5 mt-1.5">
+                                       <motion.div 
+                                         animate={{ width: publisherPhase === 0 ? ['0%', '70%'] : '70%' }}
+                                         transition={{ duration: 1, ease: 'easeOut' }}
+                                         className="h-1.5 rounded-full bg-white/10" 
+                                       />
+                                       <motion.div 
+                                         animate={{ width: publisherPhase === 0 ? ['0%', '40%'] : '40%' }}
+                                         transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
+                                         className="h-1 w-10 border border-white/5 rounded-full" 
+                                       />
+                                    </div>
+                                 </div>
+                                 <motion.div 
+                                   initial={{ opacity: 0 }}
+                                   animate={{ opacity: publisherPhase >= 0 ? 1 : 0 }}
+                                   transition={{ delay: 1.2 }}
+                                   className="flex-1 rounded-lg bg-blue-500/5 border border-white/5 flex items-center justify-center overflow-hidden relative"
+                                 >
+                                    <motion.div
+                                      animate={{ 
+                                         opacity: [0.1, 0.3, 0.1],
+                                         scale: [1, 1.1, 1]
+                                      }}
+                                      transition={{ duration: 2, repeat: Infinity }}
+                                      className="absolute inset-0 bg-blue-500/10"
+                                    />
+                                    <Rocket className={`w-8 h-8 transition-colors duration-500 ${publisherPhase === 4 ? 'text-green-400' : 'text-blue-500/40'}`} />
+                                 </motion.div>
+                                 
+                                 {/* Share Pulse (Phase 3) */}
+                                 {publisherPhase === 3 && (
+                                   <motion.div 
+                                     initial={{ scale: 1, opacity: 0.5 }}
+                                     animate={{ scale: 1.5, opacity: 0 }}
+                                     transition={{ duration: 0.6, repeat: Infinity }}
+                                     className="absolute inset-0 rounded-2xl border-2 border-blue-400/50 shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                                   />
+                                 )}
                               </motion.div>
-                              
+
+                              {/* Platform Icons (Phase 1+) */}
                               {[
-                                { Icon: Youtube, color: '#ff0000', angle: 0 },
-                                { Icon: Instagram, color: '#e4405f', angle: 90 },
+                                { Icon: Youtube, color: '#ff0000', pos: { top: '10%', left: '10%' }, stream: { x1: '20%', y1: '20%', x2: '42%', y2: '42%' } },
+                                { Icon: Instagram, color: '#e4405f', pos: { top: '10%', right: '10%' }, stream: { x1: '80%', y1: '20%', x2: '58%', y2: '42%' } },
                                 { Icon: ({ className, style }) => (
                                   <svg viewBox="0 0 24 24" fill="currentColor" className={className} style={style}>
                                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                                   </svg>
-                                ), color: '#ffffff', angle: 180 },
-                                { Icon: Linkedin, color: '#0077b5', angle: 270 }
+                                ), color: '#ffffff', pos: { bottom: '10%', left: '10%' }, stream: { x1: '20%', y1: '80%', x2: '42%', y2: '58%' } },
+                                { Icon: Linkedin, color: '#0077b5', pos: { bottom: '10%', right: '10%' }, stream: { x1: '80%', y1: '80%', x2: '58%', y2: '58%' } }
                               ].map((item, i) => (
-                                <motion.div
-                                  key={i}
-                                  initial={{ opacity: 0, scale: 0 }}
-                                  animate={{ 
-                                    x: [0, Math.cos(item.angle * Math.PI / 180) * 80],
-                                    y: [0, Math.sin(item.angle * Math.PI / 180) * 80],
-                                    opacity: [0, 1, 0.8],
-                                    scale: [0.5, 1.2, 1]
-                                  }}
-                                  transition={{ duration: 3, repeat: Infinity, delay: i * 0.4 }}
-                                  className="absolute p-3 rounded-xl bg-white/5 border border-white/10"
-                                >
-                                   <item.Icon className="w-6 h-6" style={{ color: item.color }} />
-                                </motion.div>
+                                 <div key={i} className="absolute inset-0 pointer-events-none">
+                                    {/* Connection Line (Phase 2+) */}
+                                    {publisherPhase >= 2 && (
+                                      <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
+                                        <motion.line
+                                          x1={item.stream.x1} y1={item.stream.y1} 
+                                          x2={item.stream.x2} y2={item.stream.y2}
+                                          stroke={publisherPhase === 4 ? "#22c55e" : "#3b82f6"}
+                                          strokeWidth="1.5"
+                                          strokeDasharray="5,5"
+                                          initial={{ opacity: 0, pathLength: 0 }}
+                                          animate={{ 
+                                             opacity: publisherPhase === 3 ? [0.2, 0.8, 0.2] : 0.4,
+                                             pathLength: 1
+                                          }}
+                                          transition={{ duration: 1 }}
+                                        />
+                                        
+                                        {/* Streaming Dot (Phase 2 & 3) */}
+                                        {(publisherPhase === 2 || publisherPhase === 3) && (
+                                          <motion.circle
+                                            r="2.5"
+                                            fill="#60a5fa"
+                                            initial={{ cx: item.stream.x2, cy: item.stream.y2, opacity: 0 }}
+                                            animate={{ 
+                                               cx: [item.stream.x2, item.stream.x1],
+                                               cy: [item.stream.y2, item.stream.y1],
+                                               opacity: [0, 1, 0]
+                                            }}
+                                            transition={{ 
+                                               duration: publisherPhase === 3 ? 0.4 : 0.8, 
+                                               repeat: Infinity,
+                                               ease: "linear",
+                                               delay: i * 0.1
+                                            }}
+                                            style={{ filter: 'drop-shadow(0 0 4px #3b82f6)' }}
+                                          />
+                                        )}
+                                      </svg>
+                                    )}
+
+                                    {/* Platform Icon Box */}
+                                    <motion.div
+                                      initial={{ opacity: 0, scale: 0.5, y: 20 }}
+                                      animate={{ 
+                                         opacity: publisherPhase >= 1 ? 1 : 0,
+                                         scale: publisherPhase >= 1 ? 1 : 0.5,
+                                         y: publisherPhase >= 1 ? 0 : 20,
+                                         boxShadow: publisherPhase === 4 ? `0 0 30px -5px ${item.color}30` : 'none',
+                                         borderColor: publisherPhase === 4 ? 'rgba(34, 197, 94, 0.5)' : 'rgba(255, 255, 255, 0.1)'
+                                      }}
+                                      className={`absolute p-5 rounded-[1.25rem] bg-[#0f173d]/60 border shadow-2xl backdrop-blur-xl z-30 transition-colors duration-500`}
+                                      style={item.pos}
+                                    >
+                                       <item.Icon className={`w-7 h-7 transition-colors duration-500`} style={{ color: publisherPhase === 4 ? '#22c55e' : item.color }} />
+                                       
+                                       {/* Success Status Text (Phase 4) */}
+                                       {publisherPhase === 4 && (
+                                         <motion.div
+                                           initial={{ opacity: 0, y: 5 }}
+                                           animate={{ opacity: 1, y: 0 }}
+                                           className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap"
+                                         >
+                                            <span className="text-[9px] font-black text-green-400 tracking-tighter uppercase">Posted</span>
+                                         </motion.div>
+                                       )}
+
+                                       {/* Confirmation Chip (Phase 4) */}
+                                       {publisherPhase === 4 && (
+                                         <motion.div
+                                           initial={{ scale: 0, rotate: -20 }}
+                                           animate={{ scale: 1, rotate: 0 }}
+                                           className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-white shadow-lg"
+                                         >
+                                           <CheckCircle2 className="w-3.5 h-3.5" strokeWidth={3} />
+                                         </motion.div>
+                                       )}
+
+                                       {/* Publish Flow Post (Phase 3) */}
+                                       {publisherPhase === 3 && (
+                                         <motion.div
+                                            initial={{ scale: 0.2, opacity: 0, x: i % 2 === 0 ? 100 : -100, y: i < 2 ? 100 : -100 }}
+                                            animate={{ scale: 1, opacity: [0, 1, 0], x: 0, y: 0 }}
+                                            transition={{ duration: 0.8, repeat: Infinity, ease: 'circOut' }}
+                                            className="absolute inset-0 rounded-[1.25rem] border-2 border-blue-400 bg-blue-400/10"
+                                         />
+                                       )}
+                                    </motion.div>
+                                 </div>
+                              ))}
+                           </div>
+
+                           {/* Phase Indicators */}
+                           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-5">
+                              {['Create', 'Connect', 'Target', 'Publish', 'Success'].map((label, i) => (
+                                 <div key={i} className="flex flex-col items-center gap-1.5 min-w-[50px]">
+                                    <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${publisherPhase >= i ? 'bg-blue-400 shadow-[0_0_10px_#3b82f6]' : 'bg-white/10'}`} />
+                                    <span className={`text-[9px] font-black uppercase tracking-widest transition-all duration-500 ${publisherPhase === i ? 'text-blue-400 opacity-100 scale-110' : 'text-gray-600 opacity-30'}`}>
+                                       {label}
+                                    </span>
+                                 </div>
                               ))}
                            </div>
                         </div>
@@ -964,7 +1372,7 @@ function SidebarToolsPanel({ onExploreTool }) {
                     onClick={onExploreTool}
                     className="bg-white hover:bg-gray-100 text-black px-10 py-6 rounded-2xl font-bold text-sm shadow-2xl flex items-center gap-2 group transition-all"
                   >
-                    Explore {activeToolData.name}
+                    Explore {activeToolData?.name}
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 )}
@@ -1154,21 +1562,31 @@ function ShowcaseCarousel({ cards }) {
   );
 }
 
-export default function Home() {
-  const [isBetaOpen, setIsBetaOpen] = React.useState(false);
-  const { isAuthenticated, setAuthModalOpen, theme } = useAuth();
 
+export default function Home() {
+  const [isBetaOpen, setIsBetaOpen] = useState(false);
+  const { isAuthenticated, setAuthModalOpen, theme } = useAuth();
+  const navigate = useNavigate();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const handleBetaClick = () => {
-    setIsBetaOpen(true);
+    if (isAuthenticated) {
+      setIsBetaOpen(true);
+    } else {
+      toast.error('Sign in first to enter creator studio', {
+        description: 'You need an account to join the onboarding flow.',
+        duration: 4000
+      });
+      setAuthModalOpen(true);
+    }
   };
 
-
   const handleExploreTool = () => {
-    if (!isAuthenticated) {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
       setAuthModalOpen(true);
     }
   };
@@ -1187,8 +1605,8 @@ export default function Home() {
       gradient: 'from-blue-500 to-indigo-500'
     },
     {
-      icon: Pencil,
-      title: 'Scribe',
+      icon: Search,
+      title: 'Content Insights',
       description: 'AI-powered content intelligence and portfolio strategy',
       gradient: 'from-purple-500 to-indigo-500'
     },
@@ -1224,7 +1642,7 @@ export default function Home() {
   return (
     <div className="bg-background text-foreground overflow-hidden transition-colors duration-300">
       {/* Hero Section */}
-      <section className="relative h-[105vh] lg:h-[115vh] -mt-20 flex items-center justify-center pt-20 px-6 overflow-hidden">
+      <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center py-20 px-4 sm:px-6 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
           <motion.div
@@ -1267,23 +1685,24 @@ export default function Home() {
             transition={{ duration: 30, repeat: Infinity }}
           />
         </div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(10,14,39,0.4)_100%)] pointer-events-none" />
 
         {/* Hero Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center">
+
+
+          <div className="w-full grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-20 items-center">
             
             {/* Left Column: Text Content */}
             <motion.div
               initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
+              transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
               className="text-center lg:text-left"
             >
               {/* Headline */}
               <motion.h1
-                className="font-extrabold mb-8 tracking-tight"
-                style={{ lineHeight: 1.05, fontSize: 'clamp(2.8rem, 5.5vw, 5rem)' }}
+                className="font-extrabold mb-6 md:mb-8 tracking-tight"
+                style={{ lineHeight: 1.05, fontSize: 'clamp(2rem, 5.5vw, 5rem)' }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 1, ease: "easeOut" }}
@@ -1308,7 +1727,7 @@ export default function Home() {
 
               {/* Subtitle */}
               <motion.p
-                className={`text-lg md:text-xl mb-12 font-normal max-w-2xl mx-auto lg:mx-0 leading-relaxed ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}
+                className={`text-base md:text-lg lg:text-xl mb-8 md:mb-12 font-normal max-w-2xl mx-auto lg:mx-0 leading-relaxed ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 1 }}
@@ -1322,19 +1741,36 @@ export default function Home() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.85, duration: 1 }}
               >
-              {/* Primary CTA: Start Your Journey */}
+              {/* Primary CTAs: Signup & Enter Creator Studio */}
+              {!isAuthenticated && (
+                <motion.div
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    onClick={() => setAuthModalOpen(true)}
+                    className={`px-8 py-6 text-base font-bold rounded-2xl transition-all duration-300 border backdrop-blur-md ${theme === 'light' ? 'bg-white/80 border-gray-200 text-gray-900 shadow-lg hover:bg-gray-50' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}
+                  >
+                    Signup Now
+                  </Button>
+                </motion.div>
+              )}
+              
               <motion.div
-                whileHover={{ scale: 1.06 }}
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 className="relative"
               >
-
+                {/* Glow Effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+                
                 <Button
                   onClick={handleBetaClick}
-                  className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-5 text-base font-bold rounded-2xl shadow-2xl shadow-cyan-500/40 border border-cyan-300/30"
+                  className="relative bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-6 text-base font-bold rounded-2xl shadow-2xl shadow-cyan-500/20 border border-cyan-300/30"
                 >
                   <span className="relative flex items-center gap-2">
-                    Start Your Journey
+                    Enter Creator Studio
+                    <ArrowRight className="w-4 h-4 ml-1" />
                   </span>
                 </Button>
               </motion.div>
@@ -1353,9 +1789,6 @@ export default function Home() {
 
           </div>
         </div>
-
-
-
       </section>
 
       {/* Sidebar Tools Panel */}
@@ -1366,100 +1799,45 @@ export default function Home() {
         const showcaseCards = [
           {
             badge: 'CONTENT INSIGHTS',
-            accent: '#c084fc', // purple from Scribe
-            title: 'Your AI Editorial Brain',
-            caption: 'Scan your content portfolio, surface gaps, and auto-plan your content strategy with deep intelligence.',
-            img: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=900&q=85',
-            imgAlt: 'Content creator working on a laptop with a content calendar',
+            accent: '#c084fc', // purple from Content Insights
+            title: 'Turn Data into Your Next Breakthrough',
+            caption: 'Uncover gaps, trends, and winning ideas—powered by your own content.',
+            img: '/assets/how-it-works/step1-insights.png',
+            imgAlt: 'Content Insights Interface',
           },
           {
             badge: 'CONTENT CREATION',
             accent: '#06b6d4', // cyan from Text to Voice
-            title: 'Turn Words into Voices & Videos',
-            caption: 'From studio-quality AI voiceovers to automated social videos, create highly-engaging content in minutes.',
-            img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=900&q=85',
-            imgAlt: 'Professional podcasting microphone in a recording studio',
+            title: 'From Idea to Content—In Minutes',
+            caption: 'Create studio-quality audio and videos without the usual effort.',
+            img: '/assets/how-it-works/step2-creation.png',
+            imgAlt: 'Content Creation Tools',
           },
           {
             badge: 'CONTENT PUBLISHING',
             accent: '#fb7185', // pink from Publisher
-            title: 'One Click, Every Platform',
-            caption: 'Hit publish once — LinkedIn, YouTube, Instagram, and more all go live simultaneously to maximize reach.',
-            img: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=900&q=85',
-            imgAlt: 'Social media multi-platform publishing on a phone and laptop',
+            title: 'Publish Once. Reach Everywhere.',
+            caption: 'Go live across platforms instantly—no extra steps, no repetition.',
+            img: '/assets/how-it-works/step3-publishing.png',
+            imgAlt: 'Multi-platform Publisher',
           },
           {
             badge: 'CONTENT PERFORMANCE',
             accent: '#38bdf8', // blue from Dashboard
-            title: 'All Your Metrics, One View',
-            caption: 'Track reach, engagement, and growth across every platform with unified analytics — no tab-switching required.',
-            img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=85',
-            imgAlt: 'Analytics dashboard with charts and performance metrics',
+            title: 'See What’s Working. Scale What Wins.',
+            caption: 'Track growth, engagement, and revenue—all in one unified dashboard.',
+            img: '/assets/how-it-works/step4-growth.png',
+            imgAlt: 'Performance Analytics Dashboard',
           },
         ];
         return <ShowcaseCarousel cards={showcaseCards} />;
       })()}
 
-      <div className={`py-10 relative border-y transition-colors duration-300 ${theme === 'light' ? 'bg-white border-gray-200' : 'bg-[#07091c] border-white/5'}`}>
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-center gap-4 flex-nowrap overflow-x-auto no-scrollbar scroll-smooth">
-          {contentFlow.map((item, idx) => {
-            const Icon = item.icon;
-            const iconColor = item.color.includes('cyan') ? '#06b6d4'
-              : item.color.includes('blue') ? '#60a5fa'
-                : item.color.includes('indigo') ? '#818cf8'
-                  : item.color.includes('purple') ? '#a78bfa'
-                    : '#06b6d4';
-            const bgColor = item.color.includes('cyan') ? '#06b6d4'
-              : item.color.includes('blue') ? '#3b82f6'
-                : item.color.includes('indigo') ? '#6366f1'
-                  : item.color.includes('purple') ? '#8b5cf6'
-                    : '#06b6d4';
-            return (
-              <React.Fragment key={idx}>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  whileHover={{ y: -4, scale: 1.02 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  className="flex items-center gap-3 px-6 py-3.5 rounded-2xl shrink-0 cursor-default group"
-                  style={{
-                    background: theme === 'light' ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.03)',
-                    border: theme === 'light' ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: theme === 'light' ? '0 4px 6px -1px rgba(0,0,0,0.05)' : '0 10px 30px -10px rgba(0,0,0,0.5)',
-                    backdropFilter: 'blur(8px)'
-                  }}
-                >
-                  <div
-                    className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:rotate-12"
-                    style={{ background: `${bgColor}20` }}
-                  >
-                    <Icon className="w-4 h-4" style={{ color: iconColor }} />
-                  </div>
-                  <span className={`text-[15px] font-bold tracking-tight ${theme === 'light' ? 'text-gray-800' : 'text-gray-100'}`}>
-                    {item.label}
-                  </span>
-                </motion.div>
-                {idx < contentFlow.length - 1 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: idx * 0.1 + 0.2 }}
-                    className={`flex items-center text-xl font-light ${theme === 'light' ? 'text-gray-300' : 'text-gray-700'}`}
-                  >
-                    <ArrowRight className="w-5 h-5 opacity-40" />
-                  </motion.div>
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
-      </div>
+
 
 
       {/* Who IncuBrix is built for */}
-      <section className="py-24 px-6 bg-[#0a0e27] relative overflow-hidden">
+      <section className="py-14 md:py-24 px-4 sm:px-6 bg-[#0a0e27] relative overflow-hidden">
         {/* Background Decorative Rings */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2" />
@@ -1481,13 +1859,13 @@ export default function Home() {
             >
               The Community
             </motion.span>
-            <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-white leading-tight">
-              Built for the <span className="text-cyan-400">Future</span> of Content
+            <h2 className="text-3xl md:text-4xl lg:text-6xl font-black mb-4 md:mb-6 tracking-tight text-white leading-tight">
+              Built for the <span className="text-cyan-400">Future</span> of Creators
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">Join the new generation of creators scaling their impact with IncuBrix.</p>
+            <p className="text-base md:text-xl text-gray-400 max-w-2xl mx-auto">Empowering creators to create better, grow faster, and reach wider with IncuBrix.</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 md:gap-6">
             {creatorTypes.map((item, idx) => (
               <motion.div
                 key={idx}
@@ -1496,7 +1874,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
                 whileHover={item.comingSoon ? {} : { y: -10 }}
-                className={`${!item.comingSoon ? "group " : ""}relative rounded-[2rem] overflow-hidden ${!item.comingSoon ? "cursor-pointer" : "cursor-default border border-white/5 opacity-90"} h-[320px] sm:h-[400px] lg:h-[450px] shadow-2xl`}
+                className={`${!item.comingSoon ? "group " : ""}relative rounded-[2rem] overflow-hidden ${!item.comingSoon ? "cursor-pointer" : "cursor-default border border-white/5 opacity-90"} h-[260px] sm:h-[320px] md:h-[380px] lg:h-[450px] shadow-2xl`}
               >
                 {/* Background Image with Parallax-like effect */}
                 <motion.img

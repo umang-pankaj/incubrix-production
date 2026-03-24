@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, ChevronRight, HelpCircle, ChevronLeft, CheckCircle2, MessageCircle, Bot } from 'lucide-react';
+import { X, Send, ChevronRight, HelpCircle, ChevronLeft, CheckCircle2, MessageCircle, Bot, Sparkles, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -86,7 +86,6 @@ export default function ChatWidget() {
     const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
 
-
     const [isOpen, setIsOpen] = useState(false);
     const [mode, setMode] = useState('menu'); // 'menu', 'chat', 'feedback'
     const [messages, setMessages] = useState([]);
@@ -95,6 +94,7 @@ export default function ChatWidget() {
     const [presets, setPresets] = useState([]);
     // Controls whether the text input is unlocked when action buttons are present
     const [isInputUnlocked, setIsInputUnlocked] = useState(false);
+    const [isRecentOpen, setIsRecentOpen] = useState(false);
     const messagesEndRef = useRef(null);
 
     // Feedback state
@@ -237,10 +237,17 @@ export default function ChatWidget() {
 
     // Scroll to bottom on new messages
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }, [messages, isLoading]);
 
     const handleToggle = () => {
+        if (!isAuthenticated) {
+            setAuthModalOpen(true);
+            toast.info("Please sign in or create an account to chat with Rixi!");
+            return;
+        }
         setIsOpen(!isOpen);
     };
 
@@ -270,6 +277,11 @@ export default function ChatWidget() {
         const key = user?.email ? `${user.email}_${POPUP_DISMISSED_KEY}` : POPUP_DISMISSED_KEY;
         sessionStorage.setItem(key, 'true');
         setShowWelcomePopup(false);
+        if (!isAuthenticated) {
+            setAuthModalOpen(true);
+            toast.info("Join IncuBrix to start chatting with your AI assistant!");
+            return;
+        }
         setIsOpen(true);
         setMode('menu');
     };
@@ -280,6 +292,15 @@ export default function ChatWidget() {
         setShowWelcomePopup(false);
     };
 
+    // Auto-dismiss popup after 5 seconds — animates sliding right toward chat icon
+    useEffect(() => {
+        if (!showWelcomePopup) return;
+        const timer = setTimeout(() => {
+            handleDismissPopup();
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [showWelcomePopup]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const handlePresetClick = (preset) => {
         if (preset.id === 'something_else' || preset.action === 'enable_input') {
             setMode('chat');
@@ -289,17 +310,24 @@ export default function ChatWidget() {
         }
 
         const userMsg = { id: Date.now(), role: 'user', content: preset.label };
-        const botMsg = {
-            id: Date.now() + 1,
-            role: 'bot',
-            content: preset.answer || "I'll help you with that!",
-            source: 'faq',
-            action: preset.id === 'pricing' ? 'show_pricing' : preset.id === 'demo' ? 'show_demo_options' : undefined
-        };
-
-        setMessages([userMsg, botMsg]);
+        // Show user message + typing indicator immediately
+        setMessages([userMsg]);
         setMode('chat');
         setIsInputUnlocked(false);
+        setIsLoading(true);
+
+        // After 2 seconds, reveal the bot answer
+        setTimeout(() => {
+            const botMsg = {
+                id: Date.now() + 1,
+                role: 'bot',
+                content: preset.answer || "I'll help you with that!",
+                source: 'faq',
+                action: preset.id === 'pricing' ? 'show_pricing' : preset.id === 'demo' ? 'show_demo_options' : undefined
+            };
+            setMessages(prev => [...prev, botMsg]);
+            setIsLoading(false);
+        }, 2000);
     };
 
     const handleContactSupport = () => {
@@ -401,120 +429,143 @@ export default function ChatWidget() {
 
                             {/* --- MENU MODE --- */}
                             {mode === 'menu' && (
-                                <div className="p-6 flex flex-col h-full">
+                                <div className="p-4 flex flex-col h-full">
 
-                                    {/* Recent Conversation Banner */}
+                                    {/* Compact Recent Dropdown */}
                                     {savedConvo && savedConvo.messages?.length > 0 && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: -8 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="mb-4"
-                                        >
-                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2 px-1">Recent</p>
+                                        <div className="mb-4 relative">
                                             <button
-                                                onClick={() => {
-                                                    setMessages(savedConvo.messages);
-                                                    setIsInputUnlocked(false);
-                                                    setMode('chat');
-                                                }}
-                                                className="w-full text-left p-3.5 rounded-xl bg-gradient-to-r from-cyan-900/20 to-blue-900/20 border border-cyan-500/20 hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all group"
+                                                onClick={() => setIsRecentOpen(v => !v)}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0f1535] border border-white/8 text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-cyan-400 hover:border-cyan-500/30 transition-all"
                                             >
-                                                <div className="flex items-center justify-between gap-2">
-                                                    <div className="flex items-center gap-2.5 min-w-0">
-                                                        <div className="w-7 h-7 rounded-full border border-cyan-500/30 overflow-hidden shrink-0">
-                                                            <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="text-xs font-semibold text-white truncate">
-                                                                {savedConvo.preview.replace(/\*\*(.*?)\*\*/g, '$1').replace(/^#{1,6}\s*/, '').slice(0, 48)}{savedConvo.preview.length > 48 ? '…' : ''}
-                                                            </p>
-                                                            <p className="text-[10px] text-gray-500 mt-0.5">
-                                                                {new Date(savedConvo.time).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-1.5 shrink-0">
-                                                        <span className="text-[10px] text-cyan-400 font-semibold group-hover:text-cyan-300">Continue</span>
-                                                        <ChevronRight className="w-3.5 h-3.5 text-cyan-400 group-hover:translate-x-0.5 transition-transform" />
-                                                    </div>
-                                                </div>
+                                                Recent
+                                                <svg className={`w-3 h-3 transition-transform duration-200 ${isRecentOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                                </svg>
                                             </button>
-                                            <button
-                                                onClick={() => {
-                                                    const key = user?.email ? `${user.email}_${LAST_CONVO_KEY}` : LAST_CONVO_KEY;
-                                                    localStorage.removeItem(key);
-                                                    setSavedConvo(null);
-                                                }}
-                                                className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors mt-1 px-1"
-                                            >
-                                                Clear history
-                                            </button>
-                                        </motion.div>
+
+                                            {isRecentOpen && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: -4 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className="mt-2 rounded-xl bg-[#0f1535] border border-white/8 overflow-hidden shadow-xl"
+                                                >
+                                                    <button
+                                                        onClick={() => {
+                                                            setMessages(savedConvo.messages);
+                                                            setIsInputUnlocked(false);
+                                                            setMode('chat');
+                                                            setIsRecentOpen(false);
+                                                        }}
+                                                        className="w-full text-left px-4 py-3 flex items-center justify-between gap-3 hover:bg-white/5 transition-colors group"
+                                                    >
+                                                        <div className="flex items-center gap-2.5 min-w-0">
+                                                            <div className="w-6 h-6 rounded-full border border-cyan-500/30 overflow-hidden shrink-0">
+                                                                <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <p className="text-xs font-semibold text-white truncate max-w-[160px]">
+                                                                    {savedConvo.preview.replace(/\*\*(.*?)\*\*/g, '$1').replace(/^#{1,6}\s*/, '').slice(0, 40)}{savedConvo.preview.length > 40 ? '…' : ''}
+                                                                </p>
+                                                                <p className="text-[10px] text-gray-500">
+                                                                    {new Date(savedConvo.time).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <span className="text-[10px] text-cyan-400 font-semibold shrink-0 group-hover:text-cyan-300 flex items-center gap-0.5">
+                                                            Continue <ChevronRight className="w-3 h-3" />
+                                                        </span>
+                                                    </button>
+                                                    <div className="border-t border-white/5 px-4 py-2">
+                                                        <button
+                                                            onClick={() => {
+                                                                const key = user?.email ? `${user.email}_${LAST_CONVO_KEY}` : LAST_CONVO_KEY;
+                                                                localStorage.removeItem(key);
+                                                                setSavedConvo(null);
+                                                                setIsRecentOpen(false);
+                                                            }}
+                                                            className="text-[10px] text-gray-600 hover:text-red-400 transition-colors"
+                                                        >
+                                                            Clear history
+                                                        </button>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </div>
                                     )}
 
-                                    <div className="mb-6 text-center">
-                                        <div className="w-20 h-20 mx-auto mb-4 rounded-full border-2 border-cyan-500/30 overflow-hidden shadow-2xl shadow-cyan-500/20">
-                                            <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
-                                        </div>
-                                        <div className="text-center space-y-1 mb-4">
-                                            <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-cyan-100 to-white bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
+                                    {/* Premium Floating Typography Greeting */}
+                                    <div className="mb-6 px-1 py-2 relative group mt-2">
+                                        <div className="mb-1">
+                                            <h2 className="text-2xl font-black bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(34,211,238,0.4)] tracking-tight">
                                                 Hey {isAuthenticated && user?.name ? user.name.split(' ')[0] : "there"}!
                                             </h2>
-                                            <p className="text-xl font-bold bg-gradient-to-r from-[#00d9ff] to-[#0080ff] bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(0,217,255,0.3)] tracking-tight">
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-0.5 w-8 bg-gradient-to-r from-cyan-500 to-transparent rounded-full shadow-[0_0_8px_rgba(6,182,212,0.5)]"></div>
+                                            <p className="text-sm font-semibold text-cyan-400/90 tracking-wide uppercase">
                                                 How can I assist you today?
                                             </p>
                                         </div>
+                                        
+                                        {/* Subtle background glow effect */}
+                                        <div className="absolute -top-4 -left-4 w-24 h-24 bg-cyan-500/5 blur-[40px] rounded-full pointer-events-none"></div>
                                     </div>
 
-                                    <div className="grid gap-3">
+                                    {/* Vertical Presets - Compact List */}
+                                    <div className="grid gap-2 mb-2">
                                         {presets.map((preset) => (
                                             <motion.button
                                                 key={preset.id}
-                                                whileHover={{ scale: 1.02, x: 5 }}
-                                                whileTap={{ scale: 0.98 }}
+                                                whileHover={{ scale: 1.01, x: 4 }}
+                                                whileTap={{ scale: 0.99 }}
                                                 onClick={() => handlePresetClick(preset)}
-                                                className="group text-left p-4 rounded-xl bg-[#0f1535] border border-white/5 hover:border-cyan-500/30 hover:bg-[#151d45] transition-all flex items-center justify-between"
+                                                className="group text-left px-4 py-2.5 rounded-xl bg-[#0f1535] border border-white/5 hover:border-cyan-500/30 hover:bg-[#151d45] transition-all flex items-center justify-between"
                                             >
-                                                <span className="text-gray-200 text-sm font-medium group-hover:text-cyan-400 transition-colors">
+                                                <span className="text-gray-300 text-xs font-semibold group-hover:text-cyan-400 transition-colors">
                                                     {preset.label}
                                                 </span>
-                                                <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-cyan-400 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1" />
+                                                <ChevronRight className="w-3.5 h-3.5 text-gray-600 group-hover:text-cyan-400 transition-all" />
                                             </motion.button>
                                         ))}
+                                    </div>
 
-                                        <motion.button
-                                            whileHover={{ scale: 1.02, x: 5 }}
+                                    <div className="space-y-2 mt-auto">
+                                        {/* Contact Support — distinct action button */}
+                                        <button
                                             onClick={handleContactSupport}
-                                            className="group text-left p-4 rounded-xl bg-gradient-to-r from-blue-900/20 to-cyan-900/20 border border-blue-500/20 hover:border-blue-500/40 transition-all flex items-center justify-between mt-2"
+                                            className="group w-full flex items-center justify-between px-3.5 py-3 rounded-xl bg-[#0d1330] border border-indigo-500/25 hover:border-indigo-400/50 hover:bg-indigo-950/40 transition-all"
                                         >
-                                            <span className="text-blue-300 text-sm font-medium flex items-center gap-2">
-                                                <HelpCircle className="w-4 h-4" />
-                                                Contact Support
-                                            </span>
-                                        </motion.button>
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-6 h-6 rounded-lg bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                                                    <HelpCircle className="w-3 h-3 text-indigo-400" />
+                                                </div>
+                                                <span className="text-xs font-bold text-indigo-300 tracking-tight">Contact Support</span>
+                                            </div>
+                                            <ChevronRight className="w-3.5 h-3.5 text-indigo-500/40" />
+                                        </button>
 
-                                        {/* Feedback Section */}
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 8 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{ once: true }}
-                                            className="mt-6 mx-auto w-full rounded-2xl bg-[#0f1535]/80 border border-white/5 p-5 flex flex-col items-center gap-4 shadow-xl"
+                                        {/* Feedback — visually distinct, emerald tone */}
+                                        <button
+                                            onClick={() => setMode('feedback')}
+                                            className="group w-full flex items-center justify-between px-3.5 py-3 rounded-xl bg-[#0a1a14] border border-emerald-500/20 hover:border-emerald-400/40 hover:bg-emerald-950/30 transition-all"
                                         >
-                                            <p className="text-sm font-semibold text-white tracking-wide">Tell us what you think!</p>
-                                            <button
-                                                onClick={() => setMode('feedback')}
-                                                className="w-full py-3 rounded-xl bg-white text-[#050510] text-sm font-bold tracking-wide hover:bg-cyan-50 active:scale-95 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.1)]"
-                                            >
-                                                Share Your Thoughts
-                                            </button>
-                                        </motion.div>
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                                                    <MessageSquare className="w-3 h-3 text-emerald-400" />
+                                                </div>
+                                                <span className="text-xs font-bold text-emerald-300/80 tracking-tight">Tell us what you think</span>
+                                            </div>
+                                            <ChevronRight className="w-3.5 h-3.5 text-emerald-500/40" />
+                                        </button>
 
-                                        <div className="text-[10px] text-gray-500 text-center mt-6 px-4 bg-[#0f1535]/50 py-2 rounded-lg border border-white/5">
+                                        <div className="text-[10px] text-gray-500 text-center mt-2 px-4 bg-[#0f1535]/50 py-2 rounded-lg border border-white/5">
                                             By using this bot, you agree to our <a href="/privacy" className="underline hover:text-cyan-400">policies</a>.
                                         </div>
                                     </div>
                                 </div>
                             )}
+
 
                             {/* --- CHAT MODE --- */}
                             {mode === 'chat' && (
@@ -657,22 +708,6 @@ export default function ChatWidget() {
                                         </motion.div>
                                     )}
 
-                                    {/* Feedback Section */}
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.1 }}
-                                        className="mt-8 mx-auto w-full max-w-[95%] rounded-2xl bg-[#0f1535]/80 border border-white/5 p-5 flex flex-col items-center gap-4 shadow-xl"
-                                    >
-                                        <p className="text-sm font-semibold text-white tracking-wide">Tell us what you think!</p>
-                                        <button
-                                            onClick={() => setMode('feedback')}
-                                            className="w-full py-3 rounded-xl bg-white text-[#050510] text-sm font-bold tracking-wide hover:bg-cyan-50 active:scale-95 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.1)]"
-                                        >
-                                            Share Your Thoughts
-                                        </button>
-                                    </motion.div>
-
                                     <div ref={messagesEndRef} />
                                 </div>
                             )}
@@ -803,52 +838,48 @@ export default function ChatWidget() {
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            {/* Welcome Teaser Popup — only on Home, never after dismissed */}
+            {/* Welcome Teaser Popup — compact horizontal pill to the left of chat icon */}
             <AnimatePresence>
                 {popupVisible && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20, scale: 0.9, x: 10 }}
-                        animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute bottom-24 right-0 w-[260px] bg-[#0f1535] border border-cyan-500/30 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5),0_0_20px_rgba(6,182,212,0.1)] overflow-hidden p-0 backdrop-blur-xl"
+                        initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 60, scale: 0.7 }}
+                        transition={{ duration: 0.35, ease: 'easeIn' }}
+                        className="absolute bottom-2 right-16 flex items-center gap-2.5 bg-[#0f1535] border border-cyan-500/30 rounded-full shadow-[0_4px_24px_-4px_rgba(0,0,0,0.5),0_0_16px_rgba(6,182,212,0.12)] backdrop-blur-xl px-3 py-2.5 whitespace-nowrap"
                     >
-                        <div className="p-4 pt-5">
-                            <button
-                                onClick={handleDismissPopup}
-                                className="absolute top-2 right-2 text-gray-500 hover:text-white transition-colors p-1"
-                            >
-                                <X className="w-3.5 h-3.5" />
-                            </button>
-
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-5 h-5 rounded-full overflow-hidden border border-cyan-500/30 shadow-sm shadow-cyan-500/20">
-                                    <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
-                                </div>
-                                <span className="text-[10px] font-bold text-cyan-400/80 uppercase tracking-widest">Assistant Rixi</span>
+                        {/* Avatar with online dot */}
+                        <div className="relative shrink-0">
+                            <div className="w-8 h-8 rounded-full overflow-hidden border border-cyan-500/40 shadow-sm shadow-cyan-500/20">
+                                <img src="/assets/rixi-avatar.png" alt="Rixi" className="w-full h-full object-cover block" />
                             </div>
-
-                            <div className="space-y-0.5 mb-5 text-left">
-                                <h3 className="text-lg font-bold text-white tracking-tight">
-                                    Hey {isAuthenticated && user?.name ? user.name.split(' ')[0] : "there"}!
-                                </h3>
-                                <p className="text-sm font-medium text-gray-400">
-                                    Welcome to <span className="text-white">IncuBrix</span>
-                                </p>
-                            </div>
-
-                            <button
-                                onClick={handleLetsTalk}
-                                className="w-full h-10 bg-gradient-to-r from-cyan-600/10 to-blue-600/10 border border-cyan-500/20 rounded-full px-4 flex items-center justify-between group hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all shadow-lg"
-                            >
-                                <span className="text-gray-300 text-xs font-semibold group-hover:text-cyan-400 transition-colors">Let's talk</span>
-                                <div className="w-7 h-7 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center text-white shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform">
-                                    <ChevronRight className="w-3.5 h-3.5" />
-                                </div>
-                            </button>
+                            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-[#0f1535] rounded-full" />
                         </div>
 
-                        <div className="h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 shadow-[0_-2px_10px_rgba(6,182,212,0.3)]" />
+                        {/* Text */}
+                        <div className="flex flex-col leading-tight">
+                            <span className="text-[9px] font-bold text-cyan-400/70 uppercase tracking-widest">Assistant Rixi</span>
+                            <span className="text-xs font-semibold text-white/90">
+                                Hey {isAuthenticated && user?.name ? user.name.split(' ')[0] : 'there'}!
+                            </span>
+                        </div>
+
+                        {/* Let's talk */}
+                        <button
+                            onClick={handleLetsTalk}
+                            className="ml-1 h-7 px-3 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full text-[10px] font-bold text-white hover:opacity-90 active:scale-95 transition-all shadow-md shadow-cyan-500/30 flex items-center gap-1"
+                        >
+                            Let's talk
+                            <ChevronRight className="w-3 h-3" />
+                        </button>
+
+                        {/* Dismiss */}
+                        <button
+                            onClick={handleDismissPopup}
+                            className="text-gray-600 hover:text-white transition-colors"
+                        >
+                            <X className="w-3 h-3" />
+                        </button>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -859,7 +890,7 @@ export default function ChatWidget() {
                 whileTap={{ scale: 0.95 }}
                 onClick={handleToggle}
                 className={`
-                    h-14 w-14 rounded-full shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center transition-all duration-300 z-50 overflow-hidden
+                    h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-[0_0_20px_rgba(6,182,212,0.5)] flex items-center justify-center transition-all duration-300 z-50 overflow-hidden
                     ${isOpen
                         ? 'bg-[#151d45] text-white border border-white/10'
                         : 'border-2 border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.7)]'

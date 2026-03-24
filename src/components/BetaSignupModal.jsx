@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CheckCircle2, AlertCircle, Loader2, Rocket, Sparkles, Plus, X } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Loader2, Rocket, Sparkles, Plus, X, Search, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/AuthContext';
 import { toast } from 'sonner';
@@ -17,43 +17,7 @@ import { toast } from 'sonner';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
-const COUNTRY_CODES = [
-    { code: '+1', label: 'US +1', country: 'US' },
-    { code: '+44', label: 'UK +44', country: 'UK' },
-    { code: '+91', label: 'IN +91', country: 'IN' },
-    { code: '+61', label: 'AU +61', country: 'AU' },
-    { code: '+49', label: 'DE +49', country: 'DE' },
-    { code: '+33', label: 'FR +33', country: 'FR' },
-    { code: '+81', label: 'JP +81', country: 'JP' },
-    { code: '+86', label: 'CN +86', country: 'CN' },
-    { code: '+82', label: 'KR +82', country: 'KR' },
-    { code: '+55', label: 'BR +55', country: 'BR' },
-    { code: '+52', label: 'MX +52', country: 'MX' },
-    { code: '+971', label: 'AE +971', country: 'AE' },
-    { code: '+966', label: 'SA +966', country: 'SA' },
-    { code: '+65', label: 'SG +65', country: 'SG' },
-    { code: '+60', label: 'MY +60', country: 'MY' },
-    { code: '+234', label: 'NG +234', country: 'NG' },
-    { code: '+27', label: 'ZA +27', country: 'ZA' },
-    { code: '+62', label: 'ID +62', country: 'ID' },
-    { code: '+39', label: 'IT +39', country: 'IT' },
-    { code: '+34', label: 'ES +34', country: 'ES' },
-    { code: '+31', label: 'NL +31', country: 'NL' },
-    { code: '+46', label: 'SE +46', country: 'SE' },
-    { code: '+47', label: 'NO +47', country: 'NO' },
-    { code: '+48', label: 'PL +48', country: 'PL' },
-    { code: '+7', label: 'RU +7', country: 'RU' },
-    { code: '+90', label: 'TR +90', country: 'TR' },
-    { code: '+66', label: 'TH +66', country: 'TH' },
-    { code: '+84', label: 'VN +84', country: 'VN' },
-    { code: '+63', label: 'PH +63', country: 'PH' },
-    { code: '+92', label: 'PK +92', country: 'PK' },
-    { code: '+880', label: 'BD +880', country: 'BD' },
-    { code: '+94', label: 'LK +94', country: 'LK' },
-    { code: '+977', label: 'NP +977', country: 'NP' },
-    { code: '+254', label: 'KE +254', country: 'KE' },
-    { code: '+20', label: 'EG +20', country: 'EG' },
-];
+import { ALL_COUNTRY_CODES } from '@/lib/countryCodes';
 
 const inputClass = "bg-[#151d45]/60 border-cyan-500/20 text-white placeholder:text-gray-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-11 rounded-xl";
 
@@ -113,6 +77,20 @@ export default function BetaSignupModal({ isOpen, onClose, onSuccess }) {
     const [creatorTypes, setCreatorTypes] = useState([]);
     const [platforms, setPlatforms] = useState([]);
 
+    const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+    const [countrySearchText, setCountrySearchText] = useState('');
+    const countryDropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target)) {
+                setIsCountryDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const toggleCreatorType = (id) => setCreatorTypes(prev =>
         prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]
     );
@@ -122,6 +100,13 @@ export default function BetaSignupModal({ isOpen, onClose, onSuccess }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
+    const scrollRef = useRef(null);
+
+    useEffect(() => {
+        if (error && scrollRef.current) {
+            scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [error]);
 
     const handleChange = (e) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -323,51 +308,48 @@ export default function BetaSignupModal({ isOpen, onClose, onSuccess }) {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-[520px] bg-[#0a0e27] border border-cyan-500/20 text-white shadow-2xl shadow-cyan-500/10 p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
-                {/* Header */}
-                <div className="relative bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-indigo-500/20 px-8 pt-8 pb-6">
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0e27]" />
-                    <div className="relative z-10">
-                        <DialogHeader>
-                            <div className="mb-2">
-                                <DialogTitle className="text-2xl font-bold text-white leading-snug">
-                                    {success
-                                        ? <>Welcome to the Future<br />of Content Creation.</>
-                                        : <>Elevate Your<br />Creative Impact.</>}
-                                </DialogTitle>
-                            </div>
-                            <DialogDescription className="text-gray-400 text-base">
-                                {success
-                                    ? "You're officially part of something special. We'll be in touch soon."
-                                    : "Join the next generation of creators scaling their reach and influence with IncuBrix."}
+            <DialogContent className="sm:max-w-[520px] bg-[#0a0e27] border border-cyan-500/20 text-white shadow-2xl shadow-cyan-500/10 p-0 overflow-hidden max-h-[90vh] flex flex-col">
+                {success ? (
+                    <div className="flex flex-col items-center justify-center p-12 text-center h-full min-h-[400px]">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(6,182,212,0.3)] shrink-0">
+                            <CheckCircle2 className="w-10 h-10 text-white" />
+                        </div>
+                        <DialogHeader className="w-full flex flex-col items-center">
+                            <DialogTitle className="text-2xl font-bold text-white mb-2 text-center">
+                                Application Received
+                            </DialogTitle>
+                            <DialogDescription className="text-base text-cyan-100/80 max-w-[320px] mx-auto leading-relaxed text-center mb-8">
+                                Your details have been received! You'll receive your Creator Studio access link via email shortly.
                             </DialogDescription>
                         </DialogHeader>
+                        <Button
+                            onClick={handleClose}
+                            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-12 py-6 rounded-xl text-lg font-medium shadow-xl shadow-cyan-500/20 w-full sm:w-auto"
+                        >
+                            Done
+                        </Button>
                     </div>
-                </div>
-
-                <div className="px-8 pb-8">
-                    {success ? (
-                        <div className="flex flex-col items-center justify-center py-8 text-center">
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center mb-5">
-                                <CheckCircle2 className="w-8 h-8 text-white" />
+                ) : (
+                    <>
+                        {/* Header */}
+                        <div className="relative bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-indigo-500/20 px-8 pt-8 pb-6 shrink-0">
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0e27]" />
+                            <div className="relative z-10">
+                                <DialogHeader>
+                                    <div className="mb-2">
+                                        <DialogTitle className="text-2xl font-bold text-white leading-snug">
+                                            Get Started with IncuBrix
+                                        </DialogTitle>
+                                    </div>
+                                    <DialogDescription className="text-gray-300 text-base">
+                                        Fill in your details and start using IncuBrix Creator Studio.
+                                    </DialogDescription>
+                                </DialogHeader>
                             </div>
-                            <h3 className="text-xl font-semibold mb-3 text-white">You're on the list!</h3>
-                            <p className="text-white text-base font-semibold leading-relaxed max-w-sm">
-                                Thank you! Check your mail for confirmation.
-                            </p>
-                            <div className="w-12 h-px bg-cyan-500/40 my-3" />
-                            <p className="text-cyan-300/80 text-sm leading-relaxed max-w-sm">
-                                We will review your request and get back to you.
-                            </p>
-                            <Button
-                                onClick={handleClose}
-                                className="mt-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-8 py-3 rounded-xl"
-                            >
-                                Got it
-                            </Button>
                         </div>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+
+                        <div ref={scrollRef} className="px-8 pb-8 flex-1 overflow-y-auto custom-scrollbar relative z-10">
+                            <form onSubmit={handleSubmit} className="space-y-4 pt-2">
                             {error && (
                                 <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-xl p-4">
                                     <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 shrink-0" />
@@ -540,18 +522,63 @@ export default function BetaSignupModal({ isOpen, onClose, onSuccess }) {
                                 <Label className="text-gray-300 text-sm font-medium">
                                     Contact Number <span className="text-gray-500 font-normal text-xs">(optional)</span>
                                 </Label>
-                                <div className="flex gap-2">
-                                    <select
-                                        value={formData.countryCode}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, countryCode: e.target.value }))}
-                                        className="bg-[#151d45]/60 border border-cyan-500/20 text-white h-11 rounded-xl px-2 text-sm focus:border-cyan-500 focus:ring-cyan-500/20 outline-none w-[100px] shrink-0 appearance-none cursor-pointer"
-                                    >
-                                        {COUNTRY_CODES.map(c => (
-                                            <option key={c.code} value={c.code} className="bg-[#0a0e27]">
-                                                {c.label}
-                                            </option>
-                                        ))}
-                                    </select>
+                                <div className="flex gap-2 relative">
+                                    {/* Custom Combobox */}
+                                    <div className="relative" ref={countryDropdownRef}>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsCountryDropdownOpen(!isCountryDropdownOpen);
+                                                setCountrySearchText('');
+                                            }}
+                                            className="bg-[#151d45]/60 border border-cyan-500/20 text-white h-11 rounded-xl px-2 text-sm focus:border-cyan-500 focus:ring-cyan-500/20 outline-none w-[100px] shrink-0 flex items-center justify-between cursor-pointer"
+                                        >
+                                            <span className="truncate pr-1">
+                                                {ALL_COUNTRY_CODES.find(c => c.code === formData.countryCode)?.code || formData.countryCode}
+                                            </span>
+                                            <ChevronDown className="w-4 h-4 text-cyan-400 opacity-70" />
+                                        </button>
+
+                                        {isCountryDropdownOpen && (
+                                            <div className="absolute top-[100%] left-0 z-[100] mt-1 w-[260px] bg-[#0a0e27] border border-cyan-500/30 rounded-xl shadow-2xl overflow-hidden py-1">
+                                                <div className="px-2 pt-2 pb-1 sticky top-0 bg-[#0a0e27]">
+                                                    <div className="relative">
+                                                        <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400" />
+                                                        <Input 
+                                                            placeholder="Search country or code..."
+                                                            value={countrySearchText}
+                                                            onChange={(e) => setCountrySearchText(e.target.value)}
+                                                            className="h-8 pl-8 bg-[#151d45]/40 border-cyan-500/20 text-xs text-white"
+                                                            autoFocus
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="max-h-[200px] overflow-y-auto px-1 mt-1">
+                                                    {ALL_COUNTRY_CODES.filter(c => 
+                                                        c.label.toLowerCase().includes(countrySearchText.toLowerCase()) || 
+                                                        c.code.includes(countrySearchText)
+                                                    ).map(c => (
+                                                        <button
+                                                            key={c.code + c.country}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setFormData(prev => ({ ...prev, countryCode: c.code }));
+                                                                setIsCountryDropdownOpen(false);
+                                                                setCountrySearchText('');
+                                                            }}
+                                                            className={`w-full text-left px-3 py-2 text-xs rounded-md transition-colors flex items-center gap-2 ${formData.countryCode === c.code ? 'bg-cyan-500/20 text-cyan-300' : 'text-gray-300 hover:bg-[#151d45]/60 hover:text-white'}`}
+                                                        >
+                                                            <span className="shrink-0 font-medium w-9">{c.code}</span>
+                                                            <span className="truncate opacity-80">{c.label.split(' ')[0]} {c.label.split(' ').slice(1, -1).join(' ')}</span>
+                                                        </button>
+                                                    ))}
+                                                    {ALL_COUNTRY_CODES.filter(c => c.label.toLowerCase().includes(countrySearchText.toLowerCase()) || c.code.includes(countrySearchText)).length === 0 && (
+                                                        <div className="px-3 py-4 text-center text-xs text-gray-500">No results found.</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                     <Input
                                         name="phoneNumber"
                                         type="tel"
@@ -592,8 +619,9 @@ export default function BetaSignupModal({ isOpen, onClose, onSuccess }) {
 
 
                         </form>
-                    )}
-                </div>
+                        </div>
+                    </>
+                )}
             </DialogContent>
         </Dialog>
     );

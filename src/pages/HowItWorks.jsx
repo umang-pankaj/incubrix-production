@@ -35,7 +35,7 @@ export default function HowItWorks() {
       step: 1,
       icon: Lightbulb,
       title: 'Get Content Insights',
-      description: 'Analyse content topics, current trends, and performance to understand what works and what doesn\'t, providing clear guidance on what to create next based on your goals (powered by our Scribe module).',
+      description: 'Analyse content topics, current trends, and performance to understand what works and what doesn\'t, providing clear guidance on what to create next based on your goals (powered by our Content Insights module).',
       features: [
         'Analyse trending topics and audience interests',
         'Understand which content performs best',
@@ -248,7 +248,7 @@ export default function HowItWorks() {
                     href="#demo"
                     className="group inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-semibold transition-colors text-lg"
                   >
-                    See how it works 
+                    See how IncuBrix works 
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </a>
                 </motion.div>
