@@ -941,7 +941,7 @@ export default function About() {
                     onClick={() => setAuthModalOpen(true)}
                     className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-6 rounded-full text-lg font-bold shadow-xl shadow-cyan-500/30 transition-all hover:scale-105 active:scale-95"
                   >
-                    Get Started Now
+                    Get Started
                   </Button>
                 </div>
               )}

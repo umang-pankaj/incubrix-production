@@ -1521,6 +1521,11 @@ function ShowcaseCarousel({ cards }) {
                 style={{ background: card.accent, boxShadow: `0 0 8px ${card.accent}` }}
               />
               {card.badge}
+              {card.comingSoon && (
+                <span className="ml-2 flex items-center bg-white text-black text-[9px] font-black px-1.5 py-0.5 rounded-sm tracking-widest leading-none">
+                  COMING SOON
+                </span>
+              )}
             </span>
           </div>
 
@@ -1741,39 +1746,27 @@ export default function Home() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.85, duration: 1 }}
               >
-              {/* Primary CTAs: Signup & Enter Creator Studio */}
+              {/* Primary CTA: Get Started */}
               {!isAuthenticated && (
                 <motion.div
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
+                  className="relative"
                 >
+                  {/* Glow Effect */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+                  
                   <Button
                     onClick={() => setAuthModalOpen(true)}
-                    className={`px-8 py-6 text-base font-bold rounded-2xl transition-all duration-300 border backdrop-blur-md ${theme === 'light' ? 'bg-white/80 border-gray-200 text-gray-900 shadow-lg hover:bg-gray-50' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}
+                    className="relative bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-6 text-base font-bold rounded-2xl shadow-2xl shadow-cyan-500/20 border border-cyan-300/30"
                   >
-                    Signup Now
+                    <span className="relative flex items-center gap-2">
+                      Get Started
+                      <ArrowRight className="w-4 h-4 ml-1" />
+                    </span>
                   </Button>
                 </motion.div>
               )}
-              
-              <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative"
-              >
-                {/* Glow Effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
-                
-                <Button
-                  onClick={handleBetaClick}
-                  className="relative bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-6 text-base font-bold rounded-2xl shadow-2xl shadow-cyan-500/20 border border-cyan-300/30"
-                >
-                  <span className="relative flex items-center gap-2">
-                    Enter Creator Studio
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                  </span>
-                </Button>
-              </motion.div>
               </motion.div>
             </motion.div>
             
@@ -1828,6 +1821,7 @@ export default function Home() {
             caption: 'Track growth, engagement, and revenue—all in one unified dashboard.',
             img: '/assets/how-it-works/step4-growth.png',
             imgAlt: 'Performance Analytics Dashboard',
+            comingSoon: true,
           },
         ];
         return <ShowcaseCarousel cards={showcaseCards} />;

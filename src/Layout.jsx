@@ -170,9 +170,9 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const handleNavClick = (path) => {
-    if (currentPageName === path) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    // Always scroll to top when a navigation link is clicked
+    window.scrollTo({ top: 0, behavior: currentPageName === path ? 'smooth' : 'instant' });
+    if (mobileMenuOpen) setMobileMenuOpen(false);
   };
 
   return (
@@ -234,7 +234,9 @@ export default function Layout({ children, currentPageName }) {
             {/* Logo */}
             <Link
               to={createPageUrl('Home')}
-              onClick={() => handleNavClick('Home')}
+              onClick={() => {
+                handleNavClick('Home');
+              }}
               className="flex items-center space-x-2.5 group"
             >
               <div className="h-10 flex-shrink-0">
@@ -489,9 +491,19 @@ export default function Layout({ children, currentPageName }) {
                           <div className="flex items-center">
                             <span className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'} font-bold text-sm tracking-tight`}>{(user?.plan || 'Free') + ' Plan'}</span>
                           </div>
-                          <Link to={`/Pricing?highlight=${user?.plan || 'Free'}#plans`} className="text-[10px] text-cyan-400/60 hover:text-cyan-400 uppercase font-bold tracking-widest transition-colors">Details</Link>
+                          <Link 
+                            to={`/Pricing?highlight=${user?.plan || 'Free'}#plans`} 
+                            onClick={() => handleNavClick('Pricing')}
+                            className="text-[10px] text-cyan-400/60 hover:text-cyan-400 uppercase font-bold tracking-widest transition-colors"
+                          >
+                            Details
+                          </Link>
                         </div>
-                        <Link to="/Pricing#plans" className="block">
+                        <Link 
+                          to="/Pricing#plans" 
+                          onClick={() => handleNavClick('Pricing')}
+                          className="block"
+                        >
                           <button className="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 rounded-xl text-white font-black text-xs transition-all shadow-lg shadow-cyan-500/30">
                             Upgrade Now
                           </button>
@@ -513,8 +525,8 @@ export default function Layout({ children, currentPageName }) {
 
                       {/* Dropdown Footer Links */}
                       <div className={`flex items-center justify-center gap-5 text-[10px] ${theme === 'dark' ? 'text-gray-500 border-cyan-500/10' : 'text-gray-400 border-gray-200'} font-bold border-t pt-5`}>
-                        <Link to="/Terms" className="hover:text-cyan-400 transition-colors uppercase">TERMS</Link>
-                        <Link to="/Privacy" className="hover:text-cyan-400 transition-colors uppercase">PRIVACY</Link>
+                        <Link to="/Terms" onClick={() => handleNavClick('Terms')} className="hover:text-cyan-400 transition-colors uppercase">TERMS</Link>
+                        <Link to="/Privacy" onClick={() => handleNavClick('Privacy')} className="hover:text-cyan-400 transition-colors uppercase">PRIVACY</Link>
                       </div>
                     </div>
                   </div>
@@ -670,7 +682,9 @@ export default function Layout({ children, currentPageName }) {
               <div className="flex flex-col">
                 <Link
                   to={createPageUrl('Home')}
-                  onClick={() => handleNavClick('Home')}
+                  onClick={() => {
+                    handleNavClick('Home');
+                  }}
                   className="flex items-center space-x-2.5 mb-6 group"
                 >
                   <div className="h-10 flex-shrink-0">
