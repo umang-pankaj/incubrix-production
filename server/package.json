@@ -21,7 +21,6 @@
         "@langchain/core": "^1.1.24",
         "@langchain/openai": "^1.2.7",
         "@langchain/textsplitters": "^1.0.1",
-        "@sendgrid/mail": "^8.1.6",
         "bcrypt": "^5.1.1",
         "cheerio": "^1.2.0",
         "cookie-parser": "^1.4.6",
@@ -34,7 +33,6 @@
         "openid-client": "^6.8.2",
         "passport": "^0.7.0",
         "passport-google-oauth20": "^2.0.0",
-        "passport-linkedin-oauth2": "^2.0.0",
         "uuid": "^13.0.0"
     }
 }

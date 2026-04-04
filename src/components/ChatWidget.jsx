@@ -597,7 +597,7 @@ export default function ChatWidget() {
                                                             <Button
                                                                 size="sm"
                                                                 variant="outline"
-                                                                onClick={() => window.open('https://mail.google.com/mail/?view=cm&fs=1&to=contact@incubrix.com', '_blank')}
+                                                                onClick={() => window.open('https://mail.google.com/mail/?view=cm&fs=1&to=support@incubrix.com', '_blank')}
                                                                 className="bg-cyan-500/10 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-white text-xs py-1 h-8 px-4"
                                                             >
                                                                 Email us
@@ -632,7 +632,14 @@ export default function ChatWidget() {
                                                             <Button
                                                                 size="sm"
                                                                 variant="outline"
-                                                                onClick={() => { setIsOpen(false); navigate('/HowItWorks#demo'); }}
+                                                                onClick={() => { 
+                                                                    setIsOpen(false); 
+                                                                    if (location.pathname === '/') {
+                                                                        document.getElementById('book-demo')?.scrollIntoView({ behavior: 'smooth' });
+                                                                    } else {
+                                                                        navigate('/#book-demo');
+                                                                    }
+                                                                }}
                                                                 className="bg-cyan-500/10 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-white text-xs py-1 h-8 w-full font-bold uppercase tracking-wider text-left justify-start"
                                                             >
                                                                 Book a Demo

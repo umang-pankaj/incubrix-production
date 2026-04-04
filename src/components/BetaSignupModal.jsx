@@ -148,7 +148,18 @@ export default function BetaSignupModal({ isOpen, onClose, onSuccess }) {
     const validateLinkedIn = (url) =>
         /^https?:\/\/(www\.)?linkedin\.com\/(in|pub|company)\/[^\s/]+\/?$/.test(url.trim());
 
-    const { isAuthenticated, setAuthModalOpen } = useAuth();
+    const { isAuthenticated, setAuthModalOpen, user } = useAuth();
+
+    // Pre-fill name & email from authenticated user when modal opens
+    useEffect(() => {
+        if (isOpen && user) {
+            setFormData(prev => ({
+                ...prev,
+                fullName: prev.fullName || user.name || '',
+                email: prev.email || user.email || '',
+            }));
+        }
+    }, [isOpen, user]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

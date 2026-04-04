@@ -22,7 +22,7 @@ export default function AuthModal({ open, onOpenChange }) {
   const [showOtpSentPopup, setShowOtpSentPopup] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
-  const { loginWithGoogle, loginWithLinkedIn } = useAuth();
+  const { loginWithGoogle } = useAuth();
 
   const handleGoogleSignIn = async () => {
     if (!agreed) {
@@ -39,20 +39,6 @@ export default function AuthModal({ open, onOpenChange }) {
     }
   };
 
-  const handleLinkedInSignIn = async () => {
-    if (!agreed) {
-      setError('Please accept the Terms of Service and Privacy Policy to continue.');
-      return;
-    }
-    setError('');
-    setLoading(true);
-    try {
-      await loginWithLinkedIn();
-    } catch (err) {
-      setError('LinkedIn Sign-In failed. Please try again.');
-      setLoading(false);
-    }
-  };
 
   React.useEffect(() => {
     if (open) {
@@ -357,16 +343,6 @@ export default function AuthModal({ open, onOpenChange }) {
                       </button>
                     </motion.div>
 
-                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      <button 
-                        onClick={handleLinkedInSignIn}
-                        disabled={loading}
-                        className="w-full flex items-center justify-center gap-3 bg-[#0077b5] hover:bg-[#006396] text-white py-4 px-4 rounded-xl font-semibold transition-all shadow-lg disabled:opacity-70"
-                      >
-                        <img src="https://www.svgrepo.com/show/448234/linkedin.svg" alt="LinkedIn" className="w-5 h-5 brightness-0 invert" />
-                        Continue with LinkedIn
-                      </button>
-                    </motion.div>
                   </div>
 
                   {/* Divider */}

@@ -365,7 +365,7 @@ const DashboardPreview = ({ theme }) => {
             <img 
               src="/assets/dashboard-showcase.png" 
               alt="IncuBrix Outcome Dashboard"
-              className="w-full h-full object-cover opacity-80"
+              className="w-full h-full object-contain opacity-80"
             />
             
             {/* Ambient Darken for contrast */}

@@ -1,12 +1,21 @@
+import React from 'react';
 import { Toaster } from "@/components/ui/sonner"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ChatWidget from '@/components/ChatWidget';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+}
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -22,8 +31,11 @@ const AuthenticatedApp = () => {
   // Show loading spinner while checking auth
   if (isLoadingAuth) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      <div className="fixed inset-0 flex items-center justify-center bg-[#030616] z-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin"></div>
+          <span className="text-cyan-400 font-bold text-xl uppercase tracking-widest animate-pulse">IncuBrix is Loading...</span>
+        </div>
       </div>
     );
   }
@@ -63,6 +75,7 @@ function App() {
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
+          <ScrollToTop />
           <AuthenticatedApp />
           <ChatWidget />
         </Router>

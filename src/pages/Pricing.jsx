@@ -330,7 +330,7 @@ export default function Pricing() {
                     {!isCurrentPlan && (
                       plan.name === 'Business' ? (
                         <a
-                          href={`https://mail.google.com/mail/?view=cm&fs=1&to=contact@incubrix.com&su=${encodeURIComponent('Business Plan Enquiry — IncuBrix')}&body=${encodeURIComponent("Hi IncuBrix Team,\n\nI'm interested in the Business Plan and would like to discuss pricing, onboarding, and how it fits our scale.\n\nLooking forward to hearing from you.\n\nBest regards,")}`}
+                          href={`https://mail.google.com/mail/?view=cm&fs=1&to=support@incubrix.com&su=${encodeURIComponent('Business Plan Enquiry — IncuBrix')}&body=${encodeURIComponent("Hi IncuBrix Team,\n\nI'm interested in the Business Plan and would like to discuss pricing, onboarding, and how it fits our scale.\n\nLooking forward to hearing from you.\n\nBest regards,")}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="mt-auto block"

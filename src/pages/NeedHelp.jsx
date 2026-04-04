@@ -17,7 +17,7 @@ const CATEGORIES = [
 ];
 
 export default function NeedHelp() {
-  const { theme } = useAuth();
+  const { theme, user } = useAuth();
   const location = useLocation();
   const fileInputRef = useRef(null);
 
@@ -34,8 +34,8 @@ export default function NeedHelp() {
     }
   }, [location.hash]);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    name: user?.name || '',
+    email: user?.email || '',
     category: 'General Feedback',
     message: '',
     attachments: [],
@@ -44,6 +44,16 @@ export default function NeedHelp() {
   const [loading, setLoading] = useState(false);
   const [ticketId, setTicketId] = useState('');
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || '',
+      }));
+    }
+  }, [user]);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
@@ -126,8 +136,8 @@ export default function NeedHelp() {
               onClick={() => {
                 setSubmitted(false);
                 setFormData({
-                  name: '',
-                  email: '',
+                  name: user?.name || '',
+                  email: user?.email || '',
                   category: 'General Feedback',
                   message: '',
                   attachments: [],

@@ -69,7 +69,7 @@ export default function HowItWorks() {
         'Preview how content appears before publishing'
       ],
       gradient: 'from-indigo-500 to-purple-500',
-      image: '/assets/how-it-works/step3-publishing.png'
+      image: '/assets/how-it-works/step3-publishing-zoomed.png'
     },
     {
       step: 4,
@@ -268,15 +268,15 @@ export default function HowItWorks() {
                       transition={{ duration: 3, repeat: Infinity }}
                     />
                     <Card className="bg-[#151d45]/80 backdrop-blur-sm border-cyan-500/20 overflow-hidden relative z-10 group-hover:border-cyan-500/50 transition-all rounded-[1.5rem] p-3 shadow-2xl">
-                      <div className="aspect-[4/3] lg:aspect-[16/10] relative overflow-hidden rounded-xl border border-white/5">
+                      <div className={`aspect-[4/3] relative overflow-hidden rounded-xl border border-white/5 ${idx <= 2 ? 'bg-white' : ''}`}>
                         <motion.img
                           src={item.image}
                           alt={item.title}
-                          className="w-full h-full object-cover"
-                          whileHover={{ scale: 1.05 }}
+                          className={`w-full h-full ${idx <= 2 ? 'object-contain' : 'object-cover'}`}
+                          whileHover={{ scale: idx <= 2 ? 1 : 1.05 }}
                           transition={{ duration: 0.7 }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#151d45]/80 via-[#151d45]/20 to-transparent" />
+                        {idx > 2 && <div className="absolute inset-0 bg-gradient-to-t from-[#151d45]/80 via-[#151d45]/20 to-transparent" />}
                       </div>
                     </Card>
                   </div>
@@ -410,10 +410,16 @@ export default function HowItWorks() {
                 </p>
                 <div className="w-full mt-auto">
                   <Button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => {
+                      if (window.location.pathname === '/') {
+                        document.getElementById('book-demo')?.scrollIntoView({ behavior: 'smooth' });
+                      } else {
+                        window.location.href = '/#book-demo';
+                      }
+                    }}
                     className="w-full h-16 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white text-lg font-bold rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-[0.98]"
                   >
-                    Schedule a Demo
+                    Book a Demo
                   </Button>
                 </div>
               </div>

@@ -28,7 +28,26 @@
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
+/* Fix for Calendly White Scrollbar */
+.calendly-inline-widget {
+  color-scheme: dark !important;
+  overflow: hidden !important;
+}
+
+.calendly-inline-widget iframe {
+  color-scheme: dark !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.calendly-inline-widget iframe::-webkit-scrollbar {
+  display: none !important;
+}
+
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
   /* Global scale adjustment to match 80% view density at 100% zoom */
   :root {

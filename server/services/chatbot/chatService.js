@@ -79,7 +79,7 @@ class ChatService {
     }
 
     async generateAIResponse(message) {
-        if (!process.env.OPENAI_API_KEY) return { source: 'error', answer: "Offline." };
+        if (!process.env.GEMINI_API_KEY) return { source: 'error', answer: "Offline." };
 
         try {
             const relevantDocs = await vectorStore.searchContent(message, 3);
@@ -93,37 +93,33 @@ class ChatService {
                 };
             }
 
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
-                    messages: [
-                        {
-                            role: 'system',
-                            content: `You are IncuBrix AI, a helpful assistant for the IncuBrix platform. 
-                            Use the following context to answer the user's question. 
-                            If the answer is not in the context, be honest and say you don't know, then ask if they want to contact support.
-                            Context: ${context}`
-                        },
-                        { role: 'user', content: message }
+                    contents: [
+                        { role: 'user', parts: [{ text: `Context: ${context}\n\nQuestion: ${message}` }] }
                     ],
-                    temperature: 0.3
+                    systemInstruction: {
+                        parts: [{ text: "You are IncuBrix AI, a helpful assistant for the IncuBrix platform.\nUse the following context to answer the user's question.\nIf the answer is not in the context, be honest and say you don't know, then ask if they want to contact support." }]
+                    },
+                    generationConfig: {
+                        temperature: 0.3
+                    }
                 })
             });
 
             const data = await response.json();
             if (data.error) {
-                if (data.error.code === 'insufficient_quota') {
+                if (data.error.code === 429) { // Quota exceeded in Gemini usually returns 429
                     return { source: 'error', answer: "I'm currently on a break due to high usage. Please try again later or contact **support@incubrix.com** for immediate help." };
                 }
                 return { source: 'error', answer: `AI Error: ${data.error.message}` };
             }
 
-            const answer = data.choices[0].message.content;
+            const answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "I encountered an issue generating a response.";
 
             // If AI admits it doesn't know, offer contact
             if (answer.toLowerCase().includes("don't know") || answer.toLowerCase().includes("do not know") || answer.toLowerCase().includes("no information")) {

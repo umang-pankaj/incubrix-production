@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import ScheduleDemoModal from '../components/ScheduleDemoModal';
 import BetaSignupModal from '../components/BetaSignupModal';
+import { useAuth } from '@/lib/AuthContext';
 import {
   Target,
   Users,
@@ -32,6 +33,7 @@ import { motion } from 'framer-motion';
 export default function About() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isBetaOpen, setIsBetaOpen] = React.useState(false);
+  const { isAuthenticated, setAuthModalOpen } = useAuth();
   const values = [
     {
       icon: Target,
@@ -927,27 +929,35 @@ export default function About() {
               Join creators already using IncuBrix to <span className="text-cyan-400">scale</span> their content business.
             </h2>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              {/* Primary CTA: Start Your Journey */}
-              <div className="relative">
-                <motion.div
-                  className="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 blur-lg"
-                  animate={{ opacity: [0.4, 0.75, 0.4] }}
-                  transition={{ duration: 2.5, repeat: Infinity }}
-                />
-                <Button
-                  onClick={() => setIsBetaOpen(true)}
-                  className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-6 rounded-full text-lg font-bold shadow-xl shadow-cyan-500/30 transition-all hover:scale-105 active:scale-95"
-                >
-                  Start Your Journey
-                </Button>
-              </div>
-              {/* Secondary CTA */}
+              {/* Primary CTA: Get Started Now (Hidden if logged in) */}
+              {!isAuthenticated && (
+                <div className="relative">
+                  <motion.div
+                    className="absolute -inset-1 rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 blur-lg"
+                    animate={{ opacity: [0.4, 0.75, 0.4] }}
+                    transition={{ duration: 2.5, repeat: Infinity }}
+                  />
+                  <Button
+                    onClick={() => setAuthModalOpen(true)}
+                    className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 hover:from-emerald-400 hover:via-cyan-400 hover:to-blue-400 text-white px-10 py-6 rounded-full text-lg font-bold shadow-xl shadow-cyan-500/30 transition-all hover:scale-105 active:scale-95"
+                  >
+                    Get Started Now
+                  </Button>
+                </div>
+              )}
+              {/* Secondary CTA: Book a Demo */}
               <Button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                  if (window.location.pathname === '/') {
+                    document.getElementById('book-demo')?.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    window.location.href = '/#book-demo';
+                  }
+                }}
                 variant="ghost"
                 className="text-cyan-300 hover:text-white hover:bg-cyan-500/15 px-8 py-6 rounded-full text-base font-semibold border border-cyan-400/30 hover:border-cyan-400/60 transition-all"
               >
-                Schedule a Demo <ArrowRight className="ml-2 w-5 h-5 inline" />
+                Book a Demo <ArrowRight className="ml-2 w-5 h-5 inline" />
               </Button>
             </div>
           </motion.div>

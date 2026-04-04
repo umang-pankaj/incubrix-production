@@ -170,7 +170,7 @@ export default function Terms() {
     {
       id: "dmca",
       title: "14. Copyright, IP Complaints, and DMCA",
-      content: "IncuBrix responds to valid copyright infringement notices and may terminate repeat infringers. DMCA notices should include sufficient detail to identify the copyrighted work and allegedly infringing material and be sent to contact@incubrix.com."
+      content: "IncuBrix responds to valid copyright infringement notices and may terminate repeat infringers. DMCA notices should include sufficient detail to identify the copyrighted work and allegedly infringing material and be sent to support@incubrix.com."
     },
     {
       id: "security",
@@ -258,7 +258,7 @@ export default function Terms() {
             </div>
             <div className="flex items-center gap-3">
               <Mail className="w-5 h-5 text-cyan-400" />
-              <span className="text-white">Email: <a href="mailto:contact@incubrix.com" className="text-cyan-400 hover:underline">contact@incubrix.com</a></span>
+              <span className="text-white">Email: <a href="mailto:support@incubrix.com" className="text-cyan-400 hover:underline">support@incubrix.com</a></span>
             </div>
           </div>
         </div>

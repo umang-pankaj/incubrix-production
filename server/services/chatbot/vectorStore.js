@@ -87,31 +87,32 @@ class VectorStoreService {
     }
 
     async getEmbedding(text) {
-        if (!process.env.OPENAI_API_KEY) return null;
+        if (!process.env.GEMINI_API_KEY) return null;
         if (this.quotaExceeded) return null; // Skip if quota was already exceeded
         try {
-            const response = await fetch('https://api.openai.com/v1/embeddings', {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${process.env.GEMINI_API_KEY}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    input: text,
-                    model: 'text-embedding-3-small'
+                    model: 'models/gemini-embedding-001',
+                    content: {
+                        parts: [{ text: text }]
+                    }
                 })
             });
             const data = await response.json();
             if (data.error) {
-                if (data.error.code === 'insufficient_quota' || data.error.type === 'insufficient_quota') {
-                    console.warn('[VectorStore] OpenAI quota exceeded. Disabling embeddings for this session.');
+                if (data.error.code === 429) {
+                    console.warn('[VectorStore] Gemini quota exceeded. Disabling embeddings for this session.');
                     this.quotaExceeded = true;
                 } else {
                     console.error('[VectorStore] Embedding API Error:', data.error.message);
                 }
                 return null;
             }
-            return data.data[0].embedding;
+            return data.embedding?.values;
         } catch (e) {
             console.error('[VectorStore] Embedding Fetch Error:', e);
             return null;

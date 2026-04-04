@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { Menu, X, User, Settings, Sparkles, Info, CreditCard, Moon, Sun, Monitor, UserCircle, Camera, Upload, Rocket, Calendar, Pencil, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import AuthModal from '@/components/AuthModal';
 import { useAuth } from '@/lib/AuthContext';
 import { toast, Toaster } from "sonner";
 import BetaSignupModal from '@/components/BetaSignupModal';
-import ScheduleDemoModal from '@/components/ScheduleDemoModal';
+import { motion } from 'framer-motion';
 
 export default function Layout({ children, currentPageName }) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -16,13 +16,12 @@ export default function Layout({ children, currentPageName }) {
   const fileInputRef = useRef(null);
   // Profile states - initialized as empty/default and synced via useEffect
   const [profilePhoto, setProfilePhoto] = useState(null);
-  const [isBioExpanded, setIsBioExpanded] = useState(false);
-  const [nickname, setNickname] = useState('');
-  const [useNicknameAsDisplay, setUseNicknameAsDisplay] = useState(false);
   const [isBetaEnrolled, setIsBetaEnrolled] = useState(false);
   const [betaModalOpen, setBetaModalOpen] = useState(false);
-  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const scrollTimerRef = useRef(null);
 
   // Click-based dropdown state
   const [isHeaderDropdownOpen, setIsHeaderDropdownOpen] = useState(false);
@@ -99,14 +98,10 @@ export default function Layout({ children, currentPageName }) {
     if (user?.email) {
       const email = user.email;
       setProfilePhoto(localStorage.getItem(`${email}_profilePhoto`) || null);
-      setNickname(localStorage.getItem(`${email}_nickname`) || '');
-      setUseNicknameAsDisplay(localStorage.getItem(`${email}_useNicknameAsDisplay`) === 'true');
       setIsBetaEnrolled(localStorage.getItem(`${email}_isBetaEnrolled`) === 'true');
     } else {
       // Clear data on logout
       setProfilePhoto(null);
-      setNickname('');
-      setUseNicknameAsDisplay(false);
       setIsBetaEnrolled(false);
     }
   }, [user?.email]);
@@ -124,11 +119,49 @@ export default function Layout({ children, currentPageName }) {
   }, [location.pathname, location.hash]);
 
   useEffect(() => {
+    const handleActivity = () => {
+      // If we are at the very top, always show header
+      if (window.scrollY < 20) {
+        setIsHeaderVisible(true);
+        if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+        return;
+      }
+
+      // On any activity (scroll/mouse), briefly hide header if we're scrolling
+      // But if it's just mouse move, we might want to show it.
+      // Logical compromise: Show on mouse move, Hide on scroll start, Show on scroll stop.
+      setIsHeaderVisible(false);
+
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+      
+      scrollTimerRef.current = setTimeout(() => {
+        setIsHeaderVisible(true);
+      }, 800);
+    };
+
+    const handleMouseMove = () => {
+      setIsHeaderVisible(true);
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+      
+      // Still set a timer to hide it if they stop moving and start scrolling again later
+      scrollTimerRef.current = setTimeout(() => {
+        // Only hide if we are actually scrolling (handled by scroll listener)
+      }, 800);
+    };
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
+      handleActivity();
     };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('mousemove', handleMouseMove);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
   }, []);
 
   const navLinks = [
@@ -188,7 +221,11 @@ export default function Layout({ children, currentPageName }) {
       `}</style>
 
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+      <motion.nav 
+        initial={{ y: 0 }}
+        animate={{ y: isHeaderVisible ? 0 : -100 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${isScrolled
         ? (theme === 'dark' ? 'bg-[#0a0e27]/95 backdrop-blur-lg border-b border-white/5' : 'bg-white/95 backdrop-blur-lg border-b border-gray-200 shadow-sm')
         : 'bg-transparent'
         }`}>
@@ -224,8 +261,7 @@ export default function Layout({ children, currentPageName }) {
                   <div className="py-2">
                     {[
                       { label: 'About Us', path: 'About' },
-                      { label: 'How IncuBrix Works', path: 'HowItWorks' },
-                      { label: 'Blog', path: 'Blog' }
+                      { label: 'How IncuBrix Works', path: 'HowItWorks' }
                     ].map((item) => (
                       <Link
                         key={item.label}
@@ -265,7 +301,18 @@ export default function Layout({ children, currentPageName }) {
                     ].map((item) => (
                       <button
                         key={item.label}
-                        onClick={() => setIsCreatorStudioDropdownOpen(false)}
+                        onClick={() => {
+                          setIsCreatorStudioDropdownOpen(false);
+                          if (!isAuthenticated) {
+                            toast.error('Sign in first to enter creator studio', {
+                              description: 'You need an account to explore these modules.',
+                              duration: 4000
+                            });
+                            setAuthModalOpen(true);
+                          } else {
+                            // Do nothing for authenticated users as requested
+                          }
+                        }}
                         className="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-white/5 transition-colors group text-left"
                       >
                         <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">{item.label}</span>
@@ -316,69 +363,66 @@ export default function Layout({ children, currentPageName }) {
                 </button>
 
                 {/* Social Dropdown Panel */}
-                <div className={`absolute right-0 mt-3 w-[220px] bg-[#111827] border border-white/10 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-200 z-50 ${isSocialDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2 pointer-events-none'
+                <div className={`absolute right-0 mt-3 w-auto bg-[#111827] border border-white/10 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-200 z-50 ${isSocialDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2 pointer-events-none'
                   }`}>
-                  {[
-                    {
-                      label: 'Subscribe on YouTube',
-                      href: 'https://youtube.com',
-                      icon: (
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                        </svg>
-                      ),
-                      color: 'text-red-400',
-                    },
-                    {
-                      label: 'Follow us on LinkedIn',
-                      href: 'https://linkedin.com/company/incubrix',
-                      icon: (
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                        </svg>
-                      ),
-                      color: 'text-blue-400',
-                    },
-                    {
-                      label: 'Follow us on X',
-                      href: 'https://twitter.com',
-                      icon: (
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                        </svg>
-                      ),
-                      color: 'text-gray-200',
-                    },
-                    {
-                      label: 'Follow on Instagram',
-                      href: 'https://www.instagram.com/incubrix_official?igsh=Y2ZpNms4MWRuc2Vs',
-                      icon: (
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.919-.058-1.265-.069-1.645-.069-4.849 0-3.204.012-3.583.069-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                        </svg>
-                      ),
-                      color: 'text-pink-400',
-                    },
-                  ].map((item, idx, arr) => (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => setIsSocialDropdownOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3.5 text-sm font-medium text-gray-200 hover:bg-white/8 hover:text-white transition-colors ${idx < arr.length - 1 ? 'border-b border-white/5' : ''
-                        }`}
-                    >
-                      <span className={item.color}>{item.icon}</span>
-                      {item.label}
-                    </a>
-                  ))}
+                  <div className="flex flex-row items-center gap-4 p-4">
+                    {[
+                      {
+                        label: 'Follow us on LinkedIn',
+                        href: 'https://linkedin.com/company/incubrix',
+                        icon: (
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                          </svg>
+                        ),
+                        color: 'text-blue-400',
+                      },
+                      {
+                        label: 'Follow on Instagram',
+                        href: 'https://www.instagram.com/incubrix_official?igsh=Y2ZpNms4MWRuc2Vs',
+                        icon: (
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.919-.058-1.265-.069-1.645-.069-4.849 0-3.204.012-3.583.069-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                          </svg>
+                        ),
+                        color: 'text-pink-400',
+                      },
+                      {
+                        label: 'Follow on Facebook',
+                        href: 'https://www.facebook.com/people/IncuBrix/61583095167915/#',
+                        icon: (
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
+                          </svg>
+                        ),
+                        color: 'text-blue-500',
+                      },
+                    ].map((item) => (
+                      <a
+                        key={item.label}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setIsSocialDropdownOpen(false)}
+                        className={`hover:scale-110 transition-transform ${item.color}`}
+                        title={item.label}
+                      >
+                        {item.icon}
+                      </a>
+                    ))}
+                  </div>
                 </div>
               </div>
 
               {/* Book a Demo Button */}
               <button
-                onClick={() => setIsDemoModalOpen(true)}
+                onClick={() => {
+                  if (location.pathname !== '/') {
+                    window.location.href = '/#book-demo';
+                  } else {
+                    document.getElementById('book-demo')?.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
                 className="text-xs xl:text-sm font-semibold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 px-2 xl:px-3 py-2 rounded-xl border border-cyan-500/20 hover:bg-cyan-500/10"
               >
                 <Calendar className="w-4 h-4" />
@@ -392,7 +436,7 @@ export default function Layout({ children, currentPageName }) {
                     className="bg-gradient-to-r from-[#00d9ff] to-[#0080ff] hover:opacity-90 text-white font-semibold px-6"
                   >
                     <User className="w-4 h-4 mr-2" />
-                    {(useNicknameAsDisplay && nickname) ? nickname : (user.name ? user.name.split(' ')[0] : (user.email ? user.email.split('@')[0] : 'Account'))}
+                    {(user.name ? user.name.split(' ')[0] : (user.email ? user.email.split('@')[0] : 'Account'))}
                   </Button>
                   <div className={`absolute right-0 mt-4 w-[320px] ${theme === 'dark'
                     ? 'bg-gradient-to-br from-[#111a4a] via-[#0a0e27] to-[#05091d] border-cyan-400/30'
@@ -435,60 +479,6 @@ export default function Layout({ children, currentPageName }) {
                         className="hidden"
                       />
 
-                      {/* My Profile Section */}
-                      <button
-                        onClick={() => setIsBioExpanded(!isBioExpanded)}
-                        className={`w-full flex items-center justify-center gap-2 py-3 ${theme === 'dark' ? 'bg-[#0f173d] border-cyan-500/20 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-2xl font-bold text-sm hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:shadow-[0_0_15px_rgba(6,182,212,0.2)] transition-all mb-4`}
-                      >
-                        <UserCircle className="w-4 h-4 text-cyan-400" />
-                        My Profile
-                      </button>
-
-                      {isBioExpanded && (
-                        <div className={`mb-6 p-4 rounded-2xl border ${theme === 'dark' ? 'bg-[#0a0e27]/50 border-white/5' : 'bg-gray-50/50 border-gray-200'} transition-all animate-in slide-in-from-top-2 duration-300`}>
-                          <div className="">
-                            <p className={`text-[10px] font-bold uppercase tracking-widest ${theme === 'dark' ? 'text-cyan-400/60' : 'text-cyan-600/60'} mb-2 text-left`}>Nickname</p>
-                            <div className="flex gap-2">
-                              <input
-                                type="text"
-                                value={nickname}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  setNickname(val);
-                                  if (user?.email) localStorage.setItem(`${user.email}_nickname`, val);
-                                }}
-                                className={`flex-1 bg-transparent border-b ${theme === 'dark' ? 'border-white/10 text-white' : 'border-gray-200 text-gray-900'} focus:border-cyan-500 focus:ring-0 text-sm p-0 pb-1 font-medium outline-none`}
-                                placeholder="Enter nickname..."
-                              />
-                              <button
-                                onClick={() => {
-                                  setIsBioExpanded(false);
-                                  toast.success("Profile updated!");
-                                }}
-                                className="px-3 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-white text-[10px] font-bold uppercase transition-all"
-                              >
-                                Save
-                              </button>
-                            </div>
-                            <div className="flex items-start gap-2 mt-3">
-                              <input
-                                type="checkbox"
-                                id="use-nickname-toggle"
-                                checked={useNicknameAsDisplay}
-                                onChange={(e) => {
-                                  const val = e.target.checked;
-                                  setUseNicknameAsDisplay(val);
-                                  if (user?.email) localStorage.setItem(`${user.email}_useNicknameAsDisplay`, String(val));
-                                }}
-                                className="mt-0.5 h-3 w-3 rounded border-white/10 bg-white/5 text-cyan-500 focus:ring-cyan-500/50 cursor-pointer"
-                              />
-                              <label htmlFor="use-nickname-toggle" className="text-[9px] text-cyan-400/60 text-left leading-tight cursor-pointer select-none">
-                                Use this nickname as your display name.
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      )}
 
 
                       <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent -mx-6 mb-4" />
@@ -508,35 +498,7 @@ export default function Layout({ children, currentPageName }) {
                         </Link>
                       </div>
 
-                      {/* Appearance */}
-                      <div className={`mb-4 p-4 rounded-2xl border ${theme === 'dark' ? 'bg-[#0a0e27]/30 border-cyan-500/10' : 'bg-gray-50/50 border-gray-200'} flex items-center justify-between`}>
-                        <div className="flex flex-col text-left">
-                          <span className={`${theme === 'dark' ? 'text-white' : 'text-gray-900'} font-bold text-xs uppercase tracking-wider`}>Appearance</span>
-                          <span className="text-[10px] text-gray-500 font-semibold">{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
-                        </div>
-                        <button
-                          onClick={toggleTheme}
-                          className={`relative flex items-center gap-1 p-1 rounded-xl border transition-all duration-300 ${theme === 'dark'
-                            ? 'bg-[#0f173d] border-cyan-500/20'
-                            : 'bg-white border-gray-200'
-                            }`}
-                        >
-                          <span className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all duration-200 ${theme === 'dark'
-                            ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md'
-                            : 'text-gray-400'
-                            }`}>
-                            <Moon className="w-3 h-3" />
-                            Dark
-                          </span>
-                          <span className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all duration-200 ${theme === 'light'
-                            ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-md'
-                            : 'text-gray-500'
-                            }`}>
-                            <Sun className="w-3 h-3" />
-                            Light
-                          </span>
-                        </button>
-                      </div>
+
 
                       <div className={`h-px ${theme === 'dark' ? 'bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent' : 'bg-gray-200'} -mx-6 mb-4`} />
 
@@ -553,7 +515,6 @@ export default function Layout({ children, currentPageName }) {
                       <div className={`flex items-center justify-center gap-5 text-[10px] ${theme === 'dark' ? 'text-gray-500 border-cyan-500/10' : 'text-gray-400 border-gray-200'} font-bold border-t pt-5`}>
                         <Link to="/Terms" className="hover:text-cyan-400 transition-colors uppercase">TERMS</Link>
                         <Link to="/Privacy" className="hover:text-cyan-400 transition-colors uppercase">PRIVACY</Link>
-                        <Link to="/Blog" className="hover:text-cyan-400 transition-colors uppercase">BLOGS</Link>
                       </div>
                     </div>
                   </div>
@@ -599,8 +560,7 @@ export default function Layout({ children, currentPageName }) {
                   <div className="pl-4 py-2 space-y-3 border-l border-white/10 ml-2 mt-1">
                     {[
                       { label: 'About Us', path: 'About' },
-                      { label: 'How IncuBrix Works', path: 'HowItWorks' },
-                      { label: 'Blog', path: 'Blog' }
+                      { label: 'How IncuBrix Works', path: 'HowItWorks' }
                     ].map((item) => (
                       <Link
                         key={item.label}
@@ -680,7 +640,7 @@ export default function Layout({ children, currentPageName }) {
             </div>
           </div>
         )}
-      </nav>
+      </motion.nav>
 
       {/* Auth Modal */}
       <AuthModal open={isAuthenticated ? false : (currentPageName === 'Auth' || authModalOpen)} onOpenChange={setAuthModalOpen} />
@@ -727,12 +687,12 @@ export default function Layout({ children, currentPageName }) {
                 </p>
                 <p>
                   <a
-                    href="https://mail.google.com/mail/?view=cm&fs=1&to=contact@incubrix.com"
+                    href="https://mail.google.com/mail/?view=cm&fs=1&to=support@incubrix.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-cyan-400 transition-colors"
+                    className={`text-sm transition-colors hover:text-[#00d9ff] ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
-                    contact@incubrix.com
+                    support@incubrix.com
                   </a>
                 </p>
               </div>
@@ -753,11 +713,6 @@ export default function Layout({ children, currentPageName }) {
                     How IncuBrix Works
                   </Link>
                 </li>
-                <li>
-                  <Link to={createPageUrl('Blog') + '?f=blg'} onClick={() => handleNavClick('Blog')} className={`text-sm transition-colors hover:text-[#00d9ff] ${currentPageName === 'Blog' && location.search.includes('f=blg') ? 'text-[#00d9ff] font-semibold' : 'text-gray-400'}`}>
-                    Blog
-                  </Link>
-                </li>
               </ul>
             </div>
 
@@ -774,9 +729,20 @@ export default function Layout({ children, currentPageName }) {
                   { name: 'Content Performance', query: 'performance' },
                 ].map((tool) => (
                   <li key={tool.query}>
-                    <span className="text-sm text-gray-400 cursor-default">
+                    <button
+                      onClick={() => {
+                        if (!isAuthenticated) {
+                          toast.error('Sign in first to enter creator studio', {
+                            description: 'You need an account to explore these modules.',
+                            duration: 4000
+                          });
+                          setAuthModalOpen(true);
+                        }
+                      }}
+                      className="text-sm text-gray-400 hover:text-[#00d9ff] transition-colors text-left"
+                    >
                       {tool.name}
-                    </span>
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -828,18 +794,15 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           {/* Social Links */}
-          <div className="mt-8 pt-8 border-t border-white/5 flex justify-center space-x-6">
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-            </a>
-            <a href="https://linkedin.com/company/incubrix" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#0A66C2] transition-colors">
+          <div className="mt-8 pt-8 border-t border-white/5 flex justify-center space-x-8">
+            <a href="https://linkedin.com/company/incubrix" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#0A66C2] transition-colors" title="Follow us on LinkedIn">
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#FF0000] transition-colors">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
-            </a>
-            <a href="https://www.instagram.com/incubrix_official?igsh=Y2ZpNms4MWRuc2Vs" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#E1306C] transition-colors">
+            <a href="https://www.instagram.com/incubrix_official?igsh=Y2ZpNms4MWRuc2Vs" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#E1306C] transition-colors" title="Follow on Instagram">
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.919-.058-1.265-.069-1.645-.069-4.849 0-3.204.012-3.583.069-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg>
+            </a>
+            <a href="https://www.facebook.com/people/IncuBrix/61583095167915/#" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#1877F2] transition-colors" title="Follow on Facebook">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" /></svg>
             </a>
           </div>
 
@@ -850,10 +813,6 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </div>
       </footer>
-      <ScheduleDemoModal 
-        isOpen={isDemoModalOpen} 
-        onClose={() => setIsDemoModalOpen(false)} 
-      />
     </div>
   );
 }
